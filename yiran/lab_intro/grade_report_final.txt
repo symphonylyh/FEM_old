@@ -1,0 +1,36 @@
+Grading r1365 by qilezhi2 on 2016-01-22T02:35:44.923366Z
+Monad Autograder
+Testing lab_intro at 2016-01-25 01:57:59
+
+"A computer will do what you tell it to do, but that may be much different from what you had in mind" ~ Joseph Weizenbaum
+
+Setting up test environment...
+Compiling...
+================================================================
+main.cpp:85:23: warning: comparison of integers of different signs: 'int' and 'size_t' (aka 'unsigned long') [-Wsign-compare]
+    for (int x = 0; x < firstImage.width(); x++) {
+                    ~ ^ ~~~~~~~~~~~~~~~~~~
+main.cpp:86:27: warning: comparison of integers of different signs: 'int' and 'size_t' (aka 'unsigned long') [-Wsign-compare]
+        for (int y = 0; y < firstImage.height(); y++) {
+                        ~ ^ ~~~~~~~~~~~~~~~~~~~
+2 warnings generated.
+main.cpp:85:23: warning: comparison of integers of different signs: 'int' and 'size_t' (aka 'unsigned long') [-Wsign-compare]
+    for (int x = 0; x < firstImage.width(); x++) {
+                    ~ ^ ~~~~~~~~~~~~~~~~~~
+main.cpp:86:27: warning: comparison of integers of different signs: 'int' and 'size_t' (aka 'unsigned long') [-Wsign-compare]
+        for (int y = 0; y < firstImage.height(); y++) {
+                        ~ ^ ~~~~~~~~~~~~~~~~~~~
+2 warnings generated.
+
+
+Running tests...
+================================================================
+testBrighten  . [33 pts] - passed
+testCrosshairs  [33 pts] - passed
+testBlendImages [34 pts] - passed
+
+
+Total score...
+================================================================
+TOTAL SCORE: 100
+
