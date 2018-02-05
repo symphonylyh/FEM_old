@@ -9,18 +9,27 @@
 #ifndef Node_h
 #define Node_h
 
+#include "Eigen/Eigen"
+
+using namespace Eigen;
+
 class Node {
-    
+
 public:
-    Node();
-    ~Node();
-    void setDisplacement(double u, double v);
-    double getDisplacement();
-    
+    Node(double x, double y, double xi, double eta);  // set global and local coordinates
+    void setDisp(double u, double v); // set displacement
+    Vector2d getGlobalCoord();
+    Vector2d getLocalCoord();
+    Vector2d getDisp();
+
 private:
+    double x_; // Global X-Y Coordinates
+    double y_;
+    double xi_; // Local xi-eta Coordinates
+    double eta_;
     double u_; // displacement in 2D
     double v_;
-    
+
 };
 
 #endif /* Node_h */

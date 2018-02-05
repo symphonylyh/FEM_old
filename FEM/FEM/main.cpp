@@ -13,9 +13,9 @@
 
 using namespace Eigen;
 
-int main(int argc, const char * argv[]) {
-    MatrixXf m1(3,4);
-    m1 = MatrixXf::Zero(3,4);
-    std::cout << m1(2,2) << std::endl;
+int main() {
+    Node node1(1.0,2.0,-1,-1);
+    Vector2d vec2 = node1.getLocalCoord();
+    std::cout << vec2(1) << std::endl;
     return 0;
 }

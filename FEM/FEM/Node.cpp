@@ -6,26 +6,39 @@
 //  Copyright © 2018 HHH. All rights reserved.
 //
 
+#include "Eigen/Eigen"
 #include "Node.h"
 
-Node::Node()
+Node::Node(double x, double y, double xi, double eta)
 {
+    x_ = x;
+    y_ = y;
+    xi_ = xi;
+    eta_ = eta;
     u_ = 0;
     v_ = 0;
 }
 
-Node::~Node()
-{
-    
-}
-
-void Node::setDisplacement(double u, double v)
+void Node::setDisp(double u, double v)
 {
     u_ = u;
     v_ = v;
 }
 
-double Node::getDisplacement()
+Vector2d Node::getGlobalCoord()
 {
-    return u_;
+    Vector2d coord(x_, y_);
+    return coord;
+}
+
+Vector2d Node::getLocalCoord()
+{
+    Vector2d coord(xi_, eta_);
+    return coord;
+}
+
+Vector2d Node::getDisp()
+{
+    Vector2d disp(u_, v_);
+    return disp;
 }

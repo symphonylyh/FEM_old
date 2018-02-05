@@ -9,5 +9,19 @@
 #ifndef Element_h
 #define Element_h
 
+#include "Eigen/Eigen"
+#include "Node.h"
 
+class Element
+{
+  public:
+    
+  private:
+    int type_; // Element type: number of nodes
+    int index_;
+    Node n1_, n2_, n3_, n4_;
+
+
+
+};
 #endif /* Element_h */
