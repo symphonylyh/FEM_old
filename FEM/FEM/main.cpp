@@ -15,6 +15,8 @@ using namespace Eigen;
 
 int main() {
     Node node1(1.0,2.0,-1,-1);
+    node1.fixBoundary();
+    node1.setDisp(1.0, 2.0);
     Vector2d vec2 = node1.getLocalCoord();
     std::cout << vec2(1) << std::endl;
     return 0;

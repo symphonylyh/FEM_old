@@ -10,6 +10,7 @@
 		FBA7F8AD2027F50400BA5297 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBA7F8AC2027F50400BA5297 /* main.cpp */; };
 		FBA7F8B52027F55B00BA5297 /* Node.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBA7F8B42027F55B00BA5297 /* Node.cpp */; };
 		FBA7F8B82027F57300BA5297 /* Element.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBA7F8B62027F57300BA5297 /* Element.cpp */; };
+		FBDC60CE2028FE8800B402E2 /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBDC60CD2028FE8800B402E2 /* Mesh.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -332,6 +333,8 @@
 		FBA7FB632027F78B00BA5297 /* SuperLUSupport */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SuperLUSupport; sourceTree = "<group>"; };
 		FBA7FB642027F78B00BA5297 /* SVD */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SVD; sourceTree = "<group>"; };
 		FBA7FB652027F78B00BA5297 /* UmfPackSupport */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = UmfPackSupport; sourceTree = "<group>"; };
+		FBDC60CD2028FE8800B402E2 /* Mesh.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh.cpp; sourceTree = "<group>"; };
+		FBDC60CF2028FEB400B402E2 /* Mesh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mesh.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -370,6 +373,8 @@
 				FBA7F8B92027F5F800BA5297 /* Element.h */,
 				FBA7F8B32027F53600BA5297 /* Node.h */,
 				FBA7F8B42027F55B00BA5297 /* Node.cpp */,
+				FBDC60CD2028FE8800B402E2 /* Mesh.cpp */,
+				FBDC60CF2028FEB400B402E2 /* Mesh.h */,
 			);
 			path = FEM;
 			sourceTree = "<group>";
@@ -1061,6 +1066,7 @@
 			files = (
 				FBA7F8B82027F57300BA5297 /* Element.cpp in Sources */,
 				FBA7F8AD2027F50400BA5297 /* main.cpp in Sources */,
+				FBDC60CE2028FE8800B402E2 /* Mesh.cpp in Sources */,
 				FBA7F8B52027F55B00BA5297 /* Node.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

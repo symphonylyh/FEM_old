@@ -17,6 +17,7 @@ class Node {
 
 public:
     Node(double x, double y, double xi, double eta);  // set global and local coordinates
+    void fixBoundary();
     void setDisp(double u, double v); // set displacement
     Vector2d getGlobalCoord();
     Vector2d getLocalCoord();
@@ -29,6 +30,8 @@ private:
     double eta_;
     double u_; // displacement in 2D
     double v_;
+    bool fixed_; // fixed boundary: 0-free, 1-fixed
+
 
 };
 

@@ -8,6 +8,7 @@
 
 #include "Eigen/Eigen"
 #include "Node.h"
+#include <iostream>
 
 Node::Node(double x, double y, double xi, double eta)
 {
@@ -17,12 +18,23 @@ Node::Node(double x, double y, double xi, double eta)
     eta_ = eta;
     u_ = 0;
     v_ = 0;
+    fixed_ = false;
+}
+
+void Node::fixBoundary()
+{
+  fixed_ = true;
 }
 
 void Node::setDisp(double u, double v)
 {
+  if (!fixed_) {
     u_ = u;
     v_ = v;
+  } else {
+    std::cout << "This node is fixed at boundary. Assignning displacement failed!" << std::endl;
+  }
+
 }
 
 Vector2d Node::getGlobalCoord()
