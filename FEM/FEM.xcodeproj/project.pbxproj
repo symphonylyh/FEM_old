@@ -335,6 +335,7 @@
 		FBA7FB652027F78B00BA5297 /* UmfPackSupport */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = UmfPackSupport; sourceTree = "<group>"; };
 		FBDC60CD2028FE8800B402E2 /* Mesh.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh.cpp; sourceTree = "<group>"; };
 		FBDC60CF2028FEB400B402E2 /* Mesh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mesh.h; sourceTree = "<group>"; };
+		FBDC60D32029650800B402E2 /* meshData.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = meshData.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -367,6 +368,7 @@
 		FBA7F8AB2027F50400BA5297 /* FEM */ = {
 			isa = PBXGroup;
 			children = (
+				FBDC60D32029650800B402E2 /* meshData.txt */,
 				FBA7FA102027F78B00BA5297 /* Eigen */,
 				FBA7F8AC2027F50400BA5297 /* main.cpp */,
 				FBA7F8B62027F57300BA5297 /* Element.cpp */,

@@ -16,20 +16,19 @@ using namespace Eigen;
 class Node {
 
 public:
-    Node(double x, double y, double xi, double eta);  // set global and local coordinates
+    Node(int index, double x, double y);  // set index and global coordinates
     void fixBoundary();
+    void setLocal(double xi, double eta); // set local coordinates
     void setDisp(double u, double v); // set displacement
     Vector2d getGlobalCoord();
     Vector2d getLocalCoord();
     Vector2d getDisp();
 
 private:
-    double x_; // Global X-Y Coordinates
-    double y_;
-    double xi_; // Local xi-eta Coordinates
-    double eta_;
-    double u_; // displacement in 2D
-    double v_;
+    int index_;
+    Vector2d globalCoord_; // Global X-Y Coordinates
+    Vector2d localCoord_; // Local xi-eta Coordinates
+    Vector2d disp_; // displacement in 2D
     bool fixed_; // fixed boundary: 0-free, 1-fixed
 
 

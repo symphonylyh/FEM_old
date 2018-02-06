@@ -11,16 +11,16 @@
 
 #include "Eigen/Eigen"
 #include "Node.h"
+#include <vector>
+
+using namespace Eigen;
 
 class Element
 {
   public:
-    
   private:
-    int type_; // Element type: number of nodes
     int index_;
-    Node n1_, n2_, n3_, n4_;
-
+    std::vector <Node> NodeList;
 
 
 };

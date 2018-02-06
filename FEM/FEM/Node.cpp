@@ -10,14 +10,12 @@
 #include "Node.h"
 #include <iostream>
 
-Node::Node(double x, double y, double xi, double eta)
+using namespace Eigen;
+
+Node::Node(int index, double x, double y)
 {
-    x_ = x;
-    y_ = y;
-    xi_ = xi;
-    eta_ = eta;
-    u_ = 0;
-    v_ = 0;
+    globalCoord_ << x, y;
+    index_ = index;
     fixed_ = false;
 }
 
@@ -26,11 +24,15 @@ void Node::fixBoundary()
   fixed_ = true;
 }
 
+void Node::setLocal(double xi, double eta)
+{
+  localCoord_ << 0, 0;
+}
+
 void Node::setDisp(double u, double v)
 {
   if (!fixed_) {
-    u_ = u;
-    v_ = v;
+    disp_ << u, v;
   } else {
     std::cout << "This node is fixed at boundary. Assignning displacement failed!" << std::endl;
   }
@@ -39,18 +41,15 @@ void Node::setDisp(double u, double v)
 
 Vector2d Node::getGlobalCoord()
 {
-    Vector2d coord(x_, y_);
-    return coord;
+    return globalCoord_;
 }
 
 Vector2d Node::getLocalCoord()
 {
-    Vector2d coord(xi_, eta_);
-    return coord;
+    return localCoord_;
 }
 
 Vector2d Node::getDisp()
 {
-    Vector2d disp(u_, v_);
-    return disp;
+    return disp_;
 }
