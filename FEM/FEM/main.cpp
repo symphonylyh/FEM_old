@@ -28,6 +28,14 @@ int main() {
      Mesh mesh;
      mesh.dataCount("meshData.txt"); // in Xcode, mind the working directory, should Product-Scheme-Use custom working directory. Otherwise please use absolute path
      mesh.readFromFile("meshData.txt");
-
+     MatrixXd nodeCoord0 = mesh.getNodeCoord(0);
+     MatrixXi elementIndex8 = mesh.getElementIndex(8);
+    
+    Node node0 = mesh.getNode(0);
+    std::cout << node0.getGlobalCoord() << std::endl;
+    Element element8 = mesh.getElement(8);
+    std::cout << element8.getIndex() << std::endl;
+     std::cout << nodeCoord0 << std::endl;
+    std::cout << elementIndex8 << std::endl;
     return 0;
 }

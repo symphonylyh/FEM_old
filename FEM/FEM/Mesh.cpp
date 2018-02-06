@@ -49,22 +49,37 @@ bool Mesh::readFromFile(std::string const & fileName)
         return false;
     }
 
+    // Create node & element array on heap
+    meshNode_ = new Node[nodeCount_];
+    meshElement_ = new Element[elementCount_];
     // Matrix initialization
     MatrixXd nodeCoord(nodeCount_,2);
     MatrixXi elementIndex(elementCount_,4);
     int i = 0;
     int j = 0;
-    char c; // token for 'v' and 'v'
+    char c; // token for 'v' and 'f'
+    double x, y;
+    int i1, i2, i3, i4;
 
     std::string byLine;
     while(!inFile.eof()) {
         std::getline(inFile, byLine);
         std::stringstream oneLine(byLine);
         if (byLine[0] == 'v') {
-            oneLine >> c >> nodeCoord(i,0) >> nodeCoord(i,1); // ">>" is by default separated by space
+            oneLine >> c >> x >> y; // ">>" is by default separated by space
+            nodeCoord(i,0) = x;
+            nodeCoord(i,1) = y;
+            Node tempNode(i, x, y);
+            meshNode_[i] = tempNode;
             i++;
         } else if (byLine[0] == 'f') {
-            oneLine >> c >> elementIndex(j,0) >> elementIndex(j,1) >> elementIndex(j,2) >> elementIndex(j,3);
+            oneLine >> c >> i1 >> i2 >> i3 >> i4;
+            elementIndex(j,0) = i1;
+            elementIndex(j,1) = i2;
+            elementIndex(j,2) = i3;
+            elementIndex(j,3) = i4;
+            Element tempElement(j, i1, i2, i3, i4);
+            meshElement_[j] = tempElement;
             j++;
         }
     }
@@ -73,9 +88,32 @@ bool Mesh::readFromFile(std::string const & fileName)
     nodeCoord_ = nodeCoord;
     elementIndex_ = elementIndex;
 
-    std::cout << nodeCoord << std::endl;
-    std::cout << elementIndex << std::endl;
-
     return true;
 
+}
+
+Node Mesh::getNode(int index)
+{
+    return meshNode_[index];
+}
+
+Element Mesh::getElement(int index)
+{
+    return meshElement_[index];
+}
+
+MatrixXd Mesh::getNodeCoord(int index)
+{
+    return nodeCoord_.row(index);
+}
+
+MatrixXi Mesh::getElementIndex(int index)
+{
+    return elementIndex_.row(index);
+}
+
+Mesh::~Mesh()
+{
+    delete[] meshNode_; meshNode_ = NULL;
+    delete[] meshElement_; meshElement_ = NULL;
 }

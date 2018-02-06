@@ -16,20 +16,31 @@ using namespace Eigen;
 class Node {
 
 public:
+    Node(); // default ctor
     Node(int index, double x, double y);  // set index and global coordinates
+
+    // Big Three
+    Node(Node const & other);
+    Node const & operator=(Node const & other);
+    ~Node();
+
     void fixBoundary();
     void setLocal(double xi, double eta); // set local coordinates
     void setDisp(double u, double v); // set displacement
-    Vector2d getGlobalCoord();
-    Vector2d getLocalCoord();
-    Vector2d getDisp();
+    MatrixX2d getGlobalCoord() const; // global coordinates won't be changed, but disp could be
+    MatrixX2d getLocalCoord();
+    MatrixX2d getDisp();
 
 private:
     int index_;
-    Vector2d globalCoord_; // Global X-Y Coordinates
-    Vector2d localCoord_; // Local xi-eta Coordinates
-    Vector2d disp_; // displacement in 2D
+    MatrixX2d globalCoord_; // Global X-Y Coordinates
+    MatrixX2d localCoord_; // Local xi-eta Coordinates
+    MatrixX2d disp_; // displacement in 2D
     bool fixed_; // fixed boundary: 0-free, 1-fixed
+
+    // Helper functions
+    void clear_();
+    void copy_(Node const & other);
 
 
 };
