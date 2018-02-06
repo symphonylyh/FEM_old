@@ -15,8 +15,13 @@
 class Mesh
 {
   public:
-    // bool readFromFile(string const & fileName);
+    bool dataCount(std::string const & fileName);
+    bool readFromFile(std::string const & fileName);
   private:
+    int nodeCount_;
+    int elementCount_;
+    MatrixXd nodeCoord_;
+    MatrixXi elementIndex_;
     Node* meshNode_;
     Element* meshFace_;
 };
