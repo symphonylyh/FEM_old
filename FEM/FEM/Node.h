@@ -27,6 +27,8 @@ public:
     void fixBoundary();
     void setLocal(double xi, double eta); // set local coordinates
     void setDisp(double u, double v); // set displacement
+    // Previous bug:
+    // MatrixX2d & getGlobalCoord() const; // MatrixX2d is allocated on stack, so this is error "return a ref/ptr to stack memory", you should return ref/ptr for objects on heap
     MatrixX2d getGlobalCoord() const; // global coordinates won't be changed, but disp could be
     MatrixX2d getLocalCoord();
     MatrixX2d getDisp();

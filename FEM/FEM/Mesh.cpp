@@ -53,8 +53,9 @@ bool Mesh::readFromFile(std::string const & fileName)
     meshNode_ = new Node[nodeCount_];
     meshElement_ = new Element[elementCount_];
     // Matrix initialization
-    MatrixXd nodeCoord(nodeCount_,2);
-    MatrixXi elementIndex(elementCount_,4);
+    nodeCoord_.resize(nodeCount_,2);
+    elementIndex_.resize(elementCount_,4);
+
     int i = 0;
     int j = 0;
     char c; // token for 'v' and 'f'
@@ -67,17 +68,17 @@ bool Mesh::readFromFile(std::string const & fileName)
         std::stringstream oneLine(byLine);
         if (byLine[0] == 'v') {
             oneLine >> c >> x >> y; // ">>" is by default separated by space
-            nodeCoord(i,0) = x;
-            nodeCoord(i,1) = y;
+            nodeCoord_(i,0) = x;
+            nodeCoord_(i,1) = y;
             Node tempNode(i, x, y);
             meshNode_[i] = tempNode;
             i++;
         } else if (byLine[0] == 'f') {
             oneLine >> c >> i1 >> i2 >> i3 >> i4;
-            elementIndex(j,0) = i1;
-            elementIndex(j,1) = i2;
-            elementIndex(j,2) = i3;
-            elementIndex(j,3) = i4;
+            elementIndex_(j,0) = i1;
+            elementIndex_(j,1) = i2;
+            elementIndex_(j,2) = i3;
+            elementIndex_(j,3) = i4;
             Element tempElement(j, i1, i2, i3, i4);
             meshElement_[j] = tempElement;
             j++;
@@ -85,29 +86,26 @@ bool Mesh::readFromFile(std::string const & fileName)
     }
     inFile.close();
 
-    nodeCoord_ = nodeCoord;
-    elementIndex_ = elementIndex;
-
     return true;
 
 }
 
-Node Mesh::getNode(int index)
+Node & Mesh::getNode(int index) const
 {
     return meshNode_[index];
 }
 
-Element Mesh::getElement(int index)
+Element & Mesh::getElement(int index) const
 {
     return meshElement_[index];
 }
 
-MatrixXd Mesh::getNodeCoord(int index)
+MatrixXd Mesh::getNodeCoord(int index) const
 {
     return nodeCoord_.row(index);
 }
 
-MatrixXi Mesh::getElementIndex(int index)
+MatrixXi Mesh::getElementIndex(int index) const
 {
     return elementIndex_.row(index);
 }
