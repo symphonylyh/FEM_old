@@ -1,9 +1,0 @@
-Jiayi:
-看Eigen稀疏矩阵操作：http://blog.csdn.net/xuezhisdc/article/details/54631490
-Eigen cheatsheet: https://gist.github.com/gocarlos/c91237b02c120c6319612e42fa196d77
-在Mesh.h .cpp里，根据NUM_NODE=4和nodeCount_, elementCount_写从4x4单元刚度矩阵localStiffness集合成整体刚度矩阵globalStiffness的code
-Github fork 协作编程怎么弄
-
-Haohang:
-Shape function -- inheritance
-Element function -- inheritance
