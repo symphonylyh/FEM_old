@@ -11,7 +11,7 @@
 #include <fstream>
 #include <string>
 
-const NUM_NODE = 4;
+const int NUM_NODE = 4;
 
 bool Mesh::dataCount(std::string const & fileName)
 {
