@@ -11,6 +11,7 @@
 
 #include "Node.h"
 #include "ElementQ4.h"
+#include "ShapeQ4.h"
 
 class Mesh
 {
@@ -24,6 +25,7 @@ class Mesh
     MatrixXd getNodeCoord(int index) const; // get the node coordinates as a row vector at given 0-based index
     MatrixXi getElementIndex(int index) const; // get the element-node indices as a row vector at given 0-based index
     // MatrixXd queryPoint(double x, double y); // interpolate disp, stress, strain at query point, should call Shape method, to be implemented...
+    MatrixXd assembleStiffness() const;
     ~Mesh();
   private:
     int nodeCount_;

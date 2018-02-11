@@ -9,7 +9,6 @@
 #include "Element.h"
 #include "Node.h"
 #include "Mesh.h"
-#include "ShapeQ4.h"
 #include "Eigen/Eigen"
 #include <iostream>
 #include <fstream>

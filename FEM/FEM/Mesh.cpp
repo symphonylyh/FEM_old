@@ -12,8 +12,6 @@
 #include <string>
 #include <vector>
 
-const int NUM_NODE = 4;
-
 bool Mesh::dataCount(std::string const & fileName)
 {
     std::ifstream inFile(fileName);
@@ -118,6 +116,22 @@ MatrixXd Mesh::getNodeCoord(int index) const
 MatrixXi Mesh::getElementIndex(int index) const
 {
     return elementIndex_.row(index);
+}
+
+MatrixXd Mesh::assembleStiffness() const
+{
+    MatrixXd globalStiffness = MatrixXd::Zero(2 * nodeCount_, 2 * nodeCount_); // initialization, please use sparse matrix for your purpose
+    for (int i = 0; i < elementCount_; i++) {
+      MatrixXd localStiffness = meshElement_[i]->localStiffness(); // this gives you the local 4x4 stiffness matrix of the current element, by default it is set to eye(4,4)
+      int size = meshElement_[i]->getSize(); // this gives you the element type, for Q4 element, size=4; for Q8, size=8, etc
+      MatrixXi nodeList = meshElement_[i]->printNodeList(); // this gives you the nodes belong to this element, e.g., for element8, it will give you a vector contain (10,11,15,14), use this for your globalStiffness matrix's location
+      /* Jiayi complete there
+       *
+       */
+
+    }
+
+    return globalStiffness;
 }
 
 Mesh::~Mesh()

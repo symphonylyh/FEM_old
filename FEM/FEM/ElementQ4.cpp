@@ -26,5 +26,5 @@ ElementQ4::~ElementQ4()
 
 MatrixXd ElementQ4::localStiffness() const
 {
-   return MatrixXd(2,2);
+   return MatrixXd::Identity(4,4);
 }
