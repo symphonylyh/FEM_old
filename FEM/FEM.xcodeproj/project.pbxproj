@@ -11,6 +11,7 @@
 		FBA7F8B52027F55B00BA5297 /* Node.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBA7F8B42027F55B00BA5297 /* Node.cpp */; };
 		FBA7F8B82027F57300BA5297 /* Element.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBA7F8B62027F57300BA5297 /* Element.cpp */; };
 		FBDC60CE2028FE8800B402E2 /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBDC60CD2028FE8800B402E2 /* Mesh.cpp */; };
+		FBE4BE0D202FA6F600DC83C8 /* ShapeQ4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBE4BE0C202FA6F600DC83C8 /* ShapeQ4.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -336,6 +337,9 @@
 		FBDC60CD2028FE8800B402E2 /* Mesh.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh.cpp; sourceTree = "<group>"; };
 		FBDC60CF2028FEB400B402E2 /* Mesh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mesh.h; sourceTree = "<group>"; };
 		FBDC60D32029650800B402E2 /* meshData.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = meshData.txt; sourceTree = "<group>"; };
+		FBE4BE0C202FA6F600DC83C8 /* ShapeQ4.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ShapeQ4.cpp; sourceTree = "<group>"; };
+		FBE4BE0E202FA70A00DC83C8 /* Shape.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Shape.h; sourceTree = "<group>"; };
+		FBE4BE0F202FD9E300DC83C8 /* ShapeQ4.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShapeQ4.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -377,6 +381,9 @@
 				FBA7F8B42027F55B00BA5297 /* Node.cpp */,
 				FBDC60CD2028FE8800B402E2 /* Mesh.cpp */,
 				FBDC60CF2028FEB400B402E2 /* Mesh.h */,
+				FBE4BE0C202FA6F600DC83C8 /* ShapeQ4.cpp */,
+				FBE4BE0F202FD9E300DC83C8 /* ShapeQ4.h */,
+				FBE4BE0E202FA70A00DC83C8 /* Shape.h */,
 			);
 			path = FEM;
 			sourceTree = "<group>";
@@ -1068,6 +1075,7 @@
 			files = (
 				FBA7F8B82027F57300BA5297 /* Element.cpp in Sources */,
 				FBA7F8AD2027F50400BA5297 /* main.cpp in Sources */,
+				FBE4BE0D202FA6F600DC83C8 /* ShapeQ4.cpp in Sources */,
 				FBDC60CE2028FE8800B402E2 /* Mesh.cpp in Sources */,
 				FBA7F8B52027F55B00BA5297 /* Node.cpp in Sources */,
 			);
