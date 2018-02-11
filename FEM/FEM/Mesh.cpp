@@ -74,6 +74,7 @@ bool Mesh::readFromFile(std::string const & fileName)
     }
 
     std::vector<Node> nodeList;
+    nodeList.reserve(4); // reserve+emplace_back will behave better
     for (int i = 0; i < elementCount_; i++) {
         std::getline(inFile, byLine);
         std::stringstream oneLine(byLine);
@@ -82,11 +83,16 @@ bool Mesh::readFromFile(std::string const & fileName)
         elementIndex_(i,1) = i2;
         elementIndex_(i,2) = i3;
         elementIndex_(i,3) = i4;
-        for (int j = 0; j < 4; j++) {
-          nodeList.push_back(meshNode_[j]);
-        }
+
+        nodeList.emplace_back(meshNode_[i1]);
+        nodeList.emplace_back(meshNode_[i2]);
+        nodeList.emplace_back(meshNode_[i3]);
+        nodeList.emplace_back(meshNode_[i4]);
         meshElement_[i] = new ElementQ4(i, nodeList);
+        nodeList.clear(); // clear the data storage, but the vector nodeList is still there and can be recycled
     }
+
+    std::vector<Node> ().swap(nodeList); // enforce free the vector memory to prevent memory leak
 
     inFile.close();
 
@@ -99,9 +105,9 @@ Node & Mesh::getNode(int index) const
     return meshNode_[index];
 }
 
-Element & Mesh::getElement(int index) const
+Element* & Mesh::getElement(int index) const
 {
-    return *meshElement_[index];
+    return meshElement_[index];
 }
 
 MatrixXd Mesh::getNodeCoord(int index) const

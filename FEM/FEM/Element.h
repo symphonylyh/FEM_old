@@ -18,6 +18,7 @@ using namespace Eigen;
 class Element
 {
   public:
+    // Constructors
     Element();
     Element(int index, std::vector<Node> nodeList);
 
@@ -27,6 +28,9 @@ class Element
     virtual ~Element();
 
     int getIndex() const;
+    void setIndex(int index);
+    int getSize() const;
+    MatrixXi printNodeList() const;
     virtual MatrixXd localStiffness() const = 0;
 
   private:

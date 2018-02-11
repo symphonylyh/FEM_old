@@ -29,10 +29,7 @@ int main() {
     node0.setBoundaryAll();
     node0.setDisp(1.5,1.6);
     std::cout << node0.getDisp() << std::endl;
-    Element element8 = mesh.getElement(8);
-    std::cout << element8.getIndex() << std::endl;
     std::cout << nodeCoord0 << std::endl;
-    std::cout << elementIndex8 << std::endl;
     */
 
     /* Test Shape.h and the Shape class's polymorphism of inheritance
@@ -46,6 +43,12 @@ int main() {
     std::cout << "dN:" << dN << std::endl;
     */
 
-
+    /* Test Element.h and ElementQ4.h
+    Mesh mesh;
+    mesh.dataCount("meshData.txt"); // in Xcode, mind the working directory, should Product-Scheme-Use custom working directory. Otherwise please use absolute path
+    mesh.readFromFile("meshData.txt");
+    Element* element8 = mesh.getElement(8);
+    std::cout << element8->printNodeList() << std::endl;
+    */
     return 0;
 }
