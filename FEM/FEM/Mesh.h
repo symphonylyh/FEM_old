@@ -10,7 +10,7 @@
 #define Mesh_h
 
 #include "Node.h"
-#include "Element.h"
+#include "ElementQ4.h"
 
 class Mesh
 {
@@ -31,7 +31,7 @@ class Mesh
     MatrixXd nodeCoord_;
     MatrixXi elementIndex_;
     Node* meshNode_;
-    Element* meshElement_;
+    Element** meshElement_;
 };
 
 #endif /* Mesh_h */

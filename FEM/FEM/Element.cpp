@@ -17,13 +17,10 @@ Element::Element()
 
 }
 
-Element::Element(int index, int n1, int n2, int n3, int n4)
+Element::Element(int index, std::vector<Node> nodeList)
 {
   index_ = index;
-  n1_ = n1;
-  n2_ = n2;
-  n3_ = n3;
-  n4_ = n4;
+  nodeList_ = nodeList;
 }
 
 Element::Element(Element const & other)
@@ -53,13 +50,10 @@ void Element::clear_()
 void Element::copy_(Element const & other)
 {
   index_ = other.index_;
-  n1_ = other.n1_;
-  n2_ = other.n2_;
-  n3_ = other.n3_;
-  n4_ = other.n4_;
+  nodeList_ = other.nodeList_;
 }
 
-int Element::getIndex()
+int Element::getIndex() const
 {
     return index_;
 }

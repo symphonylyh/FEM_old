@@ -19,17 +19,19 @@ class Element
 {
   public:
     Element();
-    Element(int index, int n1, int n2, int n3, int n4);
+    Element(int index, std::vector<Node> nodeList);
 
     // Big Three
     Element(Element const & other);
     Element const & operator=(Element const & other);
-    ~Element();
+    virtual ~Element();
 
-    int getIndex();
+    int getIndex() const;
+    virtual MatrixXd localStiffness() const = 0;
+
   private:
-    int index_, n1_, n2_, n3_, n4_;
-    std::vector <Node> NodeList;
+    int index_;
+    std::vector <Node> nodeList_;
 
     // Helper functions
     void clear_();

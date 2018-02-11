@@ -10,6 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 
 const int NUM_NODE = 4;
 
@@ -53,39 +54,40 @@ bool Mesh::readFromFile(std::string const & fileName)
 
     // Create node & element array on heap
     meshNode_ = new Node[nodeCount_];
-    meshElement_ = new Element[elementCount_];
+    meshElement_ = new Element*[elementCount_];
     // Matrix initialization
     nodeCoord_.resize(nodeCount_,2);
     elementIndex_.resize(elementCount_,4);
 
-    int i = 0;
-    int j = 0;
     char c; // token for 'v' and 'f'
     double x, y;
     int i1, i2, i3, i4;
 
     std::string byLine;
-    while(!inFile.eof()) {
+    for (int i = 0; i < nodeCount_; i++) {
         std::getline(inFile, byLine);
         std::stringstream oneLine(byLine);
-        if (byLine[0] == 'v') {
-            oneLine >> c >> x >> y; // ">>" is by default separated by space
-            nodeCoord_(i,0) = x;
-            nodeCoord_(i,1) = y;
-            Node tempNode(i, x, y);
-            meshNode_[i] = tempNode;
-            i++;
-        } else if (byLine[0] == 'f') {
-            oneLine >> c >> i1 >> i2 >> i3 >> i4;
-            elementIndex_(j,0) = i1;
-            elementIndex_(j,1) = i2;
-            elementIndex_(j,2) = i3;
-            elementIndex_(j,3) = i4;
-            Element tempElement(j, i1, i2, i3, i4);
-            meshElement_[j] = tempElement;
-            j++;
-        }
+        oneLine >> c >> x >> y; // ">>" is by default separated by space
+        nodeCoord_(i,0) = x;
+        nodeCoord_(i,1) = y;
+        meshNode_[i] = Node(i, x, y);
     }
+
+    std::vector<Node> nodeList;
+    for (int i = 0; i < elementCount_; i++) {
+        std::getline(inFile, byLine);
+        std::stringstream oneLine(byLine);
+        oneLine >> c >> i1 >> i2 >> i3 >> i4;
+        elementIndex_(i,0) = i1;
+        elementIndex_(i,1) = i2;
+        elementIndex_(i,2) = i3;
+        elementIndex_(i,3) = i4;
+        for (int j = 0; j < 4; j++) {
+          nodeList.push_back(meshNode_[j]);
+        }
+        meshElement_[i] = new ElementQ4(i, nodeList);
+    }
+
     inFile.close();
 
     return true;
@@ -99,7 +101,7 @@ Node & Mesh::getNode(int index) const
 
 Element & Mesh::getElement(int index) const
 {
-    return meshElement_[index];
+    return *meshElement_[index];
 }
 
 MatrixXd Mesh::getNodeCoord(int index) const
@@ -115,5 +117,8 @@ MatrixXi Mesh::getElementIndex(int index) const
 Mesh::~Mesh()
 {
     delete[] meshNode_; meshNode_ = NULL;
+    for (int i = 0; i < elementCount_; i++) {
+      delete meshElement_[i]; meshElement_[i] = NULL;
+    }
     delete[] meshElement_; meshElement_ = NULL;
 }
