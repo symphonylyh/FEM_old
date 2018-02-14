@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FB9F99F7203351990076254E /* ElementQ8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB9F99F6203351990076254E /* ElementQ8.cpp */; };
+		FB9F99FA203351B90076254E /* ShapeQ8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB9F99F9203351B90076254E /* ShapeQ8.cpp */; };
 		FBA7F8AD2027F50400BA5297 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBA7F8AC2027F50400BA5297 /* main.cpp */; };
 		FBA7F8B52027F55B00BA5297 /* Node.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBA7F8B42027F55B00BA5297 /* Node.cpp */; };
 		FBA7F8B82027F57300BA5297 /* Element.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBA7F8B62027F57300BA5297 /* Element.cpp */; };
@@ -28,6 +30,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		FB9F99F6203351990076254E /* ElementQ8.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ElementQ8.cpp; sourceTree = "<group>"; };
+		FB9F99F8203351A50076254E /* ElementQ8.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ElementQ8.h; sourceTree = "<group>"; };
+		FB9F99F9203351B90076254E /* ShapeQ8.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ShapeQ8.cpp; sourceTree = "<group>"; };
+		FB9F99FB203351C50076254E /* ShapeQ8.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShapeQ8.h; sourceTree = "<group>"; };
 		FBA7F8A92027F50400BA5297 /* FEM */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = FEM; sourceTree = BUILT_PRODUCTS_DIR; };
 		FBA7F8AC2027F50400BA5297 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		FBA7F8B32027F53600BA5297 /* Node.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Node.h; sourceTree = "<group>"; };
@@ -389,6 +395,10 @@
 				FBE4BE0E202FA70A00DC83C8 /* Shape.h */,
 				FBE4BE10202FFB8900DC83C8 /* ElementQ4.cpp */,
 				FBE4BE12202FFB9600DC83C8 /* ElementQ4.h */,
+				FB9F99F6203351990076254E /* ElementQ8.cpp */,
+				FB9F99F8203351A50076254E /* ElementQ8.h */,
+				FB9F99F9203351B90076254E /* ShapeQ8.cpp */,
+				FB9F99FB203351C50076254E /* ShapeQ8.h */,
 			);
 			path = FEM;
 			sourceTree = "<group>";
@@ -1084,6 +1094,8 @@
 				FBDC60CE2028FE8800B402E2 /* Mesh.cpp in Sources */,
 				FBA7F8B52027F55B00BA5297 /* Node.cpp in Sources */,
 				FBE4BE11202FFB8900DC83C8 /* ElementQ4.cpp in Sources */,
+				FB9F99FA203351B90076254E /* ShapeQ8.cpp in Sources */,
+				FB9F99F7203351990076254E /* ElementQ8.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
