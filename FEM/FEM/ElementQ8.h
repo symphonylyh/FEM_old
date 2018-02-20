@@ -9,5 +9,16 @@
 #ifndef ElementQ8_h
 #define ElementQ8_h
 
+class ElementQ8 : public Element
+{
+  public:
+    ElementQ8();
+    ElementQ8(int index, std::vector<Node> nodeList);
+    ~ElementQ8();
+
+    MatrixXd localStiffness() const;
+  private:
+
+};
 
 #endif /* ElementQ8_h */

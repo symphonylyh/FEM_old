@@ -7,3 +7,25 @@
 //
 
 #include "ElementQ8.h"
+
+ElementQ8::ElementQ8()
+{
+
+}
+
+ElementQ8::ElementQ8(int index, std::vector<Node> nodeList)
+  : Element(index, nodeList)
+{
+
+}
+
+ElementQ8::~ElementQ8()
+{
+
+}
+
+MatrixXd ElementQ8::localStiffness() const
+{
+    
+    return MatrixXd::Identity(8,8);
+}

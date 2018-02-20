@@ -29,7 +29,7 @@ ShapeQ8::~ShapeQ8()
 }
 
 MatrixXd ShapeQ8::shapeFunction(Vector2d & point) const
-{
+{ // 2x16 matrix
     MatrixXd result = MatrixXd::Zero(2, 2 * size_); // 2-D, 4-Node
     for (int i = 0; i < size_; i++) {
         double Ni = 0;
@@ -52,7 +52,7 @@ MatrixXd ShapeQ8::shapeFunction(Vector2d & point) const
 }
 
 MatrixXd ShapeQ8::shapeLocalDeriv(Vector2d & point) const
-{
+{ // 2x8 matrix
     MatrixXd result(size_, 2);
     for (int i = 0; i < size_; i++) {
       if (i < 4) { // 4 corner nodes
