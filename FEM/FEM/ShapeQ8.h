@@ -20,7 +20,7 @@ class ShapeQ8 : public Shape
     MatrixXd shapeLocalDeriv(Vector2d & point) const;
   private:
     Vector2d nodeArray_[8];
-    int size_;
+    int numNodes_;
 };
 
 #endif /* ShapeQ8_h */

@@ -26,6 +26,17 @@ ElementQ8::~ElementQ8()
 
 MatrixXd ElementQ8::localStiffness() const
 {
-    
+
+    return MatrixXd::Identity(16,16);
+}
+
+MatrixXd ElementQ8::jacobian() const
+{
+
     return MatrixXd::Identity(8,8);
+}
+
+MatrixXd & ElementQ8::shape() const
+{
+    return *shape_;
 }

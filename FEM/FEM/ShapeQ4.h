@@ -20,7 +20,7 @@ class ShapeQ4 : public Shape
     MatrixXd shapeLocalDeriv(Vector2d & point) const;
   private:
     Vector2d nodeArray_[4];
-    int size_;
+    int numNodes_;
 };
 
 #endif /* ShapeQ4_h */

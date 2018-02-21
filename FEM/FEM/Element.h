@@ -32,6 +32,8 @@ class Element
     int getSize() const;
     MatrixXi printNodeList() const;
     virtual MatrixXd localStiffness() const = 0;
+    virtual MatrixXd jacobian() const = 0;
+    virtual MatrixXd & shape() const = 0;
 
   private:
     int index_;

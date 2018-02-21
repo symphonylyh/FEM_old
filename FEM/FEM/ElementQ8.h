@@ -9,6 +9,8 @@
 #ifndef ElementQ8_h
 #define ElementQ8_h
 
+#include "Element.h"
+
 class ElementQ8 : public Element
 {
   public:
@@ -17,7 +19,10 @@ class ElementQ8 : public Element
     ~ElementQ8();
 
     MatrixXd localStiffness() const;
+    MatrixXd jacobian() const;
+    MatrixXd & shape() const;
   private:
+    MatrixXd* shape_;
 
 };
 

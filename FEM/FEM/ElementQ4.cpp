@@ -28,3 +28,9 @@ MatrixXd ElementQ4::localStiffness() const
 {
    return MatrixXd::Identity(4,4);
 }
+
+MatrixXd ElementQ4::jacobian() const
+{
+
+    return MatrixXd::Identity(8,8);
+}

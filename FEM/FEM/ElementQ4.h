@@ -19,6 +19,7 @@ class ElementQ4 : public Element
     ~ElementQ4();
 
     MatrixXd localStiffness() const;
+    MatrixXd jacobian() const;
   private:
 
 };
