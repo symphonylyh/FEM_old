@@ -12,6 +12,7 @@
 #include "Node.h"
 #include "ElementQ4.h"
 #include "ShapeQ4.h"
+#include "ElementQ8.h"
 #include "ShapeQ8.h"
 
 class Mesh

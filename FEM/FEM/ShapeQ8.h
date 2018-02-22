@@ -18,9 +18,14 @@ class ShapeQ8 : public Shape
     ~ShapeQ8();
     MatrixXd shapeFunction(Vector2d & point) const;
     MatrixXd shapeLocalDeriv(Vector2d & point) const;
+    std::vector<Vector2d> gaussianPoint() const;
+    std::vector<double> gaussianWeight() const;
   private:
     Vector2d nodeArray_[8];
     int numNodes_;
+    std::vector<Vector2d> gaussianPoint_; // it's hard to return an array by gaussianPoint(), so we use vector
+    int numGaussianPoints_;
+    std::vector<double> gaussianWeight_;
 };
 
 #endif /* ShapeQ8_h */

@@ -46,3 +46,20 @@ MatrixXd ShapeQ4::shapeLocalDeriv(Vector2d & point) const
     }
     return result;
 }
+
+std::vector<Vector2d> ShapeQ4::gaussianPoint() const
+{
+    Vector2d temp;
+    temp << 0,0;
+    std::vector<Vector2d> result(1);
+    result[1] = temp;
+    return result;
+}
+
+std::vector<double> ShapeQ4::gaussianWeight() const
+{
+    double temp = 0;
+    std::vector<double> result(1);
+    result[1] = temp;
+    return result;
+}

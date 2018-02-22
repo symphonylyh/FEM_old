@@ -35,8 +35,3 @@ MatrixXd ElementQ8::jacobian() const
 
     return MatrixXd::Identity(8,8);
 }
-
-MatrixXd & ElementQ8::shape() const
-{
-    return *shape_;
-}

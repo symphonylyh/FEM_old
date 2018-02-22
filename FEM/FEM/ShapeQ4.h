@@ -18,6 +18,8 @@ class ShapeQ4 : public Shape
     ~ShapeQ4();
     MatrixXd shapeFunction(Vector2d & point) const;
     MatrixXd shapeLocalDeriv(Vector2d & point) const;
+    std::vector<Vector2d> gaussianPoint() const;
+    std::vector<double> gaussianWeight() const;
   private:
     Vector2d nodeArray_[4];
     int numNodes_;

@@ -10,6 +10,7 @@
 #define Shape_h
 
 #include "Eigen/Eigen"
+#include <vector>
 
 using namespace Eigen;
 
@@ -26,6 +27,10 @@ class Shape
     virtual MatrixXd shapeFunction(Vector2d & point) const = 0;
 
     virtual MatrixXd shapeLocalDeriv(Vector2d & point) const = 0;
+
+    virtual std::vector<Vector2d> gaussianPoint() const = 0;
+
+    virtual std::vector<double> gaussianWeight() const = 0;
 
 };
 

@@ -13,10 +13,9 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include "IO.h"
 
 using namespace Eigen;
-
-#include "IO.h"
 
 int main() {
     IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
@@ -73,5 +72,18 @@ int main() {
     mesh.readFromFile("meshData.txt");
     std::cout << mesh.assembleStiffness().format(CleanFmt) << std::endl;
     */
+
+    ShapeQ8 shapeQ8;
+    std::vector<Vector2d> gPointQ8 = shapeQ8.gaussianPoint();
+    std::vector<double> gWeightQ8 = shapeQ8.gaussianWeight();
+    std::cout << "Gaussian Points:" << std::endl;
+    for (std::vector<Vector2d>::iterator i = gPointQ8.begin(); i != gPointQ8.end(); i++) {
+      std::cout << *i << "\n" << std::endl;
+    }
+    std::cout << "Gaussian Weights:" << std::endl;
+    for (std::vector<double>::iterator i = gWeightQ8.begin(); i != gWeightQ8.end(); i++) {
+      std::cout << *i << "\n" << std::endl;
+    }
+
     return 0;
 }

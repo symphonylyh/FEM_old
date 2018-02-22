@@ -10,6 +10,7 @@
 #define ElementQ8_h
 
 #include "Element.h"
+#include "ShapeQ8.h"
 
 class ElementQ8 : public Element
 {
@@ -20,9 +21,8 @@ class ElementQ8 : public Element
 
     MatrixXd localStiffness() const;
     MatrixXd jacobian() const;
-    MatrixXd & shape() const;
   private:
-    MatrixXd* shape_;
+    static ShapeQ8 shape_;
 
 };
 

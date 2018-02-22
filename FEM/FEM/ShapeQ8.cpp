@@ -7,9 +7,11 @@
 //
 
 #include "ShapeQ8.h"
+#include <cmath>
 
-ShapeQ8::ShapeQ8()
+ShapeQ8::ShapeQ8() : gaussianPoint_(9), gaussianWeight_(9)
 {
+    // Local xi-eta coordinates of nodes
     // Corner nodes
     nodeArray_[0] << -1, -1;
     nodeArray_[1] << 1, -1;
@@ -21,6 +23,32 @@ ShapeQ8::ShapeQ8()
     nodeArray_[6] << 0, 1;
     nodeArray_[7] << -1, 0;
     numNodes_ = 8;
+
+    // Local xi-eta coordinates of gaussian points
+    double temp = std::sqrt(0.6);
+    gaussianPoint_[0] << -temp, -temp;
+    gaussianPoint_[1] << 0, -temp;
+    gaussianPoint_[2] << temp, -temp;
+    gaussianPoint_[3] << -temp, 0;
+    gaussianPoint_[4] << 0, 0;
+    gaussianPoint_[5] << temp, 0;
+    gaussianPoint_[6] << -temp, temp;
+    gaussianPoint_[7] << 0, temp;
+    gaussianPoint_[8] << temp, temp;
+    numGaussianPoints_ = 9;
+
+    // Gaussian weights
+    double corner = 5.0 / 9.0; // do not use 5/9! that is 0!
+    double side = 8.0 / 9.0;
+    gaussianWeight_[0] = corner;
+    gaussianWeight_[2] = corner;
+    gaussianWeight_[6] = corner;
+    gaussianWeight_[8] = corner;
+    gaussianWeight_[1] = side;
+    gaussianWeight_[3] = side;
+    gaussianWeight_[5] = side;
+    gaussianWeight_[7] = side;
+    gaussianWeight_[4] = side;
 }
 
 ShapeQ8::~ShapeQ8()
@@ -75,4 +103,14 @@ MatrixXd ShapeQ8::shapeLocalDeriv(Vector2d & point) const
       }
     }
     return result;
+}
+
+std::vector<Vector2d> ShapeQ8::gaussianPoint() const
+{
+    return gaussianPoint_;
+}
+
+std::vector<double> ShapeQ8::gaussianWeight() const
+{
+    return gaussianWeight_;
 }
