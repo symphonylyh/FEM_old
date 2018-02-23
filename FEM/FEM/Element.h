@@ -42,7 +42,6 @@ class Element
     int size_;
     VectorXi nodeList_;
     MatrixXd nodeCoord_;
-    MatrixXd localStiffness_;
 
     // Helper functions
     void clear_();
