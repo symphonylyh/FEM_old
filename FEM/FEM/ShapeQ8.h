@@ -23,7 +23,7 @@ class ShapeQ8 : public Shape
   private:
     Vector2d nodeArray_[8];
     int numNodes_;
-    std::vector<Vector2d> gaussianPoint_; // it's hard to return an array by gaussianPoint(), so we use vector
+    std::vector<Vector2d> gaussianPoint_; // it's hard to return an array by gaussianPoint(), so we use vector. And you can specify size here, do it in initializer list
     int numGaussianPoints_;
     std::vector<double> gaussianWeight_;
 };

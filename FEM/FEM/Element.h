@@ -9,11 +9,13 @@
 #ifndef Element_h
 #define Element_h
 
-#include "Eigen/Eigen"
+//#include "Eigen/Eigen"
 #include "Node.h"
-#include <vector>
+//#include <vector>
 
-using namespace Eigen;
+#include "ShapeQ8.h"
+
+//using namespace Eigen;
 
 class Element
 {
@@ -30,13 +32,19 @@ class Element
     int getIndex() const;
     void setIndex(int index);
     int getSize() const;
-    MatrixXi printNodeList() const;
+    VectorXi getNodeList() const;
+    MatrixXd getNodeCoord() const;
     virtual MatrixXd localStiffness() const = 0;
     virtual MatrixXd jacobian() const = 0;
 
+    static ShapeQ8 shapeQ8;
+
   private:
     int index_;
-    std::vector <Node> nodeList_;
+    int size_;
+    VectorXi nodeList_;
+    MatrixXd nodeCoord_;
+    MatrixXd localStiffness_;
 
     // Helper functions
     void clear_();

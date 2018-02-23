@@ -16,7 +16,6 @@ ElementQ8::ElementQ8()
 ElementQ8::ElementQ8(int index, std::vector<Node> nodeList)
   : Element(index, nodeList)
 {
-
 }
 
 ElementQ8::~ElementQ8()
@@ -32,6 +31,5 @@ MatrixXd ElementQ8::localStiffness() const
 
 MatrixXd ElementQ8::jacobian() const
 {
-
     return MatrixXd::Identity(8,8);
 }

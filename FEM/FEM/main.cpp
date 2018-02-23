@@ -9,13 +9,13 @@
 #include "Element.h"
 #include "Node.h"
 #include "Mesh.h"
-#include "Eigen/Eigen"
+//#include "Eigen/Eigen"
 #include <iostream>
 #include <fstream>
 #include <string>
 #include "IO.h"
 
-using namespace Eigen;
+//using namespace Eigen;
 
 int main() {
     IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
@@ -23,8 +23,9 @@ int main() {
     Mesh mesh;
     mesh.dataCount("meshData.txt"); // in Xcode, mind the working directory, should Product-Scheme-Use custom working directory. Otherwise please use absolute path
     mesh.readFromFile("meshData.txt");
-    MatrixXd nodeCoord0 = mesh.getNodeCoord(0);
-    MatrixXi elementIndex8 = mesh.getElementIndex(8);
+    Element* element8 = mesh.getElement(8);
+    std::cout << element8->getNodeList().format(CleanFmt) << std::endl;
+    std::cout << element8->getNodeCoord().format(CleanFmt) << std::endl;
 
     Node node0 = mesh.getNode(0);
     node0.setBoundaryAll();
@@ -73,6 +74,7 @@ int main() {
     std::cout << mesh.assembleStiffness().format(CleanFmt) << std::endl;
     */
 
+    /*
     ShapeQ8 shapeQ8;
     std::vector<Vector2d> gPointQ8 = shapeQ8.gaussianPoint();
     std::vector<double> gWeightQ8 = shapeQ8.gaussianWeight();
@@ -84,6 +86,17 @@ int main() {
     for (std::vector<double>::iterator i = gWeightQ8.begin(); i != gWeightQ8.end(); i++) {
       std::cout << *i << "\n" << std::endl;
     }
+    */
+
+
+    Mesh mesh;
+    mesh.dataCount("meshData.txt");
+    mesh.readFromFile("meshData.txt");
+
+    Element* element8 = mesh.getElement(8);
+    std::cout << element8->shapeQ8.gaussianWeight()[0] << std::endl;
+
+
 
     return 0;
 }

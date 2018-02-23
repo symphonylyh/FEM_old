@@ -53,40 +53,37 @@ bool Mesh::readFromFile(std::string const & fileName)
     // Create node & element array on heap
     meshNode_ = new Node[nodeCount_];
     meshElement_ = new Element*[elementCount_];
-    // Matrix initialization
-    nodeCoord_.resize(nodeCount_,2);
-    elementIndex_.resize(elementCount_,4);
 
     char c; // token for 'v' and 'f'
     double x, y;
-    int i1, i2, i3, i4;
+    int i1, i2, i3, i4, i5, i6, i7, i8;
 
-    std::string byLine;
+    // Read and create all nodes
+    std::string byLine; // this record the line we are at
     for (int i = 0; i < nodeCount_; i++) {
         std::getline(inFile, byLine);
         std::stringstream oneLine(byLine);
         oneLine >> c >> x >> y; // ">>" is by default separated by space
-        nodeCoord_(i,0) = x;
-        nodeCoord_(i,1) = y;
         meshNode_[i] = Node(i, x, y);
     }
 
+    // Read and create all elements
     std::vector<Node> nodeList;
-    nodeList.reserve(4); // reserve+emplace_back will behave better
+    nodeList.reserve(8); // reserve+emplace_back will behave better. reserve can be the highest possible type number of element. e.g., you can also use reserve(100) here
     for (int i = 0; i < elementCount_; i++) {
         std::getline(inFile, byLine);
         std::stringstream oneLine(byLine);
-        oneLine >> c >> i1 >> i2 >> i3 >> i4;
-        elementIndex_(i,0) = i1;
-        elementIndex_(i,1) = i2;
-        elementIndex_(i,2) = i3;
-        elementIndex_(i,3) = i4;
+        oneLine >> c >> i1 >> i2 >> i3 >> i4 >> i5 >> i6 >> i7 >> i8; // should revise this line to a while loop when one line reaches end, and count how many nodes we read in, which tells us the element type (since our mesh can contain different types of element)
 
         nodeList.emplace_back(meshNode_[i1]);
         nodeList.emplace_back(meshNode_[i2]);
         nodeList.emplace_back(meshNode_[i3]);
         nodeList.emplace_back(meshNode_[i4]);
-        meshElement_[i] = new ElementQ4(i, nodeList);
+        nodeList.emplace_back(meshNode_[i5]);
+        nodeList.emplace_back(meshNode_[i6]);
+        nodeList.emplace_back(meshNode_[i7]);
+        nodeList.emplace_back(meshNode_[i8]);
+        meshElement_[i] = new ElementQ8(i, nodeList);
         nodeList.clear(); // clear the data storage, but the vector nodeList is still there and can be recycled
     }
 
@@ -108,16 +105,6 @@ Element* & Mesh::getElement(int index) const
     return meshElement_[index];
 }
 
-MatrixXd Mesh::getNodeCoord(int index) const
-{
-    return nodeCoord_.row(index);
-}
-
-MatrixXi Mesh::getElementIndex(int index) const
-{
-    return elementIndex_.row(index);
-}
-
 SparseMatrix<double> Mesh::assembleStiffness() const
 {
     // initialize sparse matrix
@@ -126,7 +113,7 @@ SparseMatrix<double> Mesh::assembleStiffness() const
 
     for (int i = 0; i < elementCount_; i++) {
         int size = meshElement_[i]->getSize();// element type, for Q4 element, size=4; for Q8, size=8, etc
-        MatrixXi nodeList = meshElement_[i]->printNodeList();// the index of nodes belong to this element, e.g., for element8, it will give you a vector contain (10,11,15,14), use this for your globalStiffness matrix's location
+        MatrixXi nodeList = meshElement_[i]->getNodeList();// the index of nodes belong to this element, e.g., for element8, it will give you a vector contain (10,11,15,14), use this for your globalStiffness matrix's location
         MatrixXd localStiffness = meshElement_[i]->localStiffness();
         for (int j = 0; j < size; j++){
             for (int k = 0; k < size; k++){

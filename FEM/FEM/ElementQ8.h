@@ -22,7 +22,7 @@ class ElementQ8 : public Element
     MatrixXd localStiffness() const;
     MatrixXd jacobian() const;
   private:
-    static ShapeQ8 shape_;
+
 
 };
 

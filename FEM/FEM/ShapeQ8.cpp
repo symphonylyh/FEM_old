@@ -9,7 +9,7 @@
 #include "ShapeQ8.h"
 #include <cmath>
 
-ShapeQ8::ShapeQ8() : gaussianPoint_(9), gaussianWeight_(9)
+ShapeQ8::ShapeQ8() : gaussianPoint_(9), gaussianWeight_(9) // use initializer list to define size of vector!
 {
     // Local xi-eta coordinates of nodes
     // Corner nodes
@@ -53,7 +53,6 @@ ShapeQ8::ShapeQ8() : gaussianPoint_(9), gaussianWeight_(9)
 
 ShapeQ8::~ShapeQ8()
 {
-
 }
 
 MatrixXd ShapeQ8::shapeFunction(Vector2d & point) const

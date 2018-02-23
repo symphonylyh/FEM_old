@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FB6CEBFC203F9AA900BC8C88 /* Shape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB6CEBFB203F9AA900BC8C88 /* Shape.cpp */; };
 		FB9F99F7203351990076254E /* ElementQ8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB9F99F6203351990076254E /* ElementQ8.cpp */; };
 		FB9F99FA203351B90076254E /* ShapeQ8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB9F99F9203351B90076254E /* ShapeQ8.cpp */; };
 		FBA7F8AD2027F50400BA5297 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBA7F8AC2027F50400BA5297 /* main.cpp */; };
@@ -30,6 +31,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		FB6CEBFB203F9AA900BC8C88 /* Shape.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Shape.cpp; sourceTree = "<group>"; };
 		FB9F99F6203351990076254E /* ElementQ8.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ElementQ8.cpp; sourceTree = "<group>"; };
 		FB9F99F8203351A50076254E /* ElementQ8.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ElementQ8.h; sourceTree = "<group>"; };
 		FB9F99F9203351B90076254E /* ShapeQ8.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ShapeQ8.cpp; sourceTree = "<group>"; };
@@ -399,6 +401,7 @@
 				FB9F99F8203351A50076254E /* ElementQ8.h */,
 				FB9F99F9203351B90076254E /* ShapeQ8.cpp */,
 				FB9F99FB203351C50076254E /* ShapeQ8.h */,
+				FB6CEBFB203F9AA900BC8C88 /* Shape.cpp */,
 			);
 			path = FEM;
 			sourceTree = "<group>";
@@ -1096,6 +1099,7 @@
 				FBE4BE11202FFB8900DC83C8 /* ElementQ4.cpp in Sources */,
 				FB9F99FA203351B90076254E /* ShapeQ8.cpp in Sources */,
 				FB9F99F7203351990076254E /* ElementQ8.cpp in Sources */,
+				FB6CEBFC203F9AA900BC8C88 /* Shape.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
