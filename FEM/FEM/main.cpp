@@ -41,8 +41,8 @@ int main() {
     shapeList[0] = &Q4; // or new ShapeQ4();
     shapeList[1] = &Q8;
     Vector2d point(0.5,0.5);
-    MatrixXd N_Q4 = shapeList[0]->shapeFunction(point);
-    MatrixXd dN_Q4 = shapeList[0]->shapeLocalDeriv(point);
+    MatrixXd N_Q4 = shapeList[0]->function(point);
+    MatrixXd dN_Q4 = shapeList[0]->localDeriv(point);
 
     IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
@@ -51,8 +51,8 @@ int main() {
     std::cout << "dN (Q4): \n" << dN_Q4.format(CleanFmt) << std::endl;
     std::cout << "Size of dN (Q4):" << dN_Q4.rows() << "x" << dN_Q4.cols() << std::endl;
 
-    MatrixXd N_Q8 = shapeList[1]->shapeFunction(point);
-    MatrixXd dN_Q8 = shapeList[1]->shapeLocalDeriv(point);
+    MatrixXd N_Q8 = shapeList[1]->function(point);
+    MatrixXd dN_Q8 = shapeList[1]->localDeriv(point);
     std::cout << "N (Q8): \n" << N_Q8.format(CleanFmt) << std::endl;
     std::cout << "Size of N (Q8): " << N_Q8.rows() << "x" << N_Q8.cols() << std::endl; // expected 2x16
     std::cout << "dN (Q8): \n" << dN_Q8.format(CleanFmt) << std::endl;
@@ -65,13 +65,6 @@ int main() {
     mesh.readFromFile("meshData.txt");
     Element* element8 = mesh.getElement(8);
     std::cout << element8->printNodeList() << std::endl;
-    */
-
-    /* Test assebleStiffness() in Mesh.cpp (Jiayi)
-    Mesh mesh;
-    mesh.dataCount("meshData.txt");
-    mesh.readFromFile("meshData.txt");
-    std::cout << mesh.assembleStiffness().format(CleanFmt) << std::endl;
     */
 
     /*
@@ -88,15 +81,23 @@ int main() {
     }
     */
 
-
+    /* Test ShapeQ8, ElementQ8 of computing local stiffness matrix
     Mesh mesh;
     mesh.dataCount("meshData.txt");
     mesh.readFromFile("meshData.txt");
 
     Element* element8 = mesh.getElement(8);
-    std::cout << element8->shapeQ8.gaussianWeight()[0] << std::endl;
+    std::cout << "Local stiffness matrix of element No.8: " << std::endl;
+    std::cout << "Size of local stiffness matrix: " << element8->localStiffness().rows() << "x" << element8->localStiffness().cols() << std::endl;
+    std::cout << element8->localStiffness().format(CleanFmt) << std::endl;
+    */
 
-
+    // Test global stiffness matrix assembly
+    Mesh mesh;
+    mesh.dataCount("meshData.txt");
+    mesh.readFromFile("meshData.txt");
+    std::cout << "Global stiffness matrix: \n" << "Size: " << mesh.assembleStiffness().rows() << "x" << mesh.assembleStiffness().cols() << std::endl;
+    std::cout << MatrixXd(mesh.assembleStiffness()).format(CleanFmt) << std::endl;
 
     return 0;
 }

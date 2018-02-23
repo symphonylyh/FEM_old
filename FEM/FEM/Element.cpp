@@ -12,8 +12,6 @@
 
 //using namespace Eigen;
 
-ShapeQ8 Element::shapeQ8;
-
 Element::Element()
 {
 

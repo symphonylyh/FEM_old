@@ -23,7 +23,7 @@ ShapeQ4::~ShapeQ4()
 
 }
 
-MatrixXd ShapeQ4::shapeFunction(Vector2d & point) const
+MatrixXd ShapeQ4::function(Vector2d & point) const
 {
     MatrixXd result = MatrixXd::Zero(2, 2 * numNodes_); // 2-D, 4-Node
     for (int i = 0; i < numNodes_; i++) {
@@ -35,7 +35,7 @@ MatrixXd ShapeQ4::shapeFunction(Vector2d & point) const
     return result;
 }
 
-MatrixXd ShapeQ4::shapeLocalDeriv(Vector2d & point) const
+MatrixXd ShapeQ4::localDeriv(Vector2d & point) const
 {
     MatrixXd result(numNodes_, 2);
     for (int i = 0; i < numNodes_; i++) {

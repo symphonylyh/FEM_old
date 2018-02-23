@@ -24,9 +24,11 @@ class Shape
 
     virtual ~Shape() {}
 
-    virtual MatrixXd shapeFunction(Vector2d & point) const = 0;
+    virtual VectorXd functionVec(Vector2d & point) const = 0; // shape function in vector form N1~Nn
 
-    virtual MatrixXd shapeLocalDeriv(Vector2d & point) const = 0;
+    virtual MatrixXd function(Vector2d & point) const = 0;
+
+    virtual MatrixXd localDeriv(Vector2d & point) const = 0;
 
     virtual std::vector<Vector2d> gaussianPoint() const = 0;
 

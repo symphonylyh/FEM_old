@@ -35,9 +35,7 @@ class Element
     VectorXi getNodeList() const;
     MatrixXd getNodeCoord() const;
     virtual MatrixXd localStiffness() const = 0;
-    virtual MatrixXd jacobian() const = 0;
-
-    static ShapeQ8 shapeQ8;
+    virtual MatrixXd jacobian(Vector2d & point) const = 0;
 
   private:
     int index_;

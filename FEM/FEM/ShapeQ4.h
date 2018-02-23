@@ -16,8 +16,8 @@ class ShapeQ4 : public Shape
   public:
     ShapeQ4();
     ~ShapeQ4();
-    MatrixXd shapeFunction(Vector2d & point) const;
-    MatrixXd shapeLocalDeriv(Vector2d & point) const;
+    MatrixXd function(Vector2d & point) const;
+    MatrixXd localDeriv(Vector2d & point) const;
     std::vector<Vector2d> gaussianPoint() const;
     std::vector<double> gaussianWeight() const;
   private:

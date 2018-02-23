@@ -20,10 +20,12 @@ class ElementQ8 : public Element
     ~ElementQ8();
 
     MatrixXd localStiffness() const;
-    MatrixXd jacobian() const;
+    MatrixXd jacobian(Vector2d & point) const;
+
+    static ShapeQ8 shape;
+
   private:
-
-
+    MatrixXd termsAtGaussianPt(Vector2d & point, MatrixXd & nodeCoord) const;
 };
 
 #endif /* ElementQ8_h */

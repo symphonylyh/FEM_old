@@ -55,7 +55,29 @@ ShapeQ8::~ShapeQ8()
 {
 }
 
-MatrixXd ShapeQ8::shapeFunction(Vector2d & point) const
+VectorXd ShapeQ8::functionVec(Vector2d & point) const
+{ // 8x1 Vector
+    VectorXd result(numNodes_);
+    for (int i = 0; i < numNodes_; i++) {
+        double Ni = 0;
+        if (i < 4) { // 4 corner nodes
+          // Ni = (1+xi_i*xi)(1+eta_i*eta)(xi_i*xi+eta_i*eta-1)/4
+          Ni = (1 + nodeArray_[i](0) * point(0)) * (1 + nodeArray_[0](1) * point(1)) * (nodeArray_[i](0) * point(0) + nodeArray_[0](1) * point(1) - 1) / 4;
+        }
+        if (i == 4 || i == 6) { // xi = 0 mid-side nodes
+          // Ni = (1-xi^2)(1+eta_i*eta)/2
+          Ni = (1 - point(0) * point(0)) * (1 + nodeArray_[i](1) * point(1)) / 2;
+        }
+        if (i== 5 || i == 7) { // eta = 0 mid-side nodes
+          // Ni = (1+xi_i*xi)(1-eta^2)/2
+          Ni = (1 + nodeArray_[i](0) * point(0)) * (1 - point(1) * point(1)) / 2;
+        }
+        result(i) = Ni;
+    }
+    return result;
+}
+
+MatrixXd ShapeQ8::function(Vector2d & point) const
 { // 2x16 matrix
     MatrixXd result = MatrixXd::Zero(2, 2 * numNodes_); // 2-D, 8-Node
     for (int i = 0; i < numNodes_; i++) {
@@ -78,7 +100,7 @@ MatrixXd ShapeQ8::shapeFunction(Vector2d & point) const
     return result;
 }
 
-MatrixXd ShapeQ8::shapeLocalDeriv(Vector2d & point) const
+MatrixXd ShapeQ8::localDeriv(Vector2d & point) const
 { // 2x8 matrix
     MatrixXd result(2, numNodes_);
     for (int i = 0; i < numNodes_; i++) {
