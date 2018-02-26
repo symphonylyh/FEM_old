@@ -85,3 +85,13 @@ MatrixXd Element::getNodeCoord() const
 {
     return nodeCoord_;
 }
+
+void Element::setPoissonRatio(double v)
+{
+    poissonRatio_ = v;
+}
+
+void Element::setModulus(double E)
+{
+    modulus_ = E;
+}

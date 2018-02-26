@@ -37,11 +37,17 @@ class Element
     virtual MatrixXd localStiffness() const = 0;
     virtual MatrixXd jacobian(Vector2d & point) const = 0;
 
+    void setPoissonRatio(double v);
+    void setModulus(double E);
+
   private:
     int index_;
     int size_;
     VectorXi nodeList_;
     MatrixXd nodeCoord_;
+
+    double poissonRatio_;
+    double modulus_;
 
     // Helper functions
     void clear_();
