@@ -18,13 +18,18 @@
 class Mesh
 {
   public:
+    Mesh(std::string const & fileName);
     bool dataCount(std::string const & fileName); // record the No. of nodes and elements in the mesh
     bool readFromFile(std::string const & fileName); // read the mesh info and store in node & element object
     // Different from Node.h, here we return a reference because the object meshNode_ & meshElement_ are on HEAP!
     Node & getNode(int index) const; // get the node object at given 0-based index
-    Element* & getElement(int index) const; // get the element object at given 0-based index    
+    Element* & getElement(int index) const; // get the element object at given 0-based index
+    int nodeCount() const;
+    int elementCount() const;
+    Node* nodeArray() const;
+    Element** elementArray() const;
     // MatrixXd queryPoint(double x, double y); // interpolate disp, stress, strain at query point, should call Shape method, to be implemented...
-    SparseMatrix<double> assembleStiffness() const;
+    //SparseMatrix<double> assembleStiffness() const;
     ~Mesh();
   private:
     int nodeCount_;

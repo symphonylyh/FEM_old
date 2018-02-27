@@ -6,14 +6,17 @@
 //  Copyright © 2018 HHH. All rights reserved.
 //
 
-#include "Element.h"
-#include "Node.h"
-#include "Mesh.h"
+// #include "Element.h"
+// #include "Node.h"
+// #include "Mesh.h"
 //#include "Eigen/Eigen"
 #include <iostream>
 #include <fstream>
 #include <string>
+
+#include "LinearElastic.h"
 #include "IO.h"
+
 
 //using namespace Eigen;
 
@@ -92,12 +95,19 @@ int main() {
     std::cout << element8->localStiffness().format(CleanFmt) << std::endl;
     */
 
-    // Test global stiffness matrix assembly
+    /* Test global stiffness matrix assembly
     Mesh mesh;
     mesh.dataCount("meshData.txt");
     mesh.readFromFile("meshData.txt");
     std::cout << "Global stiffness matrix: \n" << "Size: " << mesh.assembleStiffness().rows() << "x" << mesh.assembleStiffness().cols() << std::endl;
     std::cout << MatrixXd(mesh.assembleStiffness()).format(CleanFmt) << std::endl;
-
+    */
+    // Above this line is before Analysis{.h, .cpp} is added
+    //-------------------------------------------------------------------------
+    // Test Analysis.h and LinearElastic.h
+    Analysis* case1 = new LinearElastic("meshData.txt");
+    std::cout << "Global stiffness matrix: \n" << "Size: " << case1->assembleStiffness().rows() << "x" << case1->assembleStiffness().cols() << std::endl;
+    std::cout << MatrixXd(case1->assembleStiffness()).format(CleanFmt) << std::endl;
+    delete case1; case1 = NULL;
     return 0;
 }

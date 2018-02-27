@@ -12,7 +12,7 @@
 
 //using namespace Eigen;
 
-Element::Element()
+Element::Element() : poissonRatio_(0.5), modulus_(1.0)
 {
 
 }
