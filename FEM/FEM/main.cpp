@@ -114,6 +114,8 @@ int main() {
     double cond = svd.singularValues()(0) / svd.singularValues()(svd.singularValues().size()-1);
     std::cout << "Condition number: " << cond << std::endl;
     std::cout << "Determinant: " << A.determinant() << std::endl;
+    FullPivLU<MatrixXd> lu_decomp(A);
+    std::cout << "The rank of A is: " << lu_decomp.rank() << std::endl;
 
     //Jiayi
     std::cout << "Modify the stiffness matrix: " << std::endl;
@@ -125,6 +127,8 @@ int main() {
     double cond2 = svd2.singularValues()(0) / svd2.singularValues()(svd2.singularValues().size()-1);
     std::cout << "Condition number: " << cond2 << std::endl;
     std::cout << "Determinant: " << A.determinant() << std::endl;
+    FullPivLU<MatrixXd> lu_decomp2(A);
+    std::cout << "The rank of A is: " << lu_decomp2.rank() << std::endl;
 
     VectorXd b = case1->assembleAppliedForce();
     VectorXd x;
@@ -134,6 +138,7 @@ int main() {
     // ConjugateGradient is iterative solver: Recommended for large symmetric problems (e.g., 3D Poisson eq.)
     solver.compute(case1->getGlobalStiffness());
     x = solver.solve(b);
+    
     std::cout <<x<< std::endl;
 
 

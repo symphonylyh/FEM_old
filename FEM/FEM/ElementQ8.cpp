@@ -59,8 +59,8 @@ MatrixXd ElementQ8::termsAtGaussianPt(Vector2d & point, MatrixXd & nodeCoord) co
         B(3, 2 * i + 1) = globalDeriv(0, i); // dNi/dr
     }
 
-    double M = 10e8; // a temporary default value
-    double v = 0.25;
+    double M = 30000; // a temporary default value
+    double v = 0.3;
     MatrixXd E(4,4);
     E << 1 - v, v, v, 0,
           v,   1-v, v, 0,
