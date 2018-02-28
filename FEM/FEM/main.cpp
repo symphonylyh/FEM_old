@@ -106,8 +106,38 @@ int main() {
     //-------------------------------------------------------------------------
     // Test Analysis.h and LinearElastic.h
     Analysis* case1 = new LinearElastic("meshData.txt");
-    std::cout << "Global stiffness matrix: \n" << "Size: " << case1->assembleStiffness().rows() << "x" << case1->assembleStiffness().cols() << std::endl;
-    std::cout << MatrixXd(case1->assembleStiffness()).format(CleanFmt) << std::endl;
+    MatrixXd A = MatrixXd(case1->getGlobalStiffness());
+    std::cout << "Global stiffness matrix: \n" << "Size: " << A.rows() << "x" << A.cols() << std::endl;
+    std::cout << A.format(CleanFmt) << std::endl;
+    std::cout << case1->getMesh().getElement(0)->localStiffness().format(CleanFmt) << std::endl;
+    JacobiSVD<MatrixXd> svd(A);
+    double cond = svd.singularValues()(0) / svd.singularValues()(svd.singularValues().size()-1);
+    std::cout << "Condition number: " << cond << std::endl;
+    std::cout << "Determinant: " << A.determinant() << std::endl;
+
+    //Jiayi
+    std::cout << "Modify the stiffness matrix: " << std::endl;
+    case1->modifiedStiffness_x();
+    case1->modifiedStiffness_y();
+    A = MatrixXd(case1->getGlobalStiffness());
+    std::cout << A.format(CleanFmt) << std::endl;
+    JacobiSVD<MatrixXd> svd2(A);
+    double cond2 = svd2.singularValues()(0) / svd2.singularValues()(svd2.singularValues().size()-1);
+    std::cout << "Condition number: " << cond2 << std::endl;
+    std::cout << "Determinant: " << A.determinant() << std::endl;
+
+    VectorXd b = case1->assembleAppliedForce();
+    VectorXd x;
+
+    SimplicialLDLT <SparseMatrix<double> > solver;
+    // SimplicialLDLT is direct solver: Recommended for very sparse and not too large problems (e.g., 2D Poisson eq.)
+    // ConjugateGradient is iterative solver: Recommended for large symmetric problems (e.g., 3D Poisson eq.)
+    solver.compute(case1->getGlobalStiffness());
+    x = solver.solve(b);
+    std::cout <<x<< std::endl;
+
+
     delete case1; case1 = NULL;
+
     return 0;
 }

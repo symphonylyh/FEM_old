@@ -62,7 +62,8 @@ VectorXd ShapeQ8::functionVec(Vector2d & point) const
         double Ni = 0;
         if (i < 4) { // 4 corner nodes
           // Ni = (1+xi_i*xi)(1+eta_i*eta)(xi_i*xi+eta_i*eta-1)/4
-          Ni = (1 + nodeArray_[i](0) * point(0)) * (1 + nodeArray_[0](1) * point(1)) * (nodeArray_[i](0) * point(0) + nodeArray_[0](1) * point(1) - 1) / 4;
+          Ni = (1 + nodeArray_[i](0) * point(0)) * (1 + nodeArray_[i](1) * point(1)) * (nodeArray_[i](0) * point(0) + nodeArray_[i](1) * point(1) - 1) / 4;
+          // (Solved) @BUG here! Typo: used to write one nodeArray_[i](0) to be nodeArray_[0](0)
         }
         if (i == 4 || i == 6) { // xi = 0 mid-side nodes
           // Ni = (1-xi^2)(1+eta_i*eta)/2
@@ -84,7 +85,7 @@ MatrixXd ShapeQ8::function(Vector2d & point) const
         double Ni = 0;
         if (i < 4) { // 4 corner nodes
           // Ni = (1+xi_i*xi)(1+eta_i*eta)(xi_i*xi+eta_i*eta-1)/4
-          Ni = (1 + nodeArray_[i](0) * point(0)) * (1 + nodeArray_[0](1) * point(1)) * (nodeArray_[i](0) * point(0) + nodeArray_[0](1) * point(1) - 1) / 4;
+          Ni = (1 + nodeArray_[i](0) * point(0)) * (1 + nodeArray_[i](1) * point(1)) * (nodeArray_[i](0) * point(0) + nodeArray_[i](1) * point(1) - 1) / 4;
         }
         if (i == 4 || i == 6) { // xi = 0 mid-side nodes
           // Ni = (1-xi^2)(1+eta_i*eta)/2

@@ -8,39 +8,45 @@
 
 #include "LinearElastic.h"
 
-
-LinearElastic::LinearElastic(std::string const & fileName) : mesh_(fileName)
+LinearElastic::LinearElastic(std::string const & fileName) : Analysis(fileName), mesh_(getMesh()), globalStiffness_(getGlobalStiffness()) //
 {
-}
-
-Mesh& LinearElastic::getMesh()
-{
-    return mesh_;
 }
 
 LinearElastic::~LinearElastic()
 {
-    delete globalStiffness_; globalStiffness_ = NULL;
+
 }
 
-SparseMatrix<double>& LinearElastic::assembleStiffness()
+// Jiayi
+void LinearElastic::modifiedStiffness_y()
 {
-    // initialize sparse matrix
-    globalStiffness_ = new SparseMatrix<double>(2 * mesh_.nodeCount(),2 * mesh_.nodeCount());
-    globalStiffness_->setZero();
-
-    for (int i = 0; i < mesh_.elementCount(); i++) {
-        Element* curr = mesh_.elementArray()[i];
-        int size = curr->getSize();// element type, for Q4 element, size=4; for Q8, size=8, etc
-        MatrixXi nodeList = curr->getNodeList();// the index of nodes belong to this element, e.g., for element8, it will give you a vector contain (10,11,15,14), use this for your globalStiffness matrix's location
-        MatrixXd localStiffness = curr->localStiffness();
-        for (int j = 0; j < size; j++){
-            for (int k = 0; k < size; k++){
-                globalStiffness_->coeffRef(2 * nodeList(j), 2 * nodeList(k)) += localStiffness(2 * j , 2 * k);
-                globalStiffness_->coeffRef(2 * nodeList(j) + 1, 2 * nodeList(k) + 1) += localStiffness(2 * j + 1, 2 * k + 1);
+    for (int ii = 0; ii < 7; ii++){
+        for (int jj = 0; jj < globalStiffness_.cols(); jj++){
+            globalStiffness_.coeffRef(2 * ii , jj) = 0;
+            if(2*ii == jj){
+                globalStiffness_.coeffRef(2 * ii , jj) = 1;
             }
         }
     }
-    globalStiffness_->makeCompressed();
-    return *globalStiffness_;
+}
+
+void LinearElastic::modifiedStiffness_x()
+{
+    for (int ii = 0; ii < 7; ii++){
+        for (int jj = 0; jj < globalStiffness_.cols(); jj++){
+            globalStiffness_.coeffRef(2 * ii +1, jj) = 0;
+            if(2*ii + 1 == jj){
+                globalStiffness_.coeffRef(2 * ii + 1 , jj) = 1;
+            }
+        }
+    }
+}
+
+
+VectorXd LinearElastic::assembleAppliedForce() const
+{
+    VectorXd appliedforce = VectorXd::Zero(globalStiffness_.cols());
+    appliedforce.setZero();
+    appliedforce(66) = 1e6;
+    return appliedforce;
 }
