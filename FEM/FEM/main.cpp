@@ -133,12 +133,13 @@ int main() {
     VectorXd b = case1->assembleAppliedForce();
     VectorXd x;
 
-    SimplicialLDLT <SparseMatrix<double> > solver;
+    //SimplicialLDLT <SparseMatrix<double> > solver;
+    ConjugateGradient <SparseMatrix<double> > solver;
     // SimplicialLDLT is direct solver: Recommended for very sparse and not too large problems (e.g., 2D Poisson eq.)
     // ConjugateGradient is iterative solver: Recommended for large symmetric problems (e.g., 3D Poisson eq.)
     solver.compute(case1->getGlobalStiffness());
     x = solver.solve(b);
-    
+
     std::cout <<x<< std::endl;
 
 

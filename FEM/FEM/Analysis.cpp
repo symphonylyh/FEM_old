@@ -37,7 +37,7 @@ SparseMatrix<double>* Analysis::assembleStiffness()
             }
         }
     }
-    //globalStiffness_->makeCompressed();
+    globalStiffness_->makeCompressed();
     return globalStiffness_;
 }
 // SparseMatrix<double> Mesh::assembleStiffness() const

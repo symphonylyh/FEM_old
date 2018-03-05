@@ -64,6 +64,202 @@
 	<array>
 		<dict>
 			<key>Bounds</key>
+			<string>{{3889.5, 773.5}, {183, 75}}</string>
+			<key>Class</key>
+			<string>ShapedGraphic</string>
+			<key>FitText</key>
+			<string>Clip</string>
+			<key>Flow</key>
+			<string>Clip</string>
+			<key>FontInfo</key>
+			<dict>
+				<key>Color</key>
+				<dict>
+					<key>w</key>
+					<string>1</string>
+				</dict>
+				<key>Font</key>
+				<string>LucidaGrande-Bold</string>
+				<key>NSKern</key>
+				<real>-0.5</real>
+				<key>Size</key>
+				<real>13</real>
+			</dict>
+			<key>ID</key>
+			<integer>516</integer>
+			<key>Magnets</key>
+			<array>
+				<string>{0, 1}</string>
+				<string>{0, -1}</string>
+			</array>
+			<key>Shape</key>
+			<string>Rectangle</string>
+			<key>Style</key>
+			<dict>
+				<key>fill</key>
+				<dict>
+					<key>Color</key>
+					<dict>
+						<key>b</key>
+						<string>0.337194</string>
+						<key>g</key>
+						<string>0.595346</string>
+						<key>r</key>
+						<string>0.0948196</string>
+					</dict>
+				</dict>
+				<key>shadow</key>
+				<dict>
+					<key>Color</key>
+					<dict>
+						<key>a</key>
+						<string>0.23</string>
+						<key>b</key>
+						<string>0</string>
+						<key>g</key>
+						<string>0</string>
+						<key>r</key>
+						<string>0</string>
+					</dict>
+					<key>Fuzziness</key>
+					<real>1.3811873197555542</real>
+					<key>ShadowVector</key>
+					<string>{0, 1}</string>
+				</dict>
+				<key>stroke</key>
+				<dict>
+					<key>Color</key>
+					<dict>
+						<key>b</key>
+						<string>0.337194</string>
+						<key>g</key>
+						<string>0.595346</string>
+						<key>r</key>
+						<string>0.0948196</string>
+					</dict>
+					<key>CornerRadius</key>
+					<real>4</real>
+					<key>Draws</key>
+					<string>NO</string>
+				</dict>
+			</dict>
+			<key>Text</key>
+			<dict>
+				<key>Pad</key>
+				<integer>2</integer>
+				<key>Text</key>
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf830
+\cocoascreenfonts1{\fonttbl\f0\fnil\fcharset0 LucidaGrande-Bold;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
+
+\f0\b\fs26 \cf1 \kerning1\expnd-2\expndtw-10
+\shad\shadx0\shady-3\shadr82\shado132 \shadc0 critical pavement response from analysis tool}</string>
+				<key>VerticalPad</key>
+				<integer>0</integer>
+			</dict>
+		</dict>
+		<dict>
+			<key>Bounds</key>
+			<string>{{3955, 600}, {75, 75}}</string>
+			<key>Class</key>
+			<string>ShapedGraphic</string>
+			<key>FitText</key>
+			<string>Clip</string>
+			<key>Flow</key>
+			<string>Clip</string>
+			<key>FontInfo</key>
+			<dict>
+				<key>Color</key>
+				<dict>
+					<key>w</key>
+					<string>1</string>
+				</dict>
+				<key>Font</key>
+				<string>LucidaGrande-Bold</string>
+				<key>NSKern</key>
+				<real>-0.5</real>
+				<key>Size</key>
+				<real>13</real>
+			</dict>
+			<key>ID</key>
+			<integer>515</integer>
+			<key>Magnets</key>
+			<array>
+				<string>{0, 1}</string>
+				<string>{0, -1}</string>
+			</array>
+			<key>Shape</key>
+			<string>Rectangle</string>
+			<key>Style</key>
+			<dict>
+				<key>fill</key>
+				<dict>
+					<key>Color</key>
+					<dict>
+						<key>b</key>
+						<string>0.337194</string>
+						<key>g</key>
+						<string>0.595346</string>
+						<key>r</key>
+						<string>0.0948196</string>
+					</dict>
+				</dict>
+				<key>shadow</key>
+				<dict>
+					<key>Color</key>
+					<dict>
+						<key>a</key>
+						<string>0.23</string>
+						<key>b</key>
+						<string>0</string>
+						<key>g</key>
+						<string>0</string>
+						<key>r</key>
+						<string>0</string>
+					</dict>
+					<key>Fuzziness</key>
+					<real>1.3811873197555542</real>
+					<key>ShadowVector</key>
+					<string>{0, 1}</string>
+				</dict>
+				<key>stroke</key>
+				<dict>
+					<key>Color</key>
+					<dict>
+						<key>b</key>
+						<string>0.337194</string>
+						<key>g</key>
+						<string>0.595346</string>
+						<key>r</key>
+						<string>0.0948196</string>
+					</dict>
+					<key>CornerRadius</key>
+					<real>4</real>
+					<key>Draws</key>
+					<string>NO</string>
+				</dict>
+			</dict>
+			<key>Text</key>
+			<dict>
+				<key>Pad</key>
+				<integer>2</integer>
+				<key>Text</key>
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf830
+\cocoascreenfonts1{\fonttbl\f0\fnil\fcharset0 LucidaGrande-Bold;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
+
+\f0\b\fs26 \cf1 \kerning1\expnd-2\expndtw-10
+\shad\shadx0\shady-3\shadr82\shado132 \shadc0 IRI MEPDG}</string>
+				<key>VerticalPad</key>
+				<integer>0</integer>
+			</dict>
+		</dict>
+		<dict>
+			<key>Bounds</key>
 			<string>{{4133, 590}, {311, 75}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
@@ -6559,7 +6755,7 @@ Subgrade Reaction Modulus\
 					<key>OrthogonalBarPoint</key>
 					<string>{0, 0}</string>
 					<key>OrthogonalBarPosition</key>
-					<real>-1</real>
+					<real>39.645000457763672</real>
 					<key>Points</key>
 					<array>
 						<string>{1669.5, 318.8157958984375}</string>
@@ -10363,7 +10559,7 @@ Subgrade Reaction Modulus\
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2018-02-27 19:42:07 +0000</string>
+	<string>2018-03-05 22:49:03 +0000</string>
 	<key>Modifier</key>
 	<string>黄浩航</string>
 	<key>NotesVisible</key>
@@ -10453,7 +10649,7 @@ Subgrade Reaction Modulus\
 		<key>SidebarWidth</key>
 		<integer>138</integer>
 		<key>VisibleRegion</key>
-		<string>{{3758, 1}, {905, 726}}</string>
+		<string>{{3498.5, 320.5}, {905, 726}}</string>
 		<key>Zoom</key>
 		<real>1</real>
 		<key>ZoomValues</key>
