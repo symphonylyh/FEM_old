@@ -4,19 +4,40 @@
 
 using namespace std;
 
-int main() {
-    /*
-    int* arr[3];
-    int a=0, b=0, c=0;
-    arr[0] = &a;
-    arr[1] = &b;
-    arr[2] = &c;
-    cout<< arr[2] <<endl;
-    */
-    int** List = new int*[3];
-    List[0] = new int(0);
-    int* b = new int(1); List[1] = b;
-    int* c = new int(2); List[2] = c;
-    cout<< *List[2] <<endl;
-    return 0;
+  class A
+  {
+  protected:
+    int x;
+  public:
+    A() {setx(5);}
+    int printx() {return x;}
+    void setx(int d) {x = d;}
+    void multiple(int d) {x = x * d;}
+  };
+
+  class B : public A
+  {
+  public:
+    void add(int d) {x = x + d;}
+    int getx() {return x;}
+  };
+
+int main()
+{
+    A a;
+    a.setx(5);
+    cout << "Base: " << a.printx() << endl;
+
+    B b;
+    b.setx(5);
+    cout << "Derived: " << b.printx() << endl;
+    b.multiple(3);
+    cout << "Derived: " << b.printx() << endl;
+    b.add(11);
+    cout << "Derived: " << b.printx() << endl;
+    cout << "Derived: " << b.getx() << endl;
+    A c;
+    cout << "Base: " << c.printx() << endl;
 }
+
+// Result, change made in derived class wont' affect base class's instance, or other derived class's instance!

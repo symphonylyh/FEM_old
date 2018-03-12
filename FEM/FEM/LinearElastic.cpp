@@ -7,70 +7,37 @@
 //
 
 #include "LinearElastic.h"
-
-LinearElastic::LinearElastic(std::string const & fileName) : Analysis(fileName), mesh_(getMesh()), globalStiffness_(getGlobalStiffness()) //
+#include <iostream>
+LinearElastic::LinearElastic(std::string const & fileName) : Analysis(fileName)
 {
 }
 
 LinearElastic::~LinearElastic()
 {
-
 }
 
-// Jiayi
-void LinearElastic::modifiedStiffness_y()
+void LinearElastic::solveDisp()
 {
-    // for (int ii = 0; ii < 7; ii++){
-    //     for (int jj = 0; jj < globalStiffness_.cols(); jj++){
-    //         globalStiffness_.coeffRef(2 * ii , jj) = 0;
-    //         if(2*ii == jj){
-    //             globalStiffness_.coeffRef(2 * ii , jj) = 1;
-    //         }
-    //     }
-    // }
+    assembleStiffness(); globalStiffness_ = globalStiffness; // make a copy
+    applyForce();
+    // The boundary conditon should finally be read from meshdata.txt file, this is just a temporary way
+    std::vector<int> boundaryNodeList{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,22,36,44,58,66,20,34,42,56,64,78};
+    std::vector<double> boundaryValue{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    boundaryCondition(boundaryNodeList, boundaryValue);
 
-}
+    // Option1: SimplicialLDLT <SparseMatrix<double> > solver;
+    // Option2: ConjugateGradient <SparseMatrix<double> > solver;
+    // SimplicialLDLT is direct solver: Recommended for very sparse and not too large problems (e.g., 2D Poisson eq.)
+    // ConjugateGradient is iterative solver: Recommended for large symmetric problems (e.g., 3D Poisson eq.)
+    SimplicialLDLT <SparseMatrix<double> > solver;
+    solver.compute(globalStiffness);
+    nodalDisp = solver.solve(nodalForce);
+    responseForce_ = globalStiffness_ * nodalDisp;
 
-void LinearElastic::modifiedStiffness_x()
-{
-    std::vector<int> bottom{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,22,36,44,58,66,20,34,42,56,64,78};
-    for (int i = 0; i < bottom.size(); i++) {
-      double temp = globalStiffness_.coeffRef(bottom[i], bottom[i]);
-      for (int j = 0; j < globalStiffness_.cols(); j++) {
-        globalStiffness_.coeffRef(bottom[i],j) = 0;
-      }
-      for (int j = 0; j < globalStiffness_.cols(); j++) {
-        globalStiffness_.coeffRef(j,bottom[i]) = 0;
-      }
-      globalStiffness_.coeffRef(bottom[i], bottom[i]) = temp;
+    // Write into node information
+    for (int i = 0; i < mesh.nodeCount(); i++) {
+      mesh.nodeArray()[i].setDisp(nodalDisp(2 * i), nodalDisp(2 * i + 1));
+      mesh.nodeArray()[i].setForce(responseForce_(2 * i), responseForce_(2 * i + 1));
     }
 
-    // for (int ii = 0; ii < 7; ii++){
-    //     for (int jj = 0; jj < globalStiffness_.cols(); jj++){
-    //         globalStiffness_.coeffRef(2 * ii +1, jj) = 0;
-    //         if(2*ii + 1 == jj){
-    //             globalStiffness_.coeffRef(2 * ii + 1 , jj) = 1;
-    //         }
-    //     }
-    // }
-    // std::vector<int> list{7,11,18,22,29,33,10,17,21,28,32,39};
-    // for (int ii = 0; ii < list.size(); ii++){
-    //     for (int jj = 0; jj < globalStiffness_.cols(); jj++){
-    //         globalStiffness_.coeffRef(2 * list[ii] +1, jj) = 0;
-    //         if(2*list[ii] + 1 == jj){
-    //             globalStiffness_.coeffRef(2 * list[ii] + 1 , jj) = 1;
-    //         }
-    //     }
-    // }
-}
-
-
-VectorXd LinearElastic::assembleAppliedForce() const
-{
-    VectorXd appliedforce = VectorXd::Zero(globalStiffness_.cols());
-    appliedforce.setZero();
-    appliedforce(67) = -30;
-    appliedforce(69) = -30;
-    appliedforce(71) = -30;
-    return appliedforce;
 }

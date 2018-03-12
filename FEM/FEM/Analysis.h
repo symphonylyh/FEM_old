@@ -14,20 +14,26 @@
 class Analysis
 {
   public:
-    Analysis(std::string const & fileName);
-    SparseMatrix<double>* assembleStiffness(); // helper function for the ctor
-    Mesh& getMesh();
-    SparseMatrix<double>& getGlobalStiffness(); // assemble stiffness matrix is public for all methods, no need to be virtual
-
+    Analysis(std::string const & fileName); // ctor only initialize mesh info
     virtual ~Analysis();
 
-    //Jiayi
-    virtual void modifiedStiffness_y() = 0;
-    virtual void modifiedStiffness_x() = 0;
-    virtual VectorXd assembleAppliedForce() const = 0;
-  private:
-    Mesh mesh_;
-    SparseMatrix<double>* globalStiffness_;
+    void assembleStiffness(); // helper function for the ctor
+    void applyForce();
+    void boundaryCondition(std::vector<int> DOFList, std::vector<double> boundaryValue);
+    virtual void solveDisp() = 0;
+    void printDisp() const;
+    void computeStress();
+    void computeStrain();
+    void printStress() const;
+    void printStrain() const;
+
+  protected: // change from private to public. "protected" may be a better choice
+    Mesh mesh;
+    SparseMatrix<double> globalStiffness;
+    VectorXd nodalForce;
+    VectorXd nodalDisp;
+
+
 };
 
 #endif /* Analysis_h */

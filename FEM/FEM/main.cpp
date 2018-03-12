@@ -13,6 +13,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <chrono>
 
 #include "LinearElastic.h"
 #include "IO.h"
@@ -105,45 +106,31 @@ int main() {
     // Above this line is before Analysis{.h, .cpp} is added
     //-------------------------------------------------------------------------
     // Test Analysis.h and LinearElastic.h
+    // @MEMO
+    // Compute condition number, determinant and rank of a matrix:
+    // JacobiSVD<MatrixXd> svd(A);
+    // double cond = svd.singularValues()(0) / svd.singularValues()(svd.singularValues().size()-1);
+    // std::cout << "Condition number: " << cond << std::endl;
+    // std::cout << "Determinant: " << A.determinant() << std::endl;
+    // FullPivLU<MatrixXd> lu_decomp(A);
+    // std::cout << "The rank of A is: " << lu_decomp.rank() << std::endl;
+
+    // Cast type and display a formatted matrix:
+    // MatrixXd(A);
+    // include "IO.h"
+    // IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
+    // A.format(CleanFmt);
+
+    auto start = std::chrono::high_resolution_clock::now();
+
     Analysis* case1 = new LinearElastic("meshData.txt");
-    MatrixXd A = MatrixXd(case1->getGlobalStiffness());
-    std::cout << "Global stiffness matrix: \n" << "Size: " << A.rows() << "x" << A.cols() << std::endl;
-    std::cout << A.format(CleanFmt) << std::endl;
-    std::cout << case1->getMesh().getElement(0)->localStiffness().format(CleanFmt) << std::endl;
-    JacobiSVD<MatrixXd> svd(A);
-    double cond = svd.singularValues()(0) / svd.singularValues()(svd.singularValues().size()-1);
-    std::cout << "Condition number: " << cond << std::endl;
-    std::cout << "Determinant: " << A.determinant() << std::endl;
-    FullPivLU<MatrixXd> lu_decomp(A);
-    std::cout << "The rank of A is: " << lu_decomp.rank() << std::endl;
-
-    //Jiayi
-    std::cout << "Modify the stiffness matrix: " << std::endl;
-    case1->modifiedStiffness_x();
-    case1->modifiedStiffness_y();
-    A = MatrixXd(case1->getGlobalStiffness());
-    std::cout << A.format(CleanFmt) << std::endl;
-    JacobiSVD<MatrixXd> svd2(A);
-    double cond2 = svd2.singularValues()(0) / svd2.singularValues()(svd2.singularValues().size()-1);
-    std::cout << "Condition number: " << cond2 << std::endl;
-    std::cout << "Determinant: " << A.determinant() << std::endl;
-    FullPivLU<MatrixXd> lu_decomp2(A);
-    std::cout << "The rank of A is: " << lu_decomp2.rank() << std::endl;
-
-    VectorXd b = case1->assembleAppliedForce();
-    VectorXd x;
-
-    //SimplicialLDLT <SparseMatrix<double> > solver;
-    ConjugateGradient <SparseMatrix<double> > solver;
-    // SimplicialLDLT is direct solver: Recommended for very sparse and not too large problems (e.g., 2D Poisson eq.)
-    // ConjugateGradient is iterative solver: Recommended for large symmetric problems (e.g., 3D Poisson eq.)
-    solver.compute(case1->getGlobalStiffness());
-    x = solver.solve(b);
-
-    std::cout <<x<< std::endl;
-
-
+    case1->solveDisp();
+    case1->printDisp();
     delete case1; case1 = NULL;
 
+    auto finish = std::chrono::high_resolution_clock::now();
+    // std::chrono::duration<double> elapsed = finish - start;
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
+    std::cout << "Elapsed time: " << elapsed.count() << " ms" << std::endl;
     return 0;
 }
