@@ -113,15 +113,14 @@ void Analysis::boundaryCondition(std::vector<int> DOFList, std::vector<double> b
 void Analysis::printDisp() const
 {
     for (int i = 0; i < mesh.nodeCount(); i++) {
-      std::cout << "Node " << mesh.nodeArray()[i].getIndex() << " displacement: " << mesh.nodeArray()[i].getDisp() << std::endl;
+      std::cout << "Node " << mesh.nodeArray()[i].getIndex() << " displacement: " << mesh.nodeArray()[i].getDisp().transpose() << std::endl;
     }
-    //std::cout << nodalDisp << std::endl;
 }
 
 void Analysis::printForce() const
 {
     for (int i = 0; i < mesh.nodeCount(); i++) {
-      std::cout << "Node " << mesh.nodeArray()[i].getIndex() << " force: " << mesh.nodeArray()[i].getForce() << std::endl;
+      std::cout << "Node " << mesh.nodeArray()[i].getIndex() << " force: " << mesh.nodeArray()[i].getForce().transpose() << std::endl;
     }
 }
 
@@ -132,12 +131,25 @@ void Analysis::computeStress()
 
 void Analysis::computeStrain()
 {
-    int i = 0, j = 0;
-    MatrixXd B = mesh.elementArray()[i]->BMatrix((ElementQ8::shape.gaussianPoint())[j]);
-    VectorXd nodeDisp(16);
-    nodeDisp << 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1;
-    VectorXd e = B * nodeDisp;
-    std::cout << e << std::endl;
+    for (int i = 0; i < mesh.elementCount(); i++) {
+        // Optimization need here, every time we define a new varible in the loop
+        VectorXi nodeList = mesh.elementArray()[i]->getNodeList();
+        VectorXd nodeDisp(2 * mesh.elementArray()[i]->getSize());
+        // Assemble node disp vector
+        for (int j = 0; j < nodeList.size(); j++) {
+            VectorXd disp = mesh.nodeArray()[nodeList(j)].getDisp();
+            nodeDisp(j) = disp(0);
+            nodeDisp(j + 1) = disp(1);
+        }
+        // Compute at gaussian points
+        for (int g = 0; g < ElementQ8::shape.gaussianPoint().size(); g++) {
+            MatrixXd B = mesh.elementArray()[i]->BMatrix((ElementQ8::shape.gaussianPoint())[g]);
+            VectorXd e = B * nodeDisp;
+            std::cout << "Element " << i << ", Gaussian " << g << ": " << e.transpose() << std::endl;
+        }
+        std::cout << std::endl;
+    }
+
 }
 
 void Analysis::printStress() const

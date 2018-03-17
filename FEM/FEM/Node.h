@@ -39,18 +39,22 @@ public:
     int getIndex() const;
     // Previous bug:
     // MatrixX2d & getGlobalCoord() const; // MatrixX2d is allocated on stack, so this is error "return a ref/ptr to stack memory", you should return ref/ptr for objects on heap
-    MatrixX2d getGlobalCoord() const;
-    MatrixX2d getLocalCoord() const;
-    MatrixX2d getDisp() const;
-    MatrixX2d getForce() const;
+    // MatrixX2d getGlobalCoord() const;
+    // MatrixX2d getLocalCoord() const;
+    // MatrixX2d getDisp() const;
+    // MatrixX2d getForce() const;
+    Vector2d getGlobalCoord() const;
+    Vector2d getLocalCoord() const;
+    Vector2d getDisp() const;
+    Vector2d getForce() const;
 
 private:
     int index_; // 0-based index
     int fixed_; // fixed boundary: 0-free, 1-fixX, 2-fixY, 3-fixAll
-    MatrixX2d globalCoord_; // Global X-Y Coordinates
-    MatrixX2d localCoord_; // Local xi-eta Coordinates
-    MatrixX2d disp_; // displacement in 2D
-    MatrixX2d force_; // force in 2D
+    Vector2d globalCoord_; // Global X-Y Coordinates
+    Vector2d localCoord_; // Local xi-eta Coordinates
+    Vector2d disp_; // displacement in 2D
+    Vector2d force_; // force in 2D
 
     // Helper functions
     void clear_();
