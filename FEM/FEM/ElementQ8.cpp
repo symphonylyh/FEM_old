@@ -10,6 +10,7 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <iostream>
+
 ShapeQ8 ElementQ8::shape; // static class member should be defined outside all functions
 
 ElementQ8::ElementQ8()
@@ -37,6 +38,28 @@ MatrixXd ElementQ8::localStiffness() const
         }
     }
     return result;
+}
+
+MatrixXd ElementQ8::BMatrix(Vector2d & point) const {
+  MatrixXd nodeCoord = getNodeCoord();
+  MatrixXd B = MatrixXd::Zero(4, 2 * getSize()); // 4x16, B matrix
+  VectorXd shapeFunction = shape.functionVec(point); // 8x1 vector
+  double radius = shapeFunction.transpose() * nodeCoord.col(0); // term Ni/r where r = sum(Ni*ri)
+  // (Solved) @BUG here!! used to write nodeCoord.col(1), but for the r in (r,z) coordinates, we need .col(0)!
+  MatrixXd localDeriv = shape.localDeriv(point); // 2x8, local deriv (dN/xi, dN/eta) at gaussian points
+  MatrixXd jacobian = localDeriv * nodeCoord; // 2x2, jacobian
+  MatrixXd jacobianInv = jacobian.inverse(); // 2x2, inverse of jacobian
+  MatrixXd globalDeriv = jacobianInv * localDeriv; // 2x8, global deriv (dN/r, dN/z) at gaussian points
+
+  for (int i = 0; i < getSize(); i++) {
+      B(0, 2 * i) = globalDeriv(0, i); // dNi/r
+      B(1, 2 * i) = shapeFunction(i) / radius; // Ni/r
+      B(2, 2 * i + 1) = globalDeriv(1, i); // dNi/dz
+      B(3, 2 * i) = globalDeriv(1, i); // dNi/dz
+      B(3, 2 * i + 1) = globalDeriv(0, i); // dNi/dr
+  }
+
+  return B;
 }
 
 // Helper function

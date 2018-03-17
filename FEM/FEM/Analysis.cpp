@@ -8,6 +8,8 @@
 
 #include "Analysis.h"
 #include <iostream>
+#include "ElementQ8.h"
+#include "ShapeQ8.h"
 
 Analysis::Analysis(std::string const & fileName) : mesh(fileName)
 {
@@ -110,7 +112,17 @@ void Analysis::boundaryCondition(std::vector<int> DOFList, std::vector<double> b
 
 void Analysis::printDisp() const
 {
-    std::cout << nodalDisp << std::endl;
+    for (int i = 0; i < mesh.nodeCount(); i++) {
+      std::cout << "Node " << mesh.nodeArray()[i].getIndex() << " displacement: " << mesh.nodeArray()[i].getDisp() << std::endl;
+    }
+    //std::cout << nodalDisp << std::endl;
+}
+
+void Analysis::printForce() const
+{
+    for (int i = 0; i < mesh.nodeCount(); i++) {
+      std::cout << "Node " << mesh.nodeArray()[i].getIndex() << " force: " << mesh.nodeArray()[i].getForce() << std::endl;
+    }
 }
 
 void Analysis::computeStress()
@@ -120,7 +132,12 @@ void Analysis::computeStress()
 
 void Analysis::computeStrain()
 {
-
+    int i = 0, j = 0;
+    MatrixXd B = mesh.elementArray()[i]->BMatrix((ElementQ8::shape.gaussianPoint())[j]);
+    VectorXd nodeDisp(16);
+    nodeDisp << 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1;
+    VectorXd e = B * nodeDisp;
+    std::cout << e << std::endl;
 }
 
 void Analysis::printStress() const

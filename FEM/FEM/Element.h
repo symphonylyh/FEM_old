@@ -36,6 +36,7 @@ class Element
     MatrixXd getNodeCoord() const;
     virtual MatrixXd localStiffness() const = 0;
     virtual MatrixXd jacobian(Vector2d & point) const = 0;
+    virtual MatrixXd BMatrix(Vector2d & gaussianPoint) const = 0;
 
     void setPoissonRatio(double v);
     void setModulus(double E);

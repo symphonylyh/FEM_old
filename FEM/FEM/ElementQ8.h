@@ -22,6 +22,8 @@ class ElementQ8 : public Element
     MatrixXd localStiffness() const;
     MatrixXd jacobian(Vector2d & point) const;
 
+    MatrixXd BMatrix(Vector2d & point) const;
+
     static ShapeQ8 shape;
 
   private:

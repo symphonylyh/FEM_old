@@ -126,6 +126,10 @@ int main() {
     Analysis* case1 = new LinearElastic("meshData.txt");
     case1->solveDisp();
     case1->printDisp();
+    case1->printForce();
+
+    case1->computeStrain();
+    
     delete case1; case1 = NULL;
 
     auto finish = std::chrono::high_resolution_clock::now();
