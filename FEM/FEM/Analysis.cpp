@@ -177,6 +177,7 @@ void Analysis::printDisp() const
     for (int i = 0; i < mesh.nodeCount(); i++) {
       std::cout << "Node " << mesh.nodeArray()[i].getIndex() << " : " << mesh.nodeArray()[i].getDisp().transpose() << std::endl;
     }
+    std::cout << std::endl;
 }
 
 void Analysis::printForce() const
@@ -184,6 +185,7 @@ void Analysis::printForce() const
     for (int i = 0; i < mesh.nodeCount(); i++) {
       std::cout << "Node " << mesh.nodeArray()[i].getIndex() << " force: " << mesh.nodeArray()[i].getForce().transpose() << std::endl;
     }
+    std::cout << std::endl;
 }
 
 void Analysis::printStrain() const
@@ -193,6 +195,7 @@ void Analysis::printStrain() const
     for (int i = 0; i < mesh.nodeCount(); i++) {
         std::cout << "Node " << i << " : " << nodalStrain.row(i) << std::endl;
     }
+    std::cout << std::endl;
     //std::cout << nodalStrain << std::endl; // the whole matrix
 }
 
@@ -203,5 +206,6 @@ void Analysis::printStress() const
     for (int i = 0; i < mesh.nodeCount(); i++) {
         std::cout << "Node " << i << " : " << nodalStress.row(i) << std::endl;
     }
+    std::cout << std::endl;
     //std::cout << nodalStress << std::endl; // the whole matrix
 }

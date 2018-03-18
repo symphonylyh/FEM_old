@@ -34,9 +34,7 @@ public:
     void setLocalCoord(double xi, double eta);
     void setDisp(double u, double v);
     void setForce(double Fx, double Fy);
-
     void setStrainAndStress(VectorXd & strain, VectorXd & stress);
-    void setStress(VectorXd & stress); // strain and stress averaging can later be combined into one
 
     VectorXd averageStrain();
     VectorXd averageStress();
