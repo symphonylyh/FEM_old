@@ -10,6 +10,8 @@
 #include <iostream>
 #include "ElementQ8.h"
 #include "ShapeQ8.h"
+#define _USE_MATH_DEFINES
+
 
 Analysis::Analysis(std::string const & fileName) : mesh(fileName)
 {
@@ -84,9 +86,9 @@ void Analysis::applyForce()
 {
   nodalForce.resize(globalStiffness.cols());
   nodalForce.setZero();
-  nodalForce(67) = -30;
-  nodalForce(69) = -30;
-  nodalForce(71) = -30;
+  nodalForce(67) = -30 * 2 * M_PI;
+  nodalForce(69) = -30 * 2 * M_PI;
+  nodalForce(71) = -30 * 2 * M_PI;
 }
 
 /* This function will modify the global stiffness matrix and force vector based on boundary conditions
@@ -105,7 +107,7 @@ void Analysis::boundaryCondition(std::vector<int> DOFList, std::vector<double> b
         globalStiffness.coeffRef(DOFList[i], DOFList[i]) = temp;
 
         // Modify force vector
-        nodalForce -= globalStiffness.col(DOFList[i]) * boundaryValue[i]*6.5*-0.000001*300; // if consider temperature effect : *6.5*-0.000001*30
+        nodalForce -= globalStiffness.col(DOFList[i]) * boundaryValue[i]; // if consider temperature effect : *6.5*-0.000001*30
         nodalForce(DOFList[i]) = temp * boundaryValue[i];
     }
 }
@@ -124,12 +126,12 @@ void Analysis::printForce() const
     }
 }
 
-void Analysis::computeStress()
+void Analysis::computeStrain()
 {
 
 }
 
-void Analysis::computeStrain()
+void Analysis::computeStress()
 {
     // temporary here
     double M = 30000; // a temporary default value
@@ -141,8 +143,7 @@ void Analysis::computeStrain()
           0,  0,    0,  (1-2*v)/2;
     E = E * M / (1+v) /(1-2*v);
 
-    // for (int i = 0; i < mesh.elementCount(); i++) {
-    int i = 0;
+    for (int i = 0; i < mesh.elementCount(); i++) {
         // Optimization need here, every time we define a new varible in the loop
         VectorXi nodeList = mesh.elementArray()[i]->getNodeList();
         std::cout << nodeList.transpose() << std::endl;
@@ -163,8 +164,8 @@ void Analysis::computeStrain()
             MatrixXd B = mesh.elementArray()[i]->BMatrix((ElementQ8::shape.gaussianPoint())[g]);
             VectorXd e = B * nodeDisp;
             //std::cout << "Element " << i << ", Gaussian " << g << ": " << e.transpose() << std::endl;
-            // strainAtGaussPt.row(g) = e.transpose();
-            strainAtGaussPt.row(g) = (E * e).transpose();
+            strainAtGaussPt.row(g) = e.transpose();
+            //strainAtGaussPt.row(g) = (E * e).transpose();
             shapeAtGaussPt.row(g) = ElementQ8::shape.functionVec((ElementQ8::shape.gaussianPoint())[g]).transpose();
         }
         std::cout << strainAtGaussPt << std::endl;
@@ -172,26 +173,28 @@ void Analysis::computeStrain()
         MatrixXd pesudo = shapeAtGaussPt.completeOrthogonalDecomposition().pseudoInverse();
         MatrixXd strainAtNodes = pesudo * strainAtGaussPt; // 8x4 matrix
         // pesudo inverst in "Eigen/QR"
-        std::cout << "Element " << i << " nodal strain: " << strainAtNodes * E.transpose() << std::endl;
+        //std::cout << "Element " << i << " nodal strain: " << strainAtNodes * E.transpose() << std::endl;
 
         // std::cout << "test: " << mesh.nodeArray()[nodeList(0)].test() << std::endl;
         // std::cout << "test: " << mesh.getNode(nodeList(0)).test() << std::endl;
         // Set calculated strain value to 8 nodes
-        // for (int n = 0; n < mesh.elementArray()[i]->getSize(); n++) {
-        //     VectorXd strain = strainAtNodes.row(n);
-        //     strain = E * strain;
-        //     mesh.nodeArray()[nodeList(n)].setStrain(strain);
-        // }
+        for (int n = 0; n < mesh.elementArray()[i]->getSize(); n++) {
+            VectorXd strain = strainAtNodes.row(n);
+            strain = E * strain;
+            mesh.nodeArray()[nodeList(n)].setStrain(strain);
+        }
 
-    // }
+    }
 
-    // MatrixXd nodalStrain(mesh.nodeCount(), 4);
-    // for (int i = 0; i < mesh.nodeCount(); i++) {
-    //     nodalStrain.row(i) = mesh.nodeArray()[i].averageStrain().transpose();
-    // }
-    // std::cout << "Nodal strain: ";
-    // std::cout << std::endl;
-    // std::cout << nodalStrain << std::endl;
+    std::cout << "Nodal strain: ";
+    std::cout << std::endl;
+    MatrixXd nodalStrain(mesh.nodeCount(), 4);
+    for (int i = 0; i < mesh.nodeCount(); i++) {
+        nodalStrain.row(i) = mesh.nodeArray()[i].averageStrain().transpose();
+        std::cout << "Node " << i << " : " << nodalStrain.row(i).format(CleanFmt) << std::endl;
+    }
+
+    //std::cout << nodalStrain << std::endl;
 
 }
 

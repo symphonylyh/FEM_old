@@ -128,8 +128,8 @@ int main() {
     case1->printDisp();
     case1->printForce();
 
-    case1->computeStrain();
-    
+    case1->computeStress();
+
     delete case1; case1 = NULL;
 
     auto finish = std::chrono::high_resolution_clock::now();
