@@ -12,7 +12,7 @@
 
 using namespace Eigen;
 
-Node::Node() : strain_(VectorXd::Zero(4)), stress_(VectorXd::Zero(4)), strainAverageCount_(0), stressAverageCount_(0)
+Node::Node() : strain_(VectorXd::Zero(4)), stress_(VectorXd::Zero(4)), averageCount_(0) // @TODO revised here on 3/17
 {
 }
 
@@ -116,25 +116,21 @@ void Node::setForce(double Fx, double Fy)
     force_ << Fx, Fy;
 }
 
-void Node::setStrain(VectorXd & strain)
+void Node::setStrainAndStress(VectorXd & strain, VectorXd & stress)
 {
     strain_ += strain;
-    strainAverageCount_++;
-}
-
-void Node::setStress(VectorXd & stress)
-{
     stress_ += stress;
-    stressAverageCount_++;
+    averageCount_++;
 }
 
 VectorXd Node::averageStrain() {
-    return strain_ / strainAverageCount_;
+    strain_ /= averageCount_;
+    return strain_;
 }
 
-int Node::test() {
-    //return strain_.size();
-    return strainAverageCount_;
+VectorXd Node::averageStress() {
+    stress_ /= averageCount_;
+    return stress_;
 }
 
 int Node::getIndex() const
@@ -160,14 +156,4 @@ Vector2d Node::getDisp() const
 Vector2d Node::getForce() const
 {
     return force_;
-}
-
-VectorXd Node::getStrain() const
-{
-    return strain_;
-}
-
-VectorXd Node::getStress() const
-{
-    return stress_;
 }

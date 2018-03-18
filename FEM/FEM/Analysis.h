@@ -23,8 +23,8 @@ class Analysis
     virtual void solveDisp() = 0;
     void printDisp() const;
     void printForce() const;
-    void computeStress();
-    void computeStrain();
+
+    void computeStrainAndStress();
     void printStress() const;
     void printStrain() const;
 
@@ -33,6 +33,9 @@ class Analysis
     SparseMatrix<double> globalStiffness;
     VectorXd nodalForce;
     VectorXd nodalDisp;
+    MatrixXd nodalStrain;
+    MatrixXd nodalStress;
+
 
 
 };

@@ -126,9 +126,13 @@ int main() {
     Analysis* case1 = new LinearElastic("meshData.txt");
     case1->solveDisp();
     case1->printDisp();
-    case1->printForce();
+    std::cout << std::endl;
 
-    case1->computeStress();
+    case1->computeStrainAndStress();
+    case1->printStrain();
+    std::cout << std::endl;
+    case1->printStress();
+    std::cout << std::endl;
 
     delete case1; case1 = NULL;
 

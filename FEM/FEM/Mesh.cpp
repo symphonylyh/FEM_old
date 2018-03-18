@@ -72,7 +72,7 @@ bool Mesh::readFromFile(std::string const & fileName)
         std::getline(inFile, byLine);
         std::stringstream oneLine(byLine);
         oneLine >> c >> x >> y; // ">>" is by default separated by space
-        meshNode_[i] = Node(i, 6*x, 6*y); // 6* here is temporary, just to match Erol's first case!
+        meshNode_[i] = Node(i, 6*x, 6*y); // @TODO 6* here is temporary, just to match Erol's first case!
     }
 
     // Read and create all elements
