@@ -12,11 +12,11 @@
 
 using namespace Eigen;
 
-Node::Node()
+Node::Node() : strain_(VectorXd::Zero(4)), stress_(VectorXd::Zero(4)), strainAverageCount_(0), stressAverageCount_(0)
 {
 }
 
-Node::Node(int index, double x, double y)
+Node::Node(int index, double x, double y) :  Node()
 {
     //globalCoord_.resize(1,2);
     globalCoord_ << x, y;
@@ -24,6 +24,10 @@ Node::Node(int index, double x, double y)
     disp_ << 0, 0;
     index_ = index;
     fixed_ = 0; // Construct a free node with 0 displacement by default
+    // strain_ = VectorXd::Zero(4);
+    // stress_ = VectorXd::Zero(4);
+    // strainAverageCount_ = 0;
+    // stressAverageCount_ = 0;
 }
 
 Node::Node(Node const & other)
@@ -112,6 +116,27 @@ void Node::setForce(double Fx, double Fy)
     force_ << Fx, Fy;
 }
 
+void Node::setStrain(VectorXd & strain)
+{
+    strain_ += strain;
+    strainAverageCount_++;
+}
+
+void Node::setStress(VectorXd & stress)
+{
+    stress_ += stress;
+    stressAverageCount_++;
+}
+
+VectorXd Node::averageStrain() {
+    return strain_ / strainAverageCount_;
+}
+
+int Node::test() {
+    //return strain_.size();
+    return strainAverageCount_;
+}
+
 int Node::getIndex() const
 {
     return index_;
@@ -135,4 +160,14 @@ Vector2d Node::getDisp() const
 Vector2d Node::getForce() const
 {
     return force_;
+}
+
+VectorXd Node::getStrain() const
+{
+    return strain_;
+}
+
+VectorXd Node::getStress() const
+{
+    return stress_;
 }

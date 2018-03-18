@@ -35,6 +35,12 @@ public:
     void setDisp(double u, double v);
     void setForce(double Fx, double Fy);
 
+    void setStrain(VectorXd & strain);
+    void setStress(VectorXd & stress); // strain and stress averaging can later be combined into one
+
+    VectorXd averageStrain();
+    int test();
+
     // Get operations
     int getIndex() const;
     // Previous bug:
@@ -48,6 +54,9 @@ public:
     Vector2d getDisp() const;
     Vector2d getForce() const;
 
+    VectorXd getStrain() const;
+    VectorXd getStress() const;
+
 private:
     int index_; // 0-based index
     int fixed_; // fixed boundary: 0-free, 1-fixX, 2-fixY, 3-fixAll
@@ -55,6 +64,11 @@ private:
     Vector2d localCoord_; // Local xi-eta Coordinates
     Vector2d disp_; // displacement in 2D
     Vector2d force_; // force in 2D
+
+    VectorXd strain_;
+    VectorXd stress_;
+    int strainAverageCount_;
+    int stressAverageCount_;
 
     // Helper functions
     void clear_();
