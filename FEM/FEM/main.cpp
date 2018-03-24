@@ -121,9 +121,14 @@ int main() {
     // IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
     // A.format(CleanFmt);
 
-    auto start = std::chrono::high_resolution_clock::now();
+    // Get file name
+    std::string fileName;
+    std::cout << "Enter the input file:";
+    std::getline(std::cin,fileName);
 
-    Analysis* case1 = new LinearElastic("meshData.txt");
+auto start = std::chrono::high_resolution_clock::now();
+
+    Analysis* case1 = new LinearElastic(fileName);
     case1->solveDisp();
     case1->printDisp();
 
@@ -133,9 +138,9 @@ int main() {
 
     delete case1; case1 = NULL;
 
-    auto finish = std::chrono::high_resolution_clock::now();
-    // std::chrono::duration<double> elapsed = finish - start;
-    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
-    std::cout << "Elapsed time: " << elapsed.count() << " ms" << std::endl;
+auto finish = std::chrono::high_resolution_clock::now();
+// std::chrono::duration<double> elapsed = finish - start;
+auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
+std::cout << "Elapsed time: " << elapsed.count() << " ms" << std::endl;
     return 0;
 }

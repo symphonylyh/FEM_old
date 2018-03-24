@@ -12,12 +12,12 @@
 
 //using namespace Eigen;
 
-Element::Element() : poissonRatio_(0.5), modulus_(1.0)
+Element::Element() : poissonRatio(0.5), modulus(1.0)
 {
 
 }
 
-Element::Element(int index, std::vector<Node> nodeList)
+Element::Element(int index, std::vector<int> & nodeList, Node* meshNode) // @TODO previously here I pass in vector<Node> which is very expensive, now I pass in vector<int> & and a pointer the pool of nodes create in mesh
 {
   index_ = index;
   size_ = static_cast<int>(nodeList.size());
@@ -25,8 +25,10 @@ Element::Element(int index, std::vector<Node> nodeList)
   nodeCoord_.resize(size_, 2);
 
   for (int i = 0; i < size_; i++) {
-    nodeList_(i) = nodeList[i].getIndex();
-    nodeCoord_.row(i) = nodeList[i].getGlobalCoord();
+    // nodeList_(i) = nodeList[i].getIndex();
+    // nodeCoord_.row(i) = nodeList[i].getGlobalCoord();
+    nodeList_(i) = nodeList[i];
+    nodeCoord_.row(i) = meshNode[nodeList[i]].getGlobalCoord();
   }
 
 }
@@ -88,10 +90,10 @@ MatrixXd Element::getNodeCoord() const
 
 void Element::setPoissonRatio(double v)
 {
-    poissonRatio_ = v;
+    poissonRatio = v;
 }
 
 void Element::setModulus(double E)
 {
-    modulus_ = E;
+    modulus = E;
 }

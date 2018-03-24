@@ -22,7 +22,7 @@ class Element
   public:
     // Constructors
     Element();
-    Element(int index, std::vector<Node> nodeList);
+    Element(int index, std::vector<int> & nodeList, Node* meshNode);
 
     // Big Three
     Element(Element const & other);
@@ -41,14 +41,14 @@ class Element
     void setPoissonRatio(double v);
     void setModulus(double E);
 
+    double poissonRatio;
+    double modulus;
+    
   private:
     int index_;
     int size_;
     VectorXi nodeList_;
     MatrixXd nodeCoord_;
-
-    double poissonRatio_;
-    double modulus_;
 
     // Helper functions
     void clear_();

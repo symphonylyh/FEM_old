@@ -22,7 +22,7 @@ class Analysis
     void boundaryCondition(std::vector<int> DOFList, std::vector<double> boundaryValue);
     virtual void solveDisp() = 0;
     void computeStrainAndStress();
-    
+
     void printDisp() const;
     void printForce() const;
     void printStress() const;

@@ -16,7 +16,7 @@ Node::Node() : strain_(VectorXd::Zero(4)), stress_(VectorXd::Zero(4)), averageCo
 {
 }
 
-Node::Node(int index, double x, double y) :  Node()
+Node::Node(int index, double & x, double & y) :  Node()
 {
     //globalCoord_.resize(1,2);
     globalCoord_ << x, y;

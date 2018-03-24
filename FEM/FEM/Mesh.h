@@ -14,6 +14,7 @@
 #include "ShapeQ4.h"
 #include "ElementQ8.h"
 #include "ShapeQ8.h"
+#include <vector>
 
 class Mesh
 {
@@ -31,11 +32,14 @@ class Mesh
     // MatrixXd queryPoint(double x, double y); // interpolate disp, stress, strain at query point, should call Shape method, to be implemented...
     //SparseMatrix<double> assembleStiffness() const;
     ~Mesh();
+
   private:
     int nodeCount_;
     int elementCount_;
     Node* meshNode_;
     Element** meshElement_;
+    std::vector<int> boundaryDOFList_; // not node list, but degree of freedom list
+    std::vector<double> boundaryDOFValue_;
 };
 
 #endif /* Mesh_h */

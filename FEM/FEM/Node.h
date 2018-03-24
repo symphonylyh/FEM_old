@@ -18,7 +18,7 @@ class Node {
 public:
     // Constructors
     Node();
-    Node(int index, double x, double y);  // set index and global coordinates
+    Node(int index, double & x, double & y);  // set index and global coordinates
 
     // Big Three
     Node(Node const & other);
