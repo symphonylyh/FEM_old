@@ -33,13 +33,17 @@ class Mesh
     //SparseMatrix<double> assembleStiffness() const;
     ~Mesh();
 
+    std::vector<int> boundaryNodeList; // actually this is not NODE list, but degree of freedom list
+    std::vector<double> boundaryValue;
+    std::vector<int> loadNodeList;
+    std::vector<double> loadValue;
+
   private:
     int nodeCount_;
     int elementCount_;
     Node* meshNode_;
     Element** meshElement_;
-    std::vector<int> boundaryDOFList_; // not node list, but degree of freedom list
-    std::vector<double> boundaryDOFValue_;
+
 };
 
 #endif /* Mesh_h */

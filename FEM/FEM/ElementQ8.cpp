@@ -28,7 +28,7 @@ ElementQ8::~ElementQ8()
 
 }
 
-MatrixXd ElementQ8::localStiffness() const
+MatrixXd ElementQ8::localStiffness()
 {
     MatrixXd result = MatrixXd::Zero(2 * getSize(), 2 * getSize()); // 16x16, local stiffness matrix
     MatrixXd nodeCoord = getNodeCoord(); // 8x2, stores (r,z) of 8 nodes
@@ -63,7 +63,7 @@ MatrixXd ElementQ8::BMatrix(Vector2d & point) const {
 }
 
 // Helper function
-MatrixXd ElementQ8::termsAtGaussianPt(Vector2d & point, MatrixXd & nodeCoord) const
+MatrixXd ElementQ8::termsAtGaussianPt(Vector2d & point, MatrixXd & nodeCoord)
 { // B.t(xi,eta) * E * B(xi,eta) * J.det(xi,eta) * r(xi,eta)
     MatrixXd B = MatrixXd::Zero(4, 2 * getSize()); // 4x16, B matrix
     VectorXd shapeFunction = shape.functionVec(point); // 8x1 vector
@@ -82,14 +82,16 @@ MatrixXd ElementQ8::termsAtGaussianPt(Vector2d & point, MatrixXd & nodeCoord) co
         B(3, 2 * i + 1) = globalDeriv(0, i); // dNi/dr
     }
 
-    double M = 30000; // a temporary default value
-    double v = 0.3;
-    MatrixXd E(4,4);
-    E << 1 - v, v, v, 0,
-          v,   1-v, v, 0,
-          v,   v,  1-v, 0,
-          0,  0,    0,  (1-2*v)/2;
-    E = E * M / (1+v) /(1-2*v);
+    computeEMatrix();
+    // double M = modulus; // a temporary default value
+    // double v = poissonRatio;
+    // MatrixXd E(4,4);
+    // E << 1 - v, v, v, 0,
+    //       v,   1-v, v, 0,
+    //       v,   v,  1-v, 0,
+    //       0,  0,    0,  (1-2*v)/2;
+    // E = E * M / (1+v) /(1-2*v);
+    // EMatrix = E;
     MatrixXd result = B.transpose() * E * B * jacobian.determinant() * radius;
 
     return result;

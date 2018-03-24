@@ -15,10 +15,10 @@ class ElementQ4 : public Element
 {
   public:
     ElementQ4();
-    ElementQ4(int index, std::vector<Node> nodeList);
+    ElementQ4(int index, std::vector<int> & nodeList, Node* meshNode);
     ~ElementQ4();
 
-    MatrixXd localStiffness() const;
+    MatrixXd localStiffness();
     MatrixXd jacobian() const;
   private:
 

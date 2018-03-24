@@ -34,16 +34,18 @@ class Element
     int getSize() const;
     VectorXi getNodeList() const;
     MatrixXd getNodeCoord() const;
-    virtual MatrixXd localStiffness() const = 0;
+    virtual MatrixXd localStiffness() = 0;
     virtual MatrixXd jacobian(Vector2d & point) const = 0;
     virtual MatrixXd BMatrix(Vector2d & gaussianPoint) const = 0;
+    void computeEMatrix();
 
     void setPoissonRatio(double v);
     void setModulus(double E);
 
     double poissonRatio;
     double modulus;
-    
+    MatrixXd E;
+
   private:
     int index_;
     int size_;

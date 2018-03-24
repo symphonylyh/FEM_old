@@ -159,25 +159,83 @@ bool Mesh::readFromFile(std::string const & fileName)
         }
     }
     std::vector<int>().swap(elementList);
-    std::vector<double>().swap(elementPropertyList);
+    std::vector<double>().swap(elementProperty);
 
+    loadNodeList.clear();
+    loadValue.clear(); // these two are the public member variables of Mesh class, to be used in Analysis->applyForce()
     // Read X-direction load @TODO this is point load only, more complex load pattern TBD
-    std::vector<int> nodeLoadXList;
-    std::vector<double> loadX;
-    std::getline(file, readLine);
-    parseLine(readLine, nodeLoadXList);
-    std::getline(file, readLine);
-    parseLine(readLine, loadX);
-    for (int i = 0; i < nodeLoadXList.size(); i++) {
-        meshNode_[nodeLoadXList[i]]->setModulus(elementPropertyList[0]);
-        meshElement_[elementList[j]]->setPoissonRatio(elementPropertyList[1]);
+    if (loadX > 0) {
+        std::vector<int> loadXNodeList;
+        std::vector<double> loadXValue;
+        std::getline(file, readLine);
+        parseLine(readLine, loadXNodeList);
+        std::getline(file, readLine);
+        parseLine(readLine, loadXValue);
+        for (int i = 0; i < loadX; i++) {
+            loadNodeList.push_back(2 * loadXNodeList[i]);
+            loadValue.push_back(loadXValue[i]);
+        }
+        std::vector<int>().swap(loadXNodeList);
+        std::vector<double>().swap(loadXValue);
     }
-    std::vector<int>().swap(elementList);
-    std::vector<double>().swap(elementPropertyList);
-    // Read boundary
 
-    inFile.close();
+    // Read Y-direction load
+    if (loadY > 0) {
+        std::vector<int> loadYNodeList;
+        std::vector<double> loadYValue;
+        std::getline(file, readLine);
+        parseLine(readLine, loadYNodeList);
+        std::getline(file, readLine);
+        parseLine(readLine, loadYValue);
+        for (int i = 0; i < loadY; i++) {
+            loadNodeList.push_back(2 * loadYNodeList[i] + 1);
+            loadValue.push_back(loadYValue[i]);
+        }
+        std::vector<int>().swap(loadYNodeList);
+        std::vector<double>().swap(loadYValue);
+    }
 
+
+    boundaryNodeList.clear();
+    boundaryValue.clear(); // these two are the public member variables of Mesh class, to be used in Analysis->boundaryCondition()
+    // Read and set X-direction boundary condition (no need to set to Node at this time, the nodal displacement will be assigned after sovling Ku=F in Analysis->solveDisp())
+    if (boundaryX > 0) {
+        std::vector<int> boundaryXNodeList;
+        std::vector<double> boundaryXValue;
+        std::getline(file, readLine);
+        parseLine(readLine, boundaryXNodeList);
+        std::getline(file, readLine);
+        parseLine(readLine, boundaryXValue);
+        for (int i = 0; i < boundaryX; i++) {
+            boundaryNodeList.push_back(2 * boundaryXNodeList[i]);
+            boundaryValue.push_back(boundaryXValue[i]);
+        }
+        std::vector<int>().swap(boundaryXNodeList);
+        std::vector<double>().swap(boundaryXValue);
+    }
+
+    // Read and set Y-direction boundary condition
+    if (boundaryY > 0) {
+        std::vector<int> boundaryYNodeList;
+        std::vector<double> boundaryYValue;
+        std::getline(file, readLine);
+        parseLine(readLine, boundaryYNodeList);
+        std::getline(file, readLine);
+        parseLine(readLine, boundaryYValue);
+        for (int i = 0; i < boundaryY; i++) {
+            boundaryNodeList.push_back(2 * boundaryYNodeList[i] + 1);
+            boundaryValue.push_back(boundaryYValue[i]);
+        }
+        std::vector<int>().swap(boundaryYNodeList);
+        std::vector<double>().swap(boundaryYValue);
+    }
+
+    // Complete read-in
+    file.close();
+
+    return true;
+    
+    // Previous version
     // dataCount(fileName);
     //
     // std::ifstream inFile(fileName);
@@ -200,7 +258,7 @@ bool Mesh::readFromFile(std::string const & fileName)
     //     std::getline(inFile, byLine);
     //     std::stringstream oneLine(byLine);
     //     oneLine >> c >> x >> y; // ">>" is by default separated by space
-    //     meshNode_[i] = Node(i, 6*x, 6*y); // @TODO 6* here is temporary, just to match Erol's first case!
+    //     meshNode_[i] = Node(i, x, y);
     // }
     //
     // // Read and create all elements

@@ -21,9 +21,9 @@ void LinearElastic::solveDisp()
     assembleStiffness(); globalStiffness_ = globalStiffness; // make a copy
     applyForce();
     // The boundary conditon should finally be read from meshdata.txt file, this is just a temporary way
-    std::vector<int> boundaryNodeList{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,22,36,44,58,66,20,34,42,56,64,78};
-    std::vector<double> boundaryValue{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-    boundaryCondition(boundaryNodeList, boundaryValue);
+    // std::vector<int> boundaryNodeList{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,22,36,44,58,66,20,34,42,56,64,78};
+    // std::vector<double> boundaryValue{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    boundaryCondition(mesh.boundaryNodeList, mesh.boundaryValue);
 
     // Option1: SimplicialLDLT <SparseMatrix<double> > solver;
     // Option2: ConjugateGradient <SparseMatrix<double> > solver;

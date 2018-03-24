@@ -13,8 +13,8 @@ ElementQ4::ElementQ4()
 
 }
 
-ElementQ4::ElementQ4(int index, std::vector<Node> nodeList)
-  : Element(index, nodeList)
+ElementQ4::ElementQ4(int index, std::vector<int> & nodeList, Node* meshNode)
+  : Element(index, nodeList, meshNode)
 {
 
 }
@@ -24,7 +24,7 @@ ElementQ4::~ElementQ4()
 
 }
 
-MatrixXd ElementQ4::localStiffness() const
+MatrixXd ElementQ4::localStiffness()
 {
    return MatrixXd::Identity(4,4);
 }

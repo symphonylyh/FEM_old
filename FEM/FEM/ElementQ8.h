@@ -16,10 +16,10 @@ class ElementQ8 : public Element
 {
   public:
     ElementQ8();
-    ElementQ8(int index, std::vector<Node> nodeList);
+    ElementQ8(int index, std::vector<int> & nodeList, Node* meshNode);
     ~ElementQ8();
 
-    MatrixXd localStiffness() const;
+    MatrixXd localStiffness();
     MatrixXd jacobian(Vector2d & point) const;
 
     MatrixXd BMatrix(Vector2d & point) const;
@@ -27,7 +27,7 @@ class ElementQ8 : public Element
     static ShapeQ8 shape;
 
   private:
-    MatrixXd termsAtGaussianPt(Vector2d & point, MatrixXd & nodeCoord) const;
+    MatrixXd termsAtGaussianPt(Vector2d & point, MatrixXd & nodeCoord);
 };
 
 #endif /* ElementQ8_h */

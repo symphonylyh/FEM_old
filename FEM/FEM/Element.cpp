@@ -88,6 +88,18 @@ MatrixXd Element::getNodeCoord() const
     return nodeCoord_;
 }
 
+void Element::computeEMatrix()
+{
+    E.resize(4,4);
+    double M = modulus;
+    double v = poissonRatio;
+    E << 1 - v, v, v, 0,
+          v,   1-v, v, 0,
+          v,   v,  1-v, 0,
+          0,  0,    0,  (1-2*v)/2;
+    E = E * M / (1+v) /(1-2*v);
+}
+
 void Element::setPoissonRatio(double v)
 {
     poissonRatio = v;

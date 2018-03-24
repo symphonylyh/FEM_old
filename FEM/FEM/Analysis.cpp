@@ -86,16 +86,18 @@ void Analysis::applyForce()
 {
   nodalForce.resize(globalStiffness.cols());
   nodalForce.setZero();
-  nodalForce(67) = -30 * 2 * M_PI;
-  nodalForce(69) = -30 * 2 * M_PI;
-  nodalForce(71) = -30 * 2 * M_PI;
+  for (unsigned i = 0; i < mesh.loadNodeList.size(); i++)
+      nodalForce(mesh.loadNodeList[i]) = mesh.loadValue[i] * 2 * M_PI;
+  // nodalForce(67) = -30 * 2 * M_PI;
+  // nodalForce(69) = -30 * 2 * M_PI;
+  // nodalForce(71) = -30 * 2 * M_PI;
 }
 
 /* This function will modify the global stiffness matrix and force vector based on boundary conditions
   @ DOFList the DOF of the nodes that are restricted as boundary
   @ boundaryValue the boundary values. Can be zero or non-zero
 */
-void Analysis::boundaryCondition(std::vector<int> DOFList, std::vector<double> boundaryValue)
+void Analysis::boundaryCondition(std::vector<int> & DOFList, std::vector<double> & boundaryValue)
 {
     for (unsigned i = 0; i < DOFList.size(); i++) {
         // Modify stiffness matrix
@@ -115,14 +117,14 @@ void Analysis::boundaryCondition(std::vector<int> DOFList, std::vector<double> b
 void Analysis::computeStrainAndStress()
 {
     // temporary here
-    double M = 30000; // a temporary default value
-    double v = 0.3;
-    MatrixXd E(4,4);
-    E << 1 - v, v, v, 0,
-          v,   1-v, v, 0,
-          v,   v,  1-v, 0,
-          0,  0,    0,  (1-2*v)/2;
-    E = E * M / (1+v) /(1-2*v);
+    // double M = 30000; // a temporary default value
+    // double v = 0.3;
+    // MatrixXd E(4,4);
+    // E << 1 - v, v, v, 0,
+    //       v,   1-v, v, 0,
+    //       v,   v,  1-v, 0,
+    //       0,  0,    0,  (1-2*v)/2;
+    // E = E * M / (1+v) /(1-2*v);
 
     nodalStrain.resize(mesh.nodeCount(), 4);
     nodalStress.resize(mesh.nodeCount(), 4);
@@ -130,6 +132,7 @@ void Analysis::computeStrainAndStress()
         // Optimization need here, every time we define a new varible in the loop
         VectorXi nodeList = mesh.elementArray()[i]->getNodeList();
         VectorXd nodeDisp(2 * mesh.elementArray()[i]->getSize());
+        MatrixXd E = mesh.elementArray()[i]->E;
 
         // Assemble node disp vector
         for (int j = 0; j < nodeList.size(); j++) {

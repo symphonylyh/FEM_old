@@ -19,7 +19,7 @@ class Analysis
 
     void assembleStiffness(); // helper function for the ctor
     void applyForce();
-    void boundaryCondition(std::vector<int> DOFList, std::vector<double> boundaryValue);
+    void boundaryCondition(std::vector<int> & DOFList, std::vector<double> & boundaryValue);
     virtual void solveDisp() = 0;
     void computeStrainAndStress();
 
