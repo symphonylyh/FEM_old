@@ -17,12 +17,13 @@
 
 #include "LinearElastic.h"
 #include "IO.h"
+//#include "Matrix/src/Core/IO.h" // to change the folder name, you can just change in Node.h and Shape.h into "include Matrix/Eigen"
 
 
 //using namespace Eigen;
 
 int main() {
-    IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
+    //IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
     /* Test Node.h and Mesh.h
     Mesh mesh;
     mesh.dataCount("meshData.txt"); // in Xcode, mind the working directory, should Product-Scheme-Use custom working directory. Otherwise please use absolute path

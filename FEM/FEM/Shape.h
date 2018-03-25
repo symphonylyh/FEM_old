@@ -10,6 +10,7 @@
 #define Shape_h
 
 #include "Eigen/Eigen"
+//#include "Matrix/Eigen" // change name
 #include <vector>
 
 using namespace Eigen;
