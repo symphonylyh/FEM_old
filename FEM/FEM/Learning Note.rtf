@@ -7,4 +7,77 @@
 
 \f0\fs48 \cf0 Initializer list:\
 1. Reference variable. Can only be initialized using init list\
-2. The sequence in a init list should follow the sequence they are declared in the class}
+2. The sequence in a init list should follow the sequence they are declared in the class\
+3. if we have a std::vector member, we can't fix its size by vector<int> a(5); but we can only do that using a init list: .h: vector<int> a  .cpp: Class() : a(5) \{...\}. But more generally, if we know the size already, we can use std::array<int, 5>\
+\
+Static member variable in a class:\
+The benefit is efficiency b/c we use shared memory between different class instances\
+\
+.h:\
+class A \{\
+		public:\
+			static int a;\
+		private:\
+			static int b;\
+\};\
+\
+.cpp (defined outside the class body):\
+int A::a = 0;\
+int A::b = 0;\
+\
+other.cpp:\
+outside the class body where the static member is defined, we can use "::" to access it:\
+A::a = 1; // valid, b/c a is public and can be accessed outside, and can also be modified\
+A::b = 1; // invalid, b is private\
+\
+1. static member is a belonging of the whole class. It doesn't depend on any instance of the class. So no matter how many instances of that class are created, there is 
+\b only one single copy
+\b0  of the static member allocated in memory\
+2. static member/function is allocated before any instances, so you can't use a non-static member variable in a static function (b/c the non-static member doesn't exist yet). Similarly, you can call a static function by Class::fun() but you can't do so for a non-static fun(), b/c non-static member/functions are depending on specific objects/instances!\
+3. static member can only be 
+\b defined outside the class body
+\b0 , usually at the start of the .cpp file (why? b/c if we define it in ctor or init list, then every creation of instance will assign the static member)\
+4. static member can be accessed via Class::var_name  outside the class body (according to public/private qualifier). If we want to access\
+5. you can use a static function to manage the static member variables.\
+6. a static member must be initialized (in .cpp)\
+\
+Q: what if I want to have a static pointer member? I can initialize by a "new", but how can I delete it? e.g.:\
+\
+.h:\
+class A \{\
+		public:\
+			static int* a;\
+\};\
+\
+.cpp (defined outside the class body):\
+int* A::a = new int(0); // where to delete it then?\
+\
+Option1: at the end of my main(), manually delete it by delete A::a; but, when we are in a big project, we can't tell the user "remember to delete it"! it's not an elegant solution\
+Option2: create a static struct (or helper subclass) inside this class, to let its ctor and dtor do the new & delete work. e.g.:\
+Ref: \
+https://www.developerfusion.com/thread/49467/how-do-i-initialise-clean-up-static-variables\
+.h:\
+class A \{\
+		public: // definition\
+			struct staticMember \{\
+					int* a;\
+					// ctor\
+					staticMember() \{\
+							a = new int(0);\
+					\}	\
+					// dtor\
+					~staticMember() \{\
+							delete a; a = NULL;\
+					\}\
+			\};\
+		\
+		public:\
+			static staticMember hello;\
+\};\
+\
+.cpp:\
+A::staticMember A::hello; // this will call its default ctor \
+\
+Doxygen:\
+\
+}

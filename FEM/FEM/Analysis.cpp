@@ -29,8 +29,9 @@ void Analysis::assembleStiffness()
     globalStiffness.setZero();
 
     // Assemble global matrix from local matrix of each element
+    Element* curr;
     for (int i = 0; i < mesh.elementCount(); i++) {
-        Element* curr = mesh.elementArray()[i];
+        curr = mesh.elementArray()[i];
         int size = curr->getSize();// element type, for Q4 element, size=4; for Q8, size=8, etc
         MatrixXi nodeList = curr->getNodeList();// the index of nodes belong to this element, e.g., for element8, it will give you a vector contain (10,11,15,14), use this to locate row & column in globalStiffness matrix
         MatrixXd localStiffness = curr->localStiffness();
@@ -128,11 +129,13 @@ void Analysis::computeStrainAndStress()
 
     nodalStrain.resize(mesh.nodeCount(), 4);
     nodalStress.resize(mesh.nodeCount(), 4);
+    Element* curr;
     for (int i = 0; i < mesh.elementCount(); i++) {
+        curr = mesh.elementArray()[i];
         // Optimization need here, every time we define a new varible in the loop
-        VectorXi nodeList = mesh.elementArray()[i]->getNodeList();
-        VectorXd nodeDisp(2 * mesh.elementArray()[i]->getSize());
-        MatrixXd E = mesh.elementArray()[i]->E;
+        VectorXi nodeList = curr->getNodeList();
+        VectorXd nodeDisp(2 * curr->getSize());
+        MatrixXd E = curr->E;
 
         // Assemble node disp vector
         for (int j = 0; j < nodeList.size(); j++) {
@@ -141,14 +144,14 @@ void Analysis::computeStrainAndStress()
             nodeDisp(2 * j + 1) = disp(1);
         }
 
-        MatrixXd strainAtGaussPt(ElementQ8::shape.gaussianPoint().size(), 4); // 9x4 matrix for axisymmetric problem
-        MatrixXd shapeAtGaussPt(ElementQ8::shape.gaussianPoint().size(), 8); // 9x8 matrix for element Q8
+        MatrixXd strainAtGaussPt(curr->getShape()->gaussianPoint().size(), 4); // 9x4 matrix for axisymmetric problem
+        MatrixXd shapeAtGaussPt(curr->getShape()->gaussianPoint().size(), 8); // 9x8 matrix for element Q8
         // Compute strain at gaussian points
-        for (int g = 0; g < ElementQ8::shape.gaussianPoint().size(); g++) {
-            MatrixXd B = mesh.elementArray()[i]->BMatrix((ElementQ8::shape.gaussianPoint())[g]);
+        for (int g = 0; g < curr->getShape()->gaussianPoint().size(); g++) {
+            MatrixXd B = curr->BMatrix((curr->getShape()->gaussianPoint())[g]);
             VectorXd e = B * nodeDisp;
             strainAtGaussPt.row(g) = e.transpose();
-            shapeAtGaussPt.row(g) = ElementQ8::shape.functionVec((ElementQ8::shape.gaussianPoint())[g]).transpose();
+            shapeAtGaussPt.row(g) = curr->getShape()->functionVec((curr->getShape()->gaussianPoint())[g]).transpose();
         }
 
         // Solve/extrapolate for nodal strain value via a least square linear system using pesudo inverse
@@ -157,7 +160,7 @@ void Analysis::computeStrainAndStress()
         // pesudo inverst in "Eigen/QR"
 
         // Set calculated strain value to 8 nodes
-        for (int n = 0; n < mesh.elementArray()[i]->getSize(); n++) {
+        for (int n = 0; n < curr->getSize(); n++) {
             VectorXd strain = strainAtNodes.row(n);
             VectorXd stress = E * strain;
             mesh.nodeArray()[nodeList(n)].setStrainAndStress(strain, stress);

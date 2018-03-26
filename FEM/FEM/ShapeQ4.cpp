@@ -1,29 +1,28 @@
-//
-//  Shape.cpp
-//  FEM
-//
-//  Created by 黄浩航 on 10/02/2018.
-//  Copyright © 2018 HHH. All rights reserved.
-//
+/**
+ * @file ShapeQ4.cpp
+ * Implementation of ShapeQ8 class.
+ *
+ * @author Haohang Huang
+ * @date Feburary 10, 2018
+ * @TODO Gaussian points and functionVec not implemented yet.
+ */
 
 #include "ShapeQ4.h"
 
-ShapeQ4::ShapeQ4()
+ShapeQ4::ShapeQ4() : numNodes_(4), numGaussianPoints_(4), gaussianPoint_(4), gaussianWeight_(4)
 {
-    // Four corner nodes only
+    // Four corner nodes
     nodeArray_[0] << -1, -1;
     nodeArray_[1] << 1, -1;
     nodeArray_[2] << 1, 1;
     nodeArray_[3] << -1, 1;
-    numNodes_ = 4;
 }
 
 ShapeQ4::~ShapeQ4()
 {
-
 }
 
-MatrixXd ShapeQ4::function(Vector2d & point) const
+MatrixXd ShapeQ4::function(const Vector2d & point) const
 {
     MatrixXd result = MatrixXd::Zero(2, 2 * numNodes_); // 2-D, 4-Node
     for (int i = 0; i < numNodes_; i++) {
@@ -35,7 +34,7 @@ MatrixXd ShapeQ4::function(Vector2d & point) const
     return result;
 }
 
-MatrixXd ShapeQ4::localDeriv(Vector2d & point) const
+MatrixXd ShapeQ4::localDeriv(const Vector2d & point) const
 {
     MatrixXd result(numNodes_, 2);
     for (int i = 0; i < numNodes_; i++) {
@@ -47,19 +46,12 @@ MatrixXd ShapeQ4::localDeriv(Vector2d & point) const
     return result;
 }
 
-std::vector<Vector2d> ShapeQ4::gaussianPoint() const
+const std::vector<Vector2d> & ShapeQ4::gaussianPoint() const
 {
-    Vector2d temp;
-    temp << 0,0;
-    std::vector<Vector2d> result(1);
-    result[1] = temp;
-    return result;
+    return gaussianPoint_;
 }
 
-std::vector<double> ShapeQ4::gaussianWeight() const
+const std::vector<double> & ShapeQ4::gaussianWeight() const
 {
-    double temp = 0;
-    std::vector<double> result(1);
-    result[1] = temp;
-    return result;
+    return gaussianWeight_;
 }

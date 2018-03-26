@@ -1,28 +1,43 @@
-//
-//  Element.h
-//  FEM
-//
-//  Created by 黄浩航 on 04/02/2018.
-//  Copyright © 2018 HHH. All rights reserved.
-//
+/**
+ * @file Element.h
+ * Abstract base class for various isoparametric elements.
+ *
+ * @author Haohang Huang
+ * @date Feburary 4, 2018
+ */
 
 #ifndef Element_h
 #define Element_h
 
-//#include "Eigen/Eigen"
 #include "Node.h"
-//#include <vector>
+#include "Shape.h"
 
-#include "ShapeQ8.h"
-
-//using namespace Eigen;
-
+/* Abstract base Element class with shared methods and pure virtual methods.
+ *
+ * For polymorphism of a combination of different element types (e.g., T3, Q6, Q8), we
+ * create a base class with virtual methods and enable different implementation
+ * using C++ inheritance feature. Methods can be accessed using a generic
+ * pointer Element*.
+ */
 class Element
 {
   public:
-    // Constructors
+    /**
+     * Default constructor for Element.
+     */
     Element();
-    Element(int index, std::vector<int> & nodeList, Node* meshNode);
+
+    /**
+     * Custom constructor to create an element with given node indices.
+     *
+     * @param index The index number of current element.
+     * @param nodeList The list of node indices this element is consist of.
+     * @param meshNode A pointer to the node pool of the mesh.
+     *
+     * @note Old version of this function pass in all the nodes, which is expensive.
+     * This revised version only pass in a pointer to access the node pool of the mesh.
+     */
+    Element(const int & index, const std::vector<int> & nodeList, Node const * & meshNode);
 
     // Big Three
     Element(Element const & other);
@@ -35,9 +50,11 @@ class Element
     VectorXi getNodeList() const;
     MatrixXd getNodeCoord() const;
     virtual MatrixXd localStiffness() = 0;
-    virtual MatrixXd jacobian(Vector2d & point) const = 0;
-    virtual MatrixXd BMatrix(Vector2d & gaussianPoint) const = 0;
+    virtual MatrixXd jacobian(const Vector2d & point) const = 0;
+    virtual MatrixXd BMatrix(const Vector2d & gaussianPoint) const = 0;
     void computeEMatrix();
+
+    virtual Shape* getShape() const = 0;
 
     void setPoissonRatio(double v);
     void setModulus(double E);

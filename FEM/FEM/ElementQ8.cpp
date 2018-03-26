@@ -1,24 +1,25 @@
-//
-//  ElementQ8.cpp
-//  FEM
-//
-//  Created by 黄浩航 on 13/02/2018.
-//  Copyright © 2018 HHH. All rights reserved.
-//
+/**
+ * @file ElementQ8.cpp
+ * Implementation of ElementQ8 class.
+ *
+ * @author Haohang Huang
+ * @date Feburary 13, 2018
+ */
 
 #include "ElementQ8.h"
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <iostream>
 
-ShapeQ8 ElementQ8::shape; // static class member should be defined outside all functions
+// ShapeQ8 ElementQ8::shape; // static class member should be defined outside all functions
+ElementQ8::staticMembers ElementQ8::statics;
 
 ElementQ8::ElementQ8()
 {
 
 }
 
-ElementQ8::ElementQ8(int index, std::vector<int> & nodeList, Node* meshNode)
+ElementQ8::ElementQ8(const int & index, const std::vector<int> & nodeList, Node const * & meshNode)
   : Element(index, nodeList, meshNode)
 {
 }
@@ -34,19 +35,19 @@ MatrixXd ElementQ8::localStiffness()
     MatrixXd nodeCoord = getNodeCoord(); // 8x2, stores (r,z) of 8 nodes
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
-            result += 2 * M_PI * termsAtGaussianPt((shape.gaussianPoint())[3 * i + j], nodeCoord) * (shape.gaussianWeight())[i] * (shape.gaussianWeight())[j];
+            result += 2 * M_PI * termsAtGaussianPt((statics.shape->gaussianPoint())[3 * i + j], nodeCoord) * (statics.shape->gaussianWeight())[i] * (statics.shape->gaussianWeight())[j];
         }
     }
     return result;
 }
 
-MatrixXd ElementQ8::BMatrix(Vector2d & point) const {
+MatrixXd ElementQ8::BMatrix(const Vector2d & point) const {
   MatrixXd nodeCoord = getNodeCoord();
   MatrixXd B = MatrixXd::Zero(4, 2 * getSize()); // 4x16, B matrix
-  VectorXd shapeFunction = shape.functionVec(point); // 8x1 vector
+  VectorXd shapeFunction = statics.shape->functionVec(point); // 8x1 vector
   double radius = shapeFunction.transpose() * nodeCoord.col(0); // term Ni/r where r = sum(Ni*ri)
   // (Solved) @BUG here!! used to write nodeCoord.col(1), but for the r in (r,z) coordinates, we need .col(0)!
-  MatrixXd localDeriv = shape.localDeriv(point); // 2x8, local deriv (dN/xi, dN/eta) at gaussian points
+  MatrixXd localDeriv = statics.shape->localDeriv(point); // 2x8, local deriv (dN/xi, dN/eta) at gaussian points
   MatrixXd jacobian = localDeriv * nodeCoord; // 2x2, jacobian
   MatrixXd jacobianInv = jacobian.inverse(); // 2x2, inverse of jacobian
   MatrixXd globalDeriv = jacobianInv * localDeriv; // 2x8, global deriv (dN/r, dN/z) at gaussian points
@@ -62,14 +63,19 @@ MatrixXd ElementQ8::BMatrix(Vector2d & point) const {
   return B;
 }
 
+Shape* ElementQ8::getShape() const
+{
+    return statics.shape;
+}
+
 // Helper function
-MatrixXd ElementQ8::termsAtGaussianPt(Vector2d & point, MatrixXd & nodeCoord)
+MatrixXd ElementQ8::termsAtGaussianPt(const Vector2d & point, MatrixXd & nodeCoord)
 { // B.t(xi,eta) * E * B(xi,eta) * J.det(xi,eta) * r(xi,eta)
     MatrixXd B = MatrixXd::Zero(4, 2 * getSize()); // 4x16, B matrix
-    VectorXd shapeFunction = shape.functionVec(point); // 8x1 vector
+    VectorXd shapeFunction = statics.shape->functionVec(point); // 8x1 vector
     double radius = shapeFunction.transpose() * nodeCoord.col(0); // term Ni/r where r = sum(Ni*ri)
     // (Solved) @BUG here!! used to write nodeCoord.col(1), but for the r in (r,z) coordinates, we need .col(0)!
-    MatrixXd localDeriv = shape.localDeriv(point); // 2x8, local deriv (dN/xi, dN/eta) at gaussian points
+    MatrixXd localDeriv = statics.shape->localDeriv(point); // 2x8, local deriv (dN/xi, dN/eta) at gaussian points
     MatrixXd jacobian = localDeriv * nodeCoord; // 2x2, jacobian
     MatrixXd jacobianInv = jacobian.inverse(); // 2x2, inverse of jacobian
     MatrixXd globalDeriv = jacobianInv * localDeriv; // 2x8, global deriv (dN/r, dN/z) at gaussian points
@@ -97,7 +103,7 @@ MatrixXd ElementQ8::termsAtGaussianPt(Vector2d & point, MatrixXd & nodeCoord)
     return result;
 }
 
-MatrixXd ElementQ8::jacobian(Vector2d & point) const
+MatrixXd ElementQ8::jacobian(const Vector2d & point) const
 {
-    return shape.localDeriv(point) * getNodeCoord();
+    return statics.shape->localDeriv(point) * getNodeCoord();
 }

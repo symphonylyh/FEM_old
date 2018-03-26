@@ -1,10 +1,10 @@
-//
-//  ElementQ8.h
-//  FEM
-//
-//  Created by 黄浩航 on 13/02/2018.
-//  Copyright © 2018 HHH. All rights reserved.
-//
+/**
+ * @file ElementQ8.h
+ * Derived class from Element for the isoparametric Q8 element.
+ *
+ * @author Haohang Huang
+ * @date Feburary 13, 2018
+ */
 
 #ifndef ElementQ8_h
 #define ElementQ8_h
@@ -14,20 +14,37 @@
 
 class ElementQ8 : public Element
 {
+  private:
+    struct staticMembers {
+          Shape* shape;
+          // ctor
+          staticMembers() {
+              shape = new ShapeQ8;
+          }
+          // dtor
+          ~staticMembers() {
+              delete shape; shape = NULL;
+          }
+      };
+
   public:
     ElementQ8();
-    ElementQ8(int index, std::vector<int> & nodeList, Node* meshNode);
+    ElementQ8(const int & index, const std::vector<int> & nodeList, Node const * & meshNode);
     ~ElementQ8();
 
     MatrixXd localStiffness();
-    MatrixXd jacobian(Vector2d & point) const;
+    MatrixXd jacobian(const Vector2d & point) const;
 
-    MatrixXd BMatrix(Vector2d & point) const;
+    MatrixXd BMatrix(const Vector2d & point) const;
 
-    static ShapeQ8 shape;
+    //static ShapeQ8 shape;
+
+    static staticMembers statics;
+
+    Shape* getShape() const;
 
   private:
-    MatrixXd termsAtGaussianPt(Vector2d & point, MatrixXd & nodeCoord);
+    MatrixXd termsAtGaussianPt(const Vector2d & point, MatrixXd & nodeCoord);
 };
 
 #endif /* ElementQ8_h */

@@ -10,16 +10,19 @@
 #define ElementQ4_h
 
 #include "Element.h"
+#include "ShapeQ4.h"
 
 class ElementQ4 : public Element
 {
   public:
     ElementQ4();
-    ElementQ4(int index, std::vector<int> & nodeList, Node* meshNode);
+    ElementQ4(const int & index, const std::vector<int> & nodeList, Node const * & meshNode);
     ~ElementQ4();
 
     MatrixXd localStiffness();
     MatrixXd jacobian() const;
+
+    Shape* getShape() const;
   private:
 
 };

@@ -234,7 +234,7 @@ bool Mesh::readFromFile(std::string const & fileName)
     file.close();
 
     return true;
-    
+
     // Previous version
     // dataCount(fileName);
     //

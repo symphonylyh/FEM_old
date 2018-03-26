@@ -13,7 +13,7 @@ ElementQ4::ElementQ4()
 
 }
 
-ElementQ4::ElementQ4(int index, std::vector<int> & nodeList, Node* meshNode)
+ElementQ4::ElementQ4(const int & index, const std::vector<int> & nodeList, Node const * & meshNode)
   : Element(index, nodeList, meshNode)
 {
 
@@ -33,4 +33,9 @@ MatrixXd ElementQ4::jacobian() const
 {
 
     return MatrixXd::Identity(8,8);
+}
+
+Shape* ElementQ4::getShape() const
+{
+    return NULL;
 }

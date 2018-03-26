@@ -1,15 +1,15 @@
-//
-//  ShapeQ8.cpp
-//  FEM
-//
-//  Created by 黄浩航 on 13/02/2018.
-//  Copyright © 2018 HHH. All rights reserved.
-//
+/**
+ * @file ShapeQ8.cpp
+ * Implementation of ShapeQ8 class.
+ *
+ * @author Haohang Huang
+ * @date Feburary 13, 2018
+ */
 
 #include "ShapeQ8.h"
 #include <cmath>
 
-ShapeQ8::ShapeQ8() : gaussianPoint_(9), gaussianWeight_(9) // use initializer list to define size of vector!
+ShapeQ8::ShapeQ8() : numNodes_(8), numGaussianPoints_(9), gaussianPoint_(9), gaussianWeight_(9) // use initializer list to define the size of vector!
 {
     // Local xi-eta coordinates of nodes
     // Corner nodes
@@ -22,7 +22,6 @@ ShapeQ8::ShapeQ8() : gaussianPoint_(9), gaussianWeight_(9) // use initializer li
     nodeArray_[5] << 1, 0;
     nodeArray_[6] << 0, 1;
     nodeArray_[7] << -1, 0;
-    numNodes_ = 8;
 
     // Local xi-eta coordinates of gaussian points
     double temp = std::sqrt(0.6);
@@ -35,10 +34,9 @@ ShapeQ8::ShapeQ8() : gaussianPoint_(9), gaussianWeight_(9) // use initializer li
     gaussianPoint_[6] << -temp, temp;
     gaussianPoint_[7] << 0, temp;
     gaussianPoint_[8] << temp, temp;
-    numGaussianPoints_ = 9;
 
     // Gaussian weights
-    double corner = 5.0 / 9.0; // do not use 5/9! that is 0!
+    double corner = 5.0 / 9.0; // do not use 5/9! that is 0 due to trucation!
     double side = 8.0 / 9.0;
     gaussianWeight_[0] = corner;
     gaussianWeight_[2] = corner;
@@ -55,7 +53,7 @@ ShapeQ8::~ShapeQ8()
 {
 }
 
-VectorXd ShapeQ8::functionVec(Vector2d & point) const
+VectorXd ShapeQ8::functionVec(const Vector2d & point) const
 { // 8x1 Vector
     VectorXd result(numNodes_);
     for (int i = 0; i < numNodes_; i++) {
@@ -63,7 +61,7 @@ VectorXd ShapeQ8::functionVec(Vector2d & point) const
         if (i < 4) { // 4 corner nodes
           // Ni = (1+xi_i*xi)(1+eta_i*eta)(xi_i*xi+eta_i*eta-1)/4
           Ni = (1 + nodeArray_[i](0) * point(0)) * (1 + nodeArray_[i](1) * point(1)) * (nodeArray_[i](0) * point(0) + nodeArray_[i](1) * point(1) - 1) / 4;
-          // (Solved) @BUG here! Typo: used to write one nodeArray_[i](0) to be nodeArray_[0](0)
+          // (Solved) @BUG here! Typo: wrote one nodeArray_[i](0) to be nodeArray_[0](0)
         }
         if (i == 4 || i == 6) { // xi = 0 mid-side nodes
           // Ni = (1-xi^2)(1+eta_i*eta)/2
@@ -78,7 +76,7 @@ VectorXd ShapeQ8::functionVec(Vector2d & point) const
     return result;
 }
 
-MatrixXd ShapeQ8::function(Vector2d & point) const
+MatrixXd ShapeQ8::function(const Vector2d & point) const
 { // 2x16 matrix
     MatrixXd result = MatrixXd::Zero(2, 2 * numNodes_); // 2-D, 8-Node
     for (int i = 0; i < numNodes_; i++) {
@@ -101,7 +99,7 @@ MatrixXd ShapeQ8::function(Vector2d & point) const
     return result;
 }
 
-MatrixXd ShapeQ8::localDeriv(Vector2d & point) const
+MatrixXd ShapeQ8::localDeriv(const Vector2d & point) const
 { // 2x8 matrix
     MatrixXd result(2, numNodes_);
     for (int i = 0; i < numNodes_; i++) {
@@ -127,12 +125,12 @@ MatrixXd ShapeQ8::localDeriv(Vector2d & point) const
     return result;
 }
 
-std::vector<Vector2d> ShapeQ8::gaussianPoint() const
+const std::vector<Vector2d> & ShapeQ8::gaussianPoint() const
 {
     return gaussianPoint_;
 }
 
-std::vector<double> ShapeQ8::gaussianWeight() const
+const std::vector<double> & ShapeQ8::gaussianWeight() const
 {
     return gaussianWeight_;
 }
