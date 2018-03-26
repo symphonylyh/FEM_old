@@ -10,7 +10,6 @@
 #define Node_h
 
 #include "Eigen/Eigen"
-//#include "Matrix/Eigen"
 
 using namespace Eigen;
 
