@@ -1,12 +1,16 @@
-//
-//  Mesh.cpp
-//  FEM
-//
-//  Created by 黄浩航 on 05/02/2018.
-//  Copyright © 2018 HHH. All rights reserved.
-//
+/**
+ * @file Mesh.cpp
+ * Implementation of Mesh class.
+ *
+ * @author Haohang Huang
+ * @date Feburary 5, 2018
+ */
 
 #include "Mesh.h"
+#include "ElementQ4.h"
+#include "ShapeQ4.h"
+#include "ElementQ8.h"
+#include "ShapeQ8.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -111,7 +115,7 @@ bool Mesh::readFromFile(std::string const & fileName)
     std::vector<int>().swap(meshSummary);
 
     // Create node & element array on HEAP
-    meshNode_ = new Node[nodeCount_]; // this will call the default ctor of Node()
+    meshNode_ = new Node*[nodeCount_]; // this will call the default ctor of Node()
     meshElement_ = new Element*[elementCount_];
 
     // Read node coordinates
@@ -119,7 +123,7 @@ bool Mesh::readFromFile(std::string const & fileName)
     for (int i = 0; i < nodeCount_; i++) {
         std::getline(file, readLine);
         parseLine(readLine, nodeCoord);
-        meshNode_[i] = Node(i, nodeCoord[0], nodeCoord[1]);
+        meshNode_[i] = new Node(i, nodeCoord[0], nodeCoord[1]);
     }
     std::vector<double>().swap(nodeCoord); // enforce free the vector memory
 
@@ -153,10 +157,8 @@ bool Mesh::readFromFile(std::string const & fileName)
         parseLine(readLine, elementList);
         std::getline(file, readLine);
         parseLine(readLine, elementProperty);
-        for (int j = 0; j < elementList.size(); j++) {
-            meshElement_[elementList[j]]->setModulus(elementProperty[0]);
-            meshElement_[elementList[j]]->setPoissonRatio(elementProperty[1]);
-        }
+        for (int j = 0; j < elementList.size(); j++)
+            meshElement_[elementList[j]]->setMaterial(elementProperty[0], elementProperty[1]);
     }
     std::vector<int>().swap(elementList);
     std::vector<double>().swap(elementProperty);
@@ -289,7 +291,7 @@ bool Mesh::readFromFile(std::string const & fileName)
 
 }
 
-Node & Mesh::getNode(int index) const
+Node* & Mesh::getNode(int index) const
 {
     return meshNode_[index];
 }
@@ -309,7 +311,7 @@ int Mesh::elementCount() const
     return elementCount_;
 }
 
-Node* Mesh::nodeArray() const
+Node** Mesh::nodeArray() const
 {
     return meshNode_;
 }
@@ -321,9 +323,15 @@ Element** Mesh::elementArray() const
 
 Mesh::~Mesh()
 {
+    // Delete all nodes
+    for (int i = 0; i < nodeCount_; i++) {
+        delete meshNode_[i]; meshNode_[i] = NULL;
+    }
     delete[] meshNode_; meshNode_ = NULL;
+
+    // Delete all elements
     for (int i = 0; i < elementCount_; i++) {
-      delete meshElement_[i]; meshElement_[i] = NULL;
+        delete meshElement_[i]; meshElement_[i] = NULL;
     }
     delete[] meshElement_; meshElement_ = NULL;
 }

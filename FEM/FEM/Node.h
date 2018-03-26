@@ -1,10 +1,11 @@
-//
-//  Node.h
-//  FEM
-//
-//  Created by 黄浩航 on 04/02/2018.
-//  Copyright © 2018 HHH. All rights reserved.
-//
+/**
+ * @file Node.h
+ * Node class for the basic coordinates and mechanical properties.
+ *
+ * @author Haohang Huang
+ * @date Feburary 4, 2018
+ * @note Efficiency optimized by return-by-ref on March 26, 2018.
+ */
 
 #ifndef Node_h
 #define Node_h
@@ -13,60 +14,157 @@
 
 using namespace Eigen;
 
-class Node {
+/* Node class for the basic coordinates and mechanical properties information.
+ */
+class Node
+{
+    public:
+        /**
+         * Default constructor for Node.
+         */
+        Node();
 
-public:
-    // Constructors
-    Node();
-    Node(int index, double & x, double & y);  // set index and global coordinates
+        /**
+         * Custom constructor to create a node with given node coordinates.
+         *
+         * @param index The index number of current node.
+         * @param x The global x-coordinate of the node.
+         * @param y The global y-coordinate of the node.
+         * @note All pass-by-ref.
+         */
+        Node(const int & index, const double & x, const double & y);
 
-    // Big Three
-    Node(Node const & other);
-    Node const & operator=(Node const & other);
-    ~Node();
+        /**
+         * Copy constructor.
+         */
+        Node(Node const & other);
 
-    // Set operations
-    void setIndex(int index);
-    void setBoundaryX();
-    void setBoundaryY();
-    void setBoundaryAll();
-    void setGlobalCoord(double x, double y);
-    void setLocalCoord(double xi, double eta);
-    void setDisp(double u, double v);
-    void setForce(double Fx, double Fy);
-    void setStrainAndStress(VectorXd & strain, VectorXd & stress);
+        /**
+         * Assignment operator.
+         */
+        Node const & operator=(Node const & other);
 
-    VectorXd averageStrain();
-    VectorXd averageStress();
+        /**
+         * Destructor.
+         */
+        ~Node();
 
-    // Get operations
-    int getIndex() const;
-    // Previous bug:
-    // MatrixX2d & getGlobalCoord() const; // MatrixX2d is allocated on stack, so this is error "return a ref/ptr to stack memory", you should return ref/ptr for objects on heap
-    // MatrixX2d getGlobalCoord() const;
-    // MatrixX2d getLocalCoord() const;
-    // MatrixX2d getDisp() const;
-    // MatrixX2d getForce() const;
-    Vector2d getGlobalCoord() const;
-    Vector2d getLocalCoord() const;
-    Vector2d getDisp() const;
-    Vector2d getForce() const;
+        /**
+         * Assign the initial global coordinates (r,z) of the node.
+         *
+         * @param x The global x-coordinate of the node.
+         * @param y The global y-coordinate of the node.
+         */
+        void setGlobalCoord(const double & x, const double & y);
 
-private:
-    int index_; // 0-based index
-    int fixed_; // fixed boundary: 0-free, 1-fixX, 2-fixY, 3-fixAll
-    Vector2d globalCoord_; // Global X-Y Coordinates
-    Vector2d localCoord_; // Local xi-eta Coordinates
-    Vector2d disp_; // displacement in 2D
-    Vector2d force_; // force in 2D
+        /**
+         * Assign the final solved displacements (u,v) at the node.
+         *
+         * @param u The x-displacement at the node.
+         * @param v The y-displacement at the node.
+         */
+        void setDisp(const double & u, const double & v);
 
-    VectorXd strain_;
-    VectorXd stress_;
-    int averageCount_;
+        /**
+         * Assign the final solved force (Fx, Fy) at the node.
+         *
+         * @param Fx The x-force applied the node.
+         * @param Fy The y-force applied the node.
+         */
+        void setForce(const double & Fx, const double & Fy);
 
-    // Helper functions
-    void clear_();
-    void copy_(Node const & other);
+        /**
+         * Cumulate the stress and strain values at this node by summing up
+         * the values from each adjacent element.
+         *
+         * @param strain The strain vector to be added to this node. The form is:
+         * [e(r), e(theta), e(z), gamma(rz)].
+         * @param stress The stress vector to be added to this node. The form is:
+         * [s(r), s(theta), s(z), t(rz)].
+         *
+         * @note This is an internal step for computing the averaged strain and
+         * stress at each node. The cumulative value will be averaged later.
+         */
+        void setStrainAndStress(const VectorXd & strain, const VectorXd & stress);
+
+        /**
+         * Average the strain vector at this node.
+         *
+         * @return The average strain vector.
+         *
+         * @note Node objects are dynamically allocated on heap memory, so we
+         * can return-by-ref.
+         */
+        const VectorXd & averageStrain();
+
+        /**
+         * Average the stress vector at this node.
+         *
+         * @return The average stress vector.
+         */
+        const VectorXd & averageStress();
+
+        /**
+         * Get the index of this node.
+         *
+         * @return The index.
+         */
+        const int & getIndex() const;
+
+        /**
+         * Get the initial global coordinates (r,z) of the node.
+         *
+         * @return The global coordinates.
+         */
+        const Vector2d & getGlobalCoord() const;
+
+        /**
+         * Get the solved displacements (u,v) at the node.
+         *
+         * @return The displacements.
+         */
+        const Vector2d & getDisp() const;
+
+        /**
+         * Get the solved force (Fx, Fy) at the node.
+         *
+         * @return The forces.
+         */
+        const Vector2d & getForce() const;
+
+    private:
+        /** Zero-based index of the node */
+        int index_;
+
+        /** Global coordinates (r,z) */
+        Vector2d globalCoord_;
+
+        /** Displacements (u,v) */
+        Vector2d disp_;
+
+        /** Forces (Fx,Fy) */
+        Vector2d force_;
+
+        /** Strain vector [e(r), e(theta), e(z), gamma(rz)] */
+        VectorXd strain_;
+
+        /** Strain vector [s(r), s(theta), s(z), t(rz)] */
+        VectorXd stress_;
+
+        /** Number of adjacent elements at this node */
+        int averageCount_;
+
+        /**
+         * Private helper function for deleting the current node, used in destructor
+         * and assignment operator.
+         */
+        void clear_();
+
+        /**
+         * Private helper function for deep-copying the node, used in copy
+         * constructor and assignment operator.
+         */
+        void copy_(Node const & other);
 
 };
 

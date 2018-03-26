@@ -30,32 +30,32 @@
  */
 class ShapeQ8 : public Shape
 {
-  public:
-    /* See the documentation of base class Shape.
-     */
-    ShapeQ8();
-    ~ShapeQ8();
-    VectorXd functionVec(const Vector2d & point) const;
-    MatrixXd function(const Vector2d & point) const;
-    MatrixXd localDeriv(const Vector2d & point) const;
-    const std::vector<Vector2d> & gaussianPoint() const;
-    const std::vector<double> & gaussianWeight() const;
+    public:
+        /* See the documentation of base class Shape.
+         */
+        ShapeQ8();
+        ~ShapeQ8();
+        VectorXd functionVec(const Vector2d & point) const;
+        MatrixXd function(const Vector2d & point) const;
+        MatrixXd localDeriv(const Vector2d & point) const;
+        const std::vector<Vector2d> & gaussianPoint() const;
+        const std::vector<double> & gaussianWeight() const;
 
-  private:
-    /** The local isoparametric coordinates (-1,1) of the element nodes */
-    Vector2d nodeArray_[8];
+    private:
+        /** The local isoparametric coordinates (-1,1) of the element nodes */
+        Vector2d nodeArray_[8];
 
-    /** The number of nodes of the element type */
-    int numNodes_;
+        /** The number of nodes of the element type */
+        int numNodes_;
 
-    /** The number of Gaussian integration points of the element type */
-    int numGaussianPoints_;
+        /** The number of Gaussian integration points of the element type */
+        int numGaussianPoints_;
 
-    /** An array of the 2D Gaussian integration points */
-    std::vector<Vector2d> gaussianPoint_; // it's redundant to return an array pointer by gaussianPoint(), so we use vector. And you can't specify vector size here, do it in initializer list
+        /** An array of the 2D Gaussian integration points */
+        std::vector<Vector2d> gaussianPoint_; // it's redundant to return an array pointer by gaussianPoint(), so we use vector. And you can't specify vector size here, do it in initializer list
 
-    /** An array of the weight of Gaussian integration points */
-    std::vector<double> gaussianWeight_;
+        /** An array of the weight of Gaussian integration points */
+        std::vector<double> gaussianWeight_;
 };
 
 #endif /* ShapeQ8_h */

@@ -1,10 +1,10 @@
-//
-//  Analysis.cpp
-//  FEM
-//
-//  Created by 黄浩航 on 26/02/2018.
-//  Copyright © 2018 HHH. All rights reserved.
-//
+/**
+ * @file Analysis.cpp
+ * Implementation of Analysis class.
+ *
+ * @author Haohang Huang
+ * @date Feburary 26, 2018
+ */
 
 #include "Analysis.h"
 #include <iostream>
@@ -117,16 +117,6 @@ void Analysis::boundaryCondition(std::vector<int> & DOFList, std::vector<double>
 
 void Analysis::computeStrainAndStress()
 {
-    // temporary here
-    // double M = 30000; // a temporary default value
-    // double v = 0.3;
-    // MatrixXd E(4,4);
-    // E << 1 - v, v, v, 0,
-    //       v,   1-v, v, 0,
-    //       v,   v,  1-v, 0,
-    //       0,  0,    0,  (1-2*v)/2;
-    // E = E * M / (1+v) /(1-2*v);
-
     nodalStrain.resize(mesh.nodeCount(), 4);
     nodalStress.resize(mesh.nodeCount(), 4);
     Element* curr;
@@ -135,11 +125,11 @@ void Analysis::computeStrainAndStress()
         // Optimization need here, every time we define a new varible in the loop
         VectorXi nodeList = curr->getNodeList();
         VectorXd nodeDisp(2 * curr->getSize());
-        MatrixXd E = curr->E;
+        MatrixXd E = curr->EMatrix();
 
         // Assemble node disp vector
         for (int j = 0; j < nodeList.size(); j++) {
-            VectorXd disp = mesh.nodeArray()[nodeList(j)].getDisp();
+            VectorXd disp = mesh.nodeArray()[nodeList(j)]->getDisp();
             nodeDisp(2 * j) = disp(0);
             nodeDisp(2 * j + 1) = disp(1);
         }
@@ -163,15 +153,15 @@ void Analysis::computeStrainAndStress()
         for (int n = 0; n < curr->getSize(); n++) {
             VectorXd strain = strainAtNodes.row(n);
             VectorXd stress = E * strain;
-            mesh.nodeArray()[nodeList(n)].setStrainAndStress(strain, stress);
+            mesh.nodeArray()[nodeList(n)]->setStrainAndStress(strain, stress);
         }
 
     }
 
     // Write nodal strain and stress
     for (int i = 0; i < mesh.nodeCount(); i++) {
-        nodalStrain.row(i) = mesh.nodeArray()[i].averageStrain().transpose();
-        nodalStress.row(i) = mesh.nodeArray()[i].averageStress().transpose();
+        nodalStrain.row(i) = mesh.nodeArray()[i]->averageStrain().transpose();
+        nodalStress.row(i) = mesh.nodeArray()[i]->averageStress().transpose();
     }
 
 }
@@ -181,7 +171,7 @@ void Analysis::printDisp() const
     std::cout << "Nodal Displacement: ";
     std::cout << std::endl;
     for (int i = 0; i < mesh.nodeCount(); i++) {
-      std::cout << "Node " << mesh.nodeArray()[i].getIndex() << " : " << mesh.nodeArray()[i].getDisp().transpose() << std::endl;
+      std::cout << "Node " << mesh.nodeArray()[i]->getIndex() << " : " << mesh.nodeArray()[i]->getDisp().transpose() << std::endl;
     }
     std::cout << std::endl;
 }
@@ -189,7 +179,7 @@ void Analysis::printDisp() const
 void Analysis::printForce() const
 {
     for (int i = 0; i < mesh.nodeCount(); i++) {
-      std::cout << "Node " << mesh.nodeArray()[i].getIndex() << " force: " << mesh.nodeArray()[i].getForce().transpose() << std::endl;
+      std::cout << "Node " << mesh.nodeArray()[i]->getIndex() << " force: " << mesh.nodeArray()[i]->getForce().transpose() << std::endl;
     }
     std::cout << std::endl;
 }

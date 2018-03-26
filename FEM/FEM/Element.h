@@ -4,6 +4,7 @@
  *
  * @author Haohang Huang
  * @date Feburary 4, 2018
+ * @note Efficiency optimized by return-by-ref on March 26, 2018.
  */
 
 #ifndef Element_h
@@ -12,7 +13,7 @@
 #include "Node.h"
 #include "Shape.h"
 
-/* Abstract base Element class with shared methods and pure virtual methods.
+/* Abstract base Element class with shared public methods and pure virtual methods.
  *
  * For polymorphism of a combination of different element types (e.g., T3, Q6, Q8), we
  * create a base class with virtual methods and enable different implementation
@@ -21,76 +22,165 @@
  */
 class Element
 {
-  public:
-    /**
-     * Default constructor for Element.
-     */
-    Element();
+    public:
+        /**
+         * Default constructor for Element.
+         */
+        Element();
 
-    /**
-     * Custom constructor to create an element with given node indices.
-     *
-     * @param index The index number of current element.
-     * @param nodeList The list of node indices this element is consist of.
-     * @param meshNode A const pointer to the node pool of the mesh.
-     *
-     * @note Old version of this function pass in all the nodes, which is expensive.
-     * This revised version only pass in a pointer to access the node pool of the mesh.
-     */
-    Element(const int & index, const std::vector<int> & nodeList, Node* const meshNode);
+        /**
+         * Custom constructor to create an element with given node indices.
+         *
+         * @param index The index number of current element.
+         * @param nodeList The list of node indices this element is consist of.
+         * @param meshNode A const pointer to the node pool of the mesh.
+         *
+         * @note Old version of this function pass in all the nodes, which is expensive.
+         * This optimized version only pass in a pointer to access the node pool of the mesh.
+         */
+        Element(const int & index, const std::vector<int> & nodeList, Node** const meshNode);
 
-    /**
-     * Copy constructor.
-     */
-    Element(Element const & other);
+        /**
+         * Copy constructor.
+         */
+        Element(Element const & other);
 
-    /**
-     * Assignment operator.
-     */
-    Element const & operator=(Element const & other);
+        /**
+         * Assignment operator.
+         */
+        Element const & operator=(Element const & other);
 
-    /**
-     * Destructor.
-     */
-    virtual ~Element();
+        /**
+         * Destructor.
+         *
+         * @note As an abstract class, the destructor must be virtual.
+         */
+        virtual ~Element();
 
-    virtual MatrixXd localStiffness() = 0;
-    virtual MatrixXd jacobian(const Vector2d & point) const = 0;
-    virtual MatrixXd BMatrix(const Vector2d & gaussianPoint) const = 0;
-    void computeEMatrix();
-    void setPoissonRatio(double v);
-    void setModulus(double E);
+        /**
+         * Assign the material properties of the element.
+         *
+         * @param M The modulus.
+         * @param v The Poisson's ratio.
+         */
+        void setMaterial(const double & M, const double & v);
 
-    /**
-     * Custom constructor to create an element with given node indices.
-     *
-     * @param index The index number of current element.
-     * @param nodeList The list of node indices this element is consist of.
-     * @param meshNode A const pointer to the node pool of the mesh.
-     *
-     * @note Old version of this function pass in all the nodes, which is expensive.
-     * This revised version only pass in a pointer to access the node pool of the mesh.
-     */
-    int getIndex() const;
-    int getSize() const;
-    VectorXi getNodeList() const;
-    MatrixXd getNodeCoord() const;
-    virtual Shape* getShape() const = 0;
+        /**
+         * Get the stress-strain constitutive matrix of the element.
+         *
+         * @return The 4-by-4 E matrix.
+         */
+        const MatrixXd & EMatrix() const;
 
-    double poissonRatio;
-    double modulus;
-    MatrixXd E;
+        /**
+         * Compute the local element stiffness matrix formulated by
+         * differentiation of element strain energy and numerical integration
+         * (Gaussian quadrature).
+         *
+         * @return The 2n-by-2n element stiffness matrix where n is number of
+         * nodes belong to this element.
+         */
+        virtual MatrixXd localStiffness() const = 0;
 
-  private:
-    int index_;
-    int size_;
-    VectorXi nodeList_;
-    MatrixXd nodeCoord_;
+        /**
+         * Compute the Jacobian coordinates transformation matrix at a given
+         * point.
+         *
+         * @param point The point where the Jacobian matrix to be evaluated.
+         * @return The 2-by-2 (2D) Jacobian matrix.
+         */
+        virtual MatrixXd jacobian(const Vector2d & point) const = 0;
 
-    // Helper functions
-    void clear_();
-    void copy_(Element const & other);
+        /**
+         * Compute the strain-displacement constitutive matrix.
+         *
+         * e = D*u = D*(N*u) = (D*N)u = Bu, so B is the differential matrix
+         * multiplying the shape function.
+         *
+         * @param gaussianPoint The Gaussian point where the B matrix to be evaluated.
+         * @return The 4-by-2n B matrix where n is the number of nodes belong to
+         * this element.
+         */
+        virtual MatrixXd BMatrix(const Vector2d & gaussianPoint) const = 0;
 
+        /**
+         * Get the shape object of this element.
+         *
+         * @return A pointer to the shape object of this element.
+         *
+         * @note For different element, we would have different shape property,
+         * so we return a generic polymorphed Shape class pointer to achieve
+         * the standardized behavior of our program. It should also be noted
+         * that this is a virtual method, and the Shape property of each element
+         * type is stored as a static member of that class. This is really an
+         * elegant solution to pave our path towards the hybrid element case.
+         * And returning a const pointer secures the usage of shape object.
+         */
+        virtual Shape* const getShape() const = 0;
 
+        /**
+         * Get the index of this element.
+         *
+         * @return The index.
+         */
+        const int & getIndex() const;
+
+        /**
+         * Get the size/type of this element.
+         *
+         * @return The size/type.
+         */
+        const int & getSize() const;
+
+        /**
+         * Get the list of nodes belong to this element.
+         *
+         * @return The node list as a n-by-1 vector.
+         */
+        const VectorXi & getNodeList() const;
+
+        /**
+         * Get the stacked coordinates matrix of the nodes belong to this element.
+         *
+         * @return The node coordinates as a n-by-2 matrix.
+         */
+        const MatrixXd & getNodeCoord() const;
+
+    private:
+        /** Zero-based index of the element */
+        int index_;
+
+        /** Size/Type of the element, 8 for Q8, 6 for Q6, etc */
+        int size_;
+
+        /** The list of the nodes belong to this element */
+        VectorXi nodeList_;
+
+        /** The global coordinates of the nodes belong to this element as a
+         * n-by-2 matrix.
+         */
+        MatrixXd nodeCoord_;
+
+        /** The Poisson's ratio */
+        double poissonRatio_;
+
+        /** The modulus */
+        double modulus_;
+
+        /** The 4-by-4 stress-strain constitutive matrix sigma = E * e */
+        MatrixXd E_;
+
+        /**
+         * Private helper function for deleting the current element, used in destructor
+         * and assignment operator.
+         */
+        void clear_();
+
+        /**
+         * Private helper function for deep-copying the element, used in copy
+         * constructor and assignment operator.
+         */
+        void copy_(Element const & other);
 };
+
 #endif /* Element_h */

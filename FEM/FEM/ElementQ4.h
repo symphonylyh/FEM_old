@@ -1,10 +1,10 @@
-//
-//  ElementQ4.h
-//  FEM
-//
-//  Created by 黄浩航 on 10/02/2018.
-//  Copyright © 2018 HHH. All rights reserved.
-//
+/**
+ * @file ElementQ4.h
+ * Derived class from Element for the isoparametric Q4 element.
+ *
+ * @author Haohang Huang
+ * @date Feburary 10, 2018
+ */
 
 #ifndef ElementQ4_h
 #define ElementQ4_h
@@ -12,18 +12,22 @@
 #include "Element.h"
 #include "ShapeQ4.h"
 
+/* Derived class for the isoparametric Q4 element.
+ */
 class ElementQ4 : public Element
 {
-  public:
-    ElementQ4();
-    ElementQ4(const int & index, const std::vector<int> & nodeList, Node* const meshNode);
-    ~ElementQ4();
+    public:
+        /* See the documentation of base class Shape.
+         */
+        ElementQ4();
+        ElementQ4(const int & index, const std::vector<int> & nodeList, Node** const meshNode);
+        ~ElementQ4();
+        MatrixXd localStiffness() const;
+        MatrixXd jacobian() const;
+        MatrixXd BMatrix() const;
+        Shape* const getShape() const;
+    private:
 
-    MatrixXd localStiffness();
-    MatrixXd jacobian() const;
-
-    Shape* getShape() const;
-  private:
 
 };
 
