@@ -111,7 +111,7 @@ bool Mesh::readFromFile(std::string const & fileName)
     std::vector<int>().swap(meshSummary);
 
     // Create node & element array on HEAP
-    meshNode_ = new Node[nodeCount_];
+    meshNode_ = new Node[nodeCount_]; // this will call the default ctor of Node()
     meshElement_ = new Element*[elementCount_];
 
     // Read node coordinates

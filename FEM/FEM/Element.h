@@ -37,7 +37,7 @@ class Element
      * @note Old version of this function pass in all the nodes, which is expensive.
      * This revised version only pass in a pointer to access the node pool of the mesh.
      */
-    Element(const int & index, const std::vector<int> & nodeList, const Node* meshNode);
+    Element(const int & index, const std::vector<int> & nodeList, Node* const meshNode);
 
     /**
      * Copy constructor.

@@ -19,7 +19,7 @@ ElementQ8::ElementQ8()
 
 }
 
-ElementQ8::ElementQ8(const int & index, const std::vector<int> & nodeList, const Node* meshNode)
+ElementQ8::ElementQ8(const int & index, const std::vector<int> & nodeList, Node* const meshNode)
   : Element(index, nodeList, meshNode)
 {
 }
