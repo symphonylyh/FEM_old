@@ -17,7 +17,7 @@ Element::Element() : poissonRatio(0.5), modulus(1.0)
 
 }
 
-Element::Element(const int & index, const std::vector<int> & nodeList, Node const * & meshNode) // @TODO previously here I pass in vector<Node> which is very expensive, now I pass in vector<int> & and a pointer the pool of nodes create in mesh
+Element::Element(const int & index, const std::vector<int> & nodeList, const Node* meshNode) // @TODO previously here I pass in vector<Node> which is very expensive, now I pass in vector<int> & and a pointer the pool of nodes create in mesh
 {
   index_ = index;
   size_ = static_cast<int>(nodeList.size());
@@ -54,7 +54,6 @@ Element::~Element()
 
 void Element::clear_()
 {
-
 }
 
 void Element::copy_(Element const & other)
@@ -66,11 +65,6 @@ void Element::copy_(Element const & other)
 int Element::getIndex() const
 {
     return index_;
-}
-
-void Element::setIndex(int index)
-{
-    index_ = index;
 }
 
 int Element::getSize() const

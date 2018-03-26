@@ -32,32 +32,50 @@ class Element
      *
      * @param index The index number of current element.
      * @param nodeList The list of node indices this element is consist of.
-     * @param meshNode A pointer to the node pool of the mesh.
+     * @param meshNode A const pointer to the node pool of the mesh.
      *
      * @note Old version of this function pass in all the nodes, which is expensive.
      * This revised version only pass in a pointer to access the node pool of the mesh.
      */
-    Element(const int & index, const std::vector<int> & nodeList, Node const * & meshNode);
+    Element(const int & index, const std::vector<int> & nodeList, const Node* meshNode);
 
-    // Big Three
+    /**
+     * Copy constructor.
+     */
     Element(Element const & other);
+
+    /**
+     * Assignment operator.
+     */
     Element const & operator=(Element const & other);
+
+    /**
+     * Destructor.
+     */
     virtual ~Element();
 
-    int getIndex() const;
-    void setIndex(int index);
-    int getSize() const;
-    VectorXi getNodeList() const;
-    MatrixXd getNodeCoord() const;
     virtual MatrixXd localStiffness() = 0;
     virtual MatrixXd jacobian(const Vector2d & point) const = 0;
     virtual MatrixXd BMatrix(const Vector2d & gaussianPoint) const = 0;
     void computeEMatrix();
-
-    virtual Shape* getShape() const = 0;
-
     void setPoissonRatio(double v);
     void setModulus(double E);
+
+    /**
+     * Custom constructor to create an element with given node indices.
+     *
+     * @param index The index number of current element.
+     * @param nodeList The list of node indices this element is consist of.
+     * @param meshNode A const pointer to the node pool of the mesh.
+     *
+     * @note Old version of this function pass in all the nodes, which is expensive.
+     * This revised version only pass in a pointer to access the node pool of the mesh.
+     */
+    int getIndex() const;
+    int getSize() const;
+    VectorXi getNodeList() const;
+    MatrixXd getNodeCoord() const;
+    virtual Shape* getShape() const = 0;
 
     double poissonRatio;
     double modulus;

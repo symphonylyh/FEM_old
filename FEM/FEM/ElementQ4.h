@@ -16,7 +16,7 @@ class ElementQ4 : public Element
 {
   public:
     ElementQ4();
-    ElementQ4(const int & index, const std::vector<int> & nodeList, Node const * & meshNode);
+    ElementQ4(const int & index, const std::vector<int> & nodeList, const Node* meshNode);
     ~ElementQ4();
 
     MatrixXd localStiffness();
