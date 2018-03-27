@@ -110,7 +110,7 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a5a1c5739ef85c8f9071f689e790b5251"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_mesh.html#a5a1c5739ef85c8f9071f689e790b5251">boundaryNodeList</a></td></tr>
-<tr class="memdesc:a5a1c5739ef85c8f9071f689e790b5251"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_a.html">A</a> list of the degree of freedom that are at boundary.  <a href="#a5a1c5739ef85c8f9071f689e790b5251">More...</a><br /></td></tr>
+<tr class="memdesc:a5a1c5739ef85c8f9071f689e790b5251"><td class="mdescLeft">&#160;</td><td class="mdescRight">A list of the degree of freedom that are at boundary.  <a href="#a5a1c5739ef85c8f9071f689e790b5251">More...</a><br /></td></tr>
 <tr class="separator:a5a1c5739ef85c8f9071f689e790b5251"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab331f3e3efeb2934c202b07db8a6c1a5"><td class="memItemLeft" align="right" valign="top"><a id="ab331f3e3efeb2934c202b07db8a6c1a5"></a>
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_mesh.html#ab331f3e3efeb2934c202b07db8a6c1a5">boundaryValue</a></td></tr>
@@ -118,17 +118,14 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <tr class="separator:ab331f3e3efeb2934c202b07db8a6c1a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad54254084b97877bb4d0f9d9d9cbb380"><td class="memItemLeft" align="right" valign="top"><a id="ad54254084b97877bb4d0f9d9d9cbb380"></a>
 std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_mesh.html#ad54254084b97877bb4d0f9d9d9cbb380">loadNodeList</a></td></tr>
-<tr class="memdesc:ad54254084b97877bb4d0f9d9d9cbb380"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_a.html">A</a> DOF list (see above) of the node with applied load. <br /></td></tr>
+<tr class="memdesc:ad54254084b97877bb4d0f9d9d9cbb380"><td class="mdescLeft">&#160;</td><td class="mdescRight">A DOF list (see above) of the node with applied load. <br /></td></tr>
 <tr class="separator:ad54254084b97877bb4d0f9d9d9cbb380"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a688adb457f52ffa939f53f22afae697e"><td class="memItemLeft" align="right" valign="top"><a id="a688adb457f52ffa939f53f22afae697e"></a>
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_mesh.html#a688adb457f52ffa939f53f22afae697e">loadValue</a></td></tr>
 <tr class="memdesc:a688adb457f52ffa939f53f22afae697e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The load values at the node. <br /></td></tr>
 <tr class="separator:a688adb457f52ffa939f53f22afae697e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_mesh_8h_source.html#l00020">20</a> of file <a class="el" href="_mesh_8h_source.html">Mesh.h</a>.</p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="af9ff79e2003cfde74b16266cd8113acf"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af9ff79e2003cfde74b16266cd8113acf">&#9670;&nbsp;</a></span>Mesh()</h2>
 
@@ -153,8 +150,6 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8cpp_source.html#l00025">25</a> of file <a class="el" href="_mesh_8cpp_source.html">Mesh.cpp</a>.</p>
-
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -174,10 +169,8 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </div><div class="memdoc">
 
 <p>Get the element array. </p>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="class_a.html">A</a> pointer to the element pool.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to the element pool.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>There are two ways to query a node/element: mesh.nodeArray()[i] OR mesh.getNode(i) </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="_mesh_8cpp_source.html#l00221">221</a> of file <a class="el" href="_mesh_8cpp_source.html">Mesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -198,8 +191,6 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 
 <p>Get the total number of the elements. </p>
 <dl class="section return"><dt>Returns</dt><dd>The total number of the elements. </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="_mesh_8cpp_source.html#l00201">201</a> of file <a class="el" href="_mesh_8cpp_source.html">Mesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -226,9 +217,7 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="class_a.html">A</a> pointer to the element being queried. </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="_mesh_8cpp_source.html#l00211">211</a> of file <a class="el" href="_mesh_8cpp_source.html">Mesh.cpp</a>.</p>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to the element being queried. </dd></dl>
 
 </div>
 </div>
@@ -255,9 +244,7 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="class_a.html">A</a> pointer to the node being queried. </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="_mesh_8cpp_source.html#l00206">206</a> of file <a class="el" href="_mesh_8cpp_source.html">Mesh.cpp</a>.</p>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to the node being queried. </dd></dl>
 
 </div>
 </div>
@@ -277,9 +264,7 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </div><div class="memdoc">
 
 <p>Get the node array. </p>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="class_a.html">A</a> pointer to the node pool. </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="_mesh_8cpp_source.html#l00216">216</a> of file <a class="el" href="_mesh_8cpp_source.html">Mesh.cpp</a>.</p>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to the node pool. </dd></dl>
 
 </div>
 </div>
@@ -300,8 +285,6 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 
 <p>Get the total number of the nodes. </p>
 <dl class="section return"><dt>Returns</dt><dd>The total number of the nodes. </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="_mesh_8cpp_source.html#l00196">196</a> of file <a class="el" href="_mesh_8cpp_source.html">Mesh.cpp</a>.</p>
 
 </div>
 </div>
@@ -329,8 +312,6 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8cpp_source.html#l00045">45</a> of file <a class="el" href="_mesh_8cpp_source.html">Mesh.cpp</a>.</p>
-
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -346,16 +327,14 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
       </table>
 </div><div class="memdoc">
 
-<p><a class="el" href="class_a.html">A</a> list of the degree of freedom that are at boundary. </p>
+<p>A list of the degree of freedom that are at boundary. </p>
 <dl class="section note"><dt>Note</dt><dd>Actually this is not NODE list, but degree of freedom list, e.g., if node 1,2 are X&amp;Y fixed, node 4 is x fixed, then the DOF list is (2,3 | 4,5 | 8) and the boundary value list below is (0,0,0,0,0). </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="_mesh_8h_source.html#l00100">100</a> of file <a class="el" href="_mesh_8h_source.html">Mesh.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li><a class="el" href="_mesh_8h_source.html">Mesh.h</a></li>
-<li><a class="el" href="_mesh_8cpp_source.html">Mesh.cpp</a></li>
+<li><a class="el" href="_mesh_8h.html">Mesh.h</a></li>
+<li><a class="el" href="_mesh_8cpp.html">Mesh.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

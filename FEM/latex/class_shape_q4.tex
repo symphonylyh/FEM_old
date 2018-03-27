@@ -19,13 +19,6 @@ const std\+::vector$<$ double $>$ \& \mbox{\hyperlink{class_shape_q4_a51233dd1ca
 \begin{DoxyCompactList}\small\item\em Get the gaussian integration weights to be used in load distribution and stress/strain computation. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
-\subsection{Detailed Description}
-
-
-Definition at line 28 of file Shape\+Q4.\+h.
-
-
-
 \subsection{Member Function Documentation}
 \mbox{\Hypertarget{class_shape_q4_a306cacfd4d87384b3d06c2788cafd4ba}\label{class_shape_q4_a306cacfd4d87384b3d06c2788cafd4ba}} 
 \index{Shape\+Q4@{Shape\+Q4}!function@{function}}
@@ -45,7 +38,7 @@ this is because our displacement vector is stored in an interleaving form as \mb
 
 
 \begin{DoxyParams}{Parameters}
-{\em point} & \mbox{\hyperlink{class_a}{A}} 2D point x(r,z) at which the shape function to be evaluated. Pass-\/by-\/ref. \\
+{\em point} & A 2D point x(r,z) at which the shape function to be evaluated. Pass-\/by-\/ref. \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
@@ -54,10 +47,6 @@ The stacked and interleaved shape function N as a matrix at given point.
 
 
 Implements \mbox{\hyperlink{class_shape_ab6e0d64b40e09c176ce2ece24bc94a37}{Shape}}.
-
-
-
-Definition at line 25 of file Shape\+Q4.\+cpp.
 
 \mbox{\Hypertarget{class_shape_q4_a5c185036352eabf489007b92f6d48ad2}\label{class_shape_q4_a5c185036352eabf489007b92f6d48ad2}} 
 \index{Shape\+Q4@{Shape\+Q4}!gaussian\+Point@{gaussian\+Point}}
@@ -76,10 +65,6 @@ An array of 2D points. Since the whole \mbox{\hyperlink{class_shape}{Shape}} obj
 
 Implements \mbox{\hyperlink{class_shape_afa8029d0991fc5d9054a667823224bd0}{Shape}}.
 
-
-
-Definition at line 49 of file Shape\+Q4.\+cpp.
-
 \mbox{\Hypertarget{class_shape_q4_a51233dd1caaabbe8404c06b5b0db5755}\label{class_shape_q4_a51233dd1caaabbe8404c06b5b0db5755}} 
 \index{Shape\+Q4@{Shape\+Q4}!gaussian\+Weight@{gaussian\+Weight}}
 \index{gaussian\+Weight@{gaussian\+Weight}!Shape\+Q4@{Shape\+Q4}}
@@ -97,10 +82,6 @@ An array of weight values. Since the whole \mbox{\hyperlink{class_shape}{Shape}}
 
 Implements \mbox{\hyperlink{class_shape_a4257697bb443af2871a7cc7a82c8c823}{Shape}}.
 
-
-
-Definition at line 54 of file Shape\+Q4.\+cpp.
-
 \mbox{\Hypertarget{class_shape_q4_ad3e1f5e25aee96cd21b1c8770c35afd0}\label{class_shape_q4_ad3e1f5e25aee96cd21b1c8770c35afd0}} 
 \index{Shape\+Q4@{Shape\+Q4}!local\+Deriv@{local\+Deriv}}
 \index{local\+Deriv@{local\+Deriv}!Shape\+Q4@{Shape\+Q4}}
@@ -117,7 +98,7 @@ If n is the number of nodes of this element type, then this function will return
 
 
 \begin{DoxyParams}{Parameters}
-{\em point} & \mbox{\hyperlink{class_a}{A}} 2D point x(r,z) at which the shape function to be evaluated. Pass-\/by-\/ref. \\
+{\em point} & A 2D point x(r,z) at which the shape function to be evaluated. Pass-\/by-\/ref. \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
@@ -126,10 +107,6 @@ The stacked and interleaved shape function N as a matrix at given point.
 
 
 Implements \mbox{\hyperlink{class_shape_a55575394f656e3ee4b5ac37ea04af8c9}{Shape}}.
-
-
-
-Definition at line 37 of file Shape\+Q4.\+cpp.
 
 
 

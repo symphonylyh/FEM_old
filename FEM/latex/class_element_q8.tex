@@ -25,15 +25,8 @@ Matrix\+Xd \mbox{\hyperlink{class_element_q8_afb41facf96d5bb4be5162724699e3e02}{
 \item 
 \mbox{\Hypertarget{class_element_q8_a62510ae2d4322be38825928a1f0e2747}\label{class_element_q8_a62510ae2d4322be38825928a1f0e2747}} 
 static static\+Members \mbox{\hyperlink{class_element_q8_a62510ae2d4322be38825928a1f0e2747}{statics}}
-\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{class_a}{A}} static structure that manages all the static members used in this class. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em A static structure that manages all the static members used in this class. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Additional Inherited Members}
-
-
-\subsection{Detailed Description}
-
-
-Definition at line 18 of file Element\+Q8.\+h.
-
 
 
 \subsection{Member Function Documentation}
@@ -47,23 +40,19 @@ Definition at line 18 of file Element\+Q8.\+h.
 
 Compute the strain-\/displacement constitutive matrix. 
 
-e = D$\ast$u = D$\ast$(N$\ast$u) = (D$\ast$N)u = Bu, so \mbox{\hyperlink{class_b}{B}} is the differential matrix multiplying the shape function.
+e = D$\ast$u = D$\ast$(N$\ast$u) = (D$\ast$N)u = Bu, so B is the differential matrix multiplying the shape function.
 
 
 \begin{DoxyParams}{Parameters}
-{\em gaussian\+Point} & The Gaussian point where the \mbox{\hyperlink{class_b}{B}} matrix to be evaluated. \\
+{\em gaussian\+Point} & The Gaussian point where the B matrix to be evaluated. \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-The 4-\/by-\/2n \mbox{\hyperlink{class_b}{B}} matrix where n is the number of nodes belong to this element. 
+The 4-\/by-\/2n B matrix where n is the number of nodes belong to this element. 
 \end{DoxyReturn}
 
 
 Implements \mbox{\hyperlink{class_element_ae3c88315d1a30addff6379a9089465ca}{Element}}.
-
-
-
-Definition at line 44 of file Element\+Q8.\+cpp.
 
 \mbox{\Hypertarget{class_element_q8_a06118e8d0c0a0cb247c249f22e11eeaf}\label{class_element_q8_a06118e8d0c0a0cb247c249f22e11eeaf}} 
 \index{Element\+Q8@{Element\+Q8}!get\+Shape@{get\+Shape}}
@@ -76,7 +65,7 @@ Definition at line 44 of file Element\+Q8.\+cpp.
 Get the shape object of this element. 
 
 \begin{DoxyReturn}{Returns}
-\mbox{\hyperlink{class_a}{A}} pointer to the shape object of this element.
+A pointer to the shape object of this element.
 \end{DoxyReturn}
 \begin{DoxyNote}{Note}
 For different element, we would have different shape property, so we return a generic polymorphed \mbox{\hyperlink{class_shape}{Shape}} class pointer to achieve the standardized behavior of our program. It should also be noted that this is a virtual method, and the \mbox{\hyperlink{class_shape}{Shape}} property of each element type is stored as a static member of that class. This is really an elegant solution to pave our path towards the hybrid element case. And returning a const pointer secures the usage of shape object. 
@@ -84,10 +73,6 @@ For different element, we would have different shape property, so we return a ge
 
 
 Implements \mbox{\hyperlink{class_element_a54c5c297abff4ac3abacd815342a9645}{Element}}.
-
-
-
-Definition at line 66 of file Element\+Q8.\+cpp.
 
 \mbox{\Hypertarget{class_element_q8_ae23bf98a466daa224224da495d5724ff}\label{class_element_q8_ae23bf98a466daa224224da495d5724ff}} 
 \index{Element\+Q8@{Element\+Q8}!jacobian@{jacobian}}
@@ -111,10 +96,6 @@ The 2-\/by-\/2 (2D) Jacobian matrix.
 
 Implements \mbox{\hyperlink{class_element_ad469c745f0bcb9d7a3431b1608c1ade6}{Element}}.
 
-
-
-Definition at line 39 of file Element\+Q8.\+cpp.
-
 \mbox{\Hypertarget{class_element_q8_afc898e404f9abb5a5a4d74eee54476b7}\label{class_element_q8_afc898e404f9abb5a5a4d74eee54476b7}} 
 \index{Element\+Q8@{Element\+Q8}!local\+Stiffness@{local\+Stiffness}}
 \index{local\+Stiffness@{local\+Stiffness}!Element\+Q8@{Element\+Q8}}
@@ -131,10 +112,6 @@ The 2n-\/by-\/2n element stiffness matrix where n is number of nodes belong to t
 
 
 Implements \mbox{\hyperlink{class_element_a603fbe060b5d6979506f0d2130e6c171}{Element}}.
-
-
-
-Definition at line 30 of file Element\+Q8.\+cpp.
 
 
 

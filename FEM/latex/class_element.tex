@@ -50,13 +50,6 @@ Matrix\+Xd \mbox{\hyperlink{class_element_adb81184f683d1eebb5b3a28887ff8df4}{loc
 \begin{DoxyCompactList}\small\item\em The 2n-\/by-\/2n local stiffness matrix where n is the number of nodes. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
-\subsection{Detailed Description}
-
-
-Definition at line 23 of file Element.\+h.
-
-
-
 \subsection{Constructor \& Destructor Documentation}
 \mbox{\Hypertarget{class_element_a05c744ed2de597b38da74c7765f5ed1b}\label{class_element_a05c744ed2de597b38da74c7765f5ed1b}} 
 \index{Element@{Element}!Element@{Element}}
@@ -74,16 +67,12 @@ Custom constructor to create an element with given node indices.
 \hline
 {\em node\+List} & The list of node indices this element is consist of. \\
 \hline
-{\em mesh\+Node} & \mbox{\hyperlink{class_a}{A}} const pointer to the node pool of the mesh.\\
+{\em mesh\+Node} & A const pointer to the node pool of the mesh.\\
 \hline
 \end{DoxyParams}
 \begin{DoxyNote}{Note}
 Old version of this function pass in all the nodes, which is expensive. This optimized version only pass in a pointer to access the node pool of the mesh. 
 \end{DoxyNote}
-
-
-Definition at line 16 of file Element.\+cpp.
-
 \mbox{\Hypertarget{class_element_a13d54ba9c08b6bec651402f1c2bb002c}\label{class_element_a13d54ba9c08b6bec651402f1c2bb002c}} 
 \index{Element@{Element}!````~Element@{$\sim$\+Element}}
 \index{````~Element@{$\sim$\+Element}!Element@{Element}}
@@ -99,10 +88,6 @@ As an abstract class, the destructor must be virtual.
 \end{DoxyNote}
 
 
-Definition at line 41 of file Element.\+cpp.
-
-
-
 \subsection{Member Function Documentation}
 \mbox{\Hypertarget{class_element_ae3c88315d1a30addff6379a9089465ca}\label{class_element_ae3c88315d1a30addff6379a9089465ca}} 
 \index{Element@{Element}!B\+Matrix@{B\+Matrix}}
@@ -114,15 +99,15 @@ Definition at line 41 of file Element.\+cpp.
 
 Compute the strain-\/displacement constitutive matrix. 
 
-e = D$\ast$u = D$\ast$(N$\ast$u) = (D$\ast$N)u = Bu, so \mbox{\hyperlink{class_b}{B}} is the differential matrix multiplying the shape function.
+e = D$\ast$u = D$\ast$(N$\ast$u) = (D$\ast$N)u = Bu, so B is the differential matrix multiplying the shape function.
 
 
 \begin{DoxyParams}{Parameters}
-{\em gaussian\+Point} & The Gaussian point where the \mbox{\hyperlink{class_b}{B}} matrix to be evaluated. \\
+{\em gaussian\+Point} & The Gaussian point where the B matrix to be evaluated. \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-The 4-\/by-\/2n \mbox{\hyperlink{class_b}{B}} matrix where n is the number of nodes belong to this element. 
+The 4-\/by-\/2n B matrix where n is the number of nodes belong to this element. 
 \end{DoxyReturn}
 
 
@@ -141,10 +126,6 @@ Get the stress-\/strain constitutive matrix of the element.
 \begin{DoxyReturn}{Returns}
 The 4-\/by-\/4 E matrix. 
 \end{DoxyReturn}
-
-
-Definition at line 59 of file Element.\+cpp.
-
 \mbox{\Hypertarget{class_element_a85dc312253f1d39c29659393fbb1d485}\label{class_element_a85dc312253f1d39c29659393fbb1d485}} 
 \index{Element@{Element}!get\+Index@{get\+Index}}
 \index{get\+Index@{get\+Index}!Element@{Element}}
@@ -158,10 +139,6 @@ Get the index of this element.
 \begin{DoxyReturn}{Returns}
 The index. 
 \end{DoxyReturn}
-
-
-Definition at line 64 of file Element.\+cpp.
-
 \mbox{\Hypertarget{class_element_a4d12b24e62592a1456e04d15872d5240}\label{class_element_a4d12b24e62592a1456e04d15872d5240}} 
 \index{Element@{Element}!get\+Node\+Coord@{get\+Node\+Coord}}
 \index{get\+Node\+Coord@{get\+Node\+Coord}!Element@{Element}}
@@ -175,10 +152,6 @@ Get the stacked coordinates matrix of the nodes belong to this element.
 \begin{DoxyReturn}{Returns}
 The node coordinates as a n-\/by-\/2 matrix. 
 \end{DoxyReturn}
-
-
-Definition at line 79 of file Element.\+cpp.
-
 \mbox{\Hypertarget{class_element_a763e0e4a46e68823903557a605dc5474}\label{class_element_a763e0e4a46e68823903557a605dc5474}} 
 \index{Element@{Element}!get\+Node\+List@{get\+Node\+List}}
 \index{get\+Node\+List@{get\+Node\+List}!Element@{Element}}
@@ -192,10 +165,6 @@ Get the list of nodes belong to this element.
 \begin{DoxyReturn}{Returns}
 The node list as a n-\/by-\/1 vector. 
 \end{DoxyReturn}
-
-
-Definition at line 74 of file Element.\+cpp.
-
 \mbox{\Hypertarget{class_element_a54c5c297abff4ac3abacd815342a9645}\label{class_element_a54c5c297abff4ac3abacd815342a9645}} 
 \index{Element@{Element}!get\+Shape@{get\+Shape}}
 \index{get\+Shape@{get\+Shape}!Element@{Element}}
@@ -207,7 +176,7 @@ Definition at line 74 of file Element.\+cpp.
 Get the shape object of this element. 
 
 \begin{DoxyReturn}{Returns}
-\mbox{\hyperlink{class_a}{A}} pointer to the shape object of this element.
+A pointer to the shape object of this element.
 \end{DoxyReturn}
 \begin{DoxyNote}{Note}
 For different element, we would have different shape property, so we return a generic polymorphed \mbox{\hyperlink{class_shape}{Shape}} class pointer to achieve the standardized behavior of our program. It should also be noted that this is a virtual method, and the \mbox{\hyperlink{class_shape}{Shape}} property of each element type is stored as a static member of that class. This is really an elegant solution to pave our path towards the hybrid element case. And returning a const pointer secures the usage of shape object. 
@@ -229,10 +198,6 @@ Get the size/type of this element.
 \begin{DoxyReturn}{Returns}
 The size/type. 
 \end{DoxyReturn}
-
-
-Definition at line 69 of file Element.\+cpp.
-
 \mbox{\Hypertarget{class_element_ad469c745f0bcb9d7a3431b1608c1ade6}\label{class_element_ad469c745f0bcb9d7a3431b1608c1ade6}} 
 \index{Element@{Element}!jacobian@{jacobian}}
 \index{jacobian@{jacobian}!Element@{Element}}
@@ -289,10 +254,6 @@ Assign the material properties of the element.
 {\em v} & The Poisson\textquotesingle{}s ratio. \\
 \hline
 \end{DoxyParams}
-
-
-Definition at line 46 of file Element.\+cpp.
-
 
 
 The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}

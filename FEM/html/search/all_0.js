@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['a',['A',['../class_a.html',1,'']]],
   ['analysis',['Analysis',['../class_analysis.html',1,'Analysis'],['../class_analysis.html#a1cf251eb8dc62b30815ab5548ad88f73',1,'Analysis::Analysis()'],['../class_analysis.html#aae14526bb70c6372fd662b46aab74d2d',1,'Analysis::Analysis(std::string const &amp;fileName)']]],
   ['analysis_2ecpp',['Analysis.cpp',['../_analysis_8cpp.html',1,'']]],
   ['analysis_2eh',['Analysis.h',['../_analysis_8h.html',1,'']]],

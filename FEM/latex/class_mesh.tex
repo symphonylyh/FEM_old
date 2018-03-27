@@ -29,23 +29,16 @@ const int \& \mbox{\hyperlink{class_mesh_aa1b2aafa40bd4b335e9bf6306e482881}{elem
 \begin{DoxyCompactItemize}
 \item 
 std\+::vector$<$ int $>$ \mbox{\hyperlink{class_mesh_a5a1c5739ef85c8f9071f689e790b5251}{boundary\+Node\+List}}
-\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{class_a}{A}} list of the degree of freedom that are at boundary. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em A list of the degree of freedom that are at boundary. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{class_mesh_ab331f3e3efeb2934c202b07db8a6c1a5}\label{class_mesh_ab331f3e3efeb2934c202b07db8a6c1a5}} 
 std\+::vector$<$ double $>$ \mbox{\hyperlink{class_mesh_ab331f3e3efeb2934c202b07db8a6c1a5}{boundary\+Value}}
 \begin{DoxyCompactList}\small\item\em The boundary values corresponding to the D\+OF list above. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{class_mesh_ad54254084b97877bb4d0f9d9d9cbb380}\label{class_mesh_ad54254084b97877bb4d0f9d9d9cbb380}} 
 std\+::vector$<$ int $>$ \mbox{\hyperlink{class_mesh_ad54254084b97877bb4d0f9d9d9cbb380}{load\+Node\+List}}
-\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{class_a}{A}} D\+OF list (see above) of the node with applied load. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em A D\+OF list (see above) of the node with applied load. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{class_mesh_a688adb457f52ffa939f53f22afae697e}\label{class_mesh_a688adb457f52ffa939f53f22afae697e}} 
 std\+::vector$<$ double $>$ \mbox{\hyperlink{class_mesh_a688adb457f52ffa939f53f22afae697e}{load\+Value}}
 \begin{DoxyCompactList}\small\item\em The load values at the node. \end{DoxyCompactList}\end{DoxyCompactItemize}
-
-
-\subsection{Detailed Description}
-
-
-Definition at line 20 of file Mesh.\+h.
-
 
 
 \subsection{Constructor \& Destructor Documentation}
@@ -66,10 +59,6 @@ Custom constructor to create a mesh with given file name.
 \end{DoxyParams}
 
 
-Definition at line 25 of file Mesh.\+cpp.
-
-
-
 \subsection{Member Function Documentation}
 \mbox{\Hypertarget{class_mesh_a042cc2ef19b7090f830b915721818181}\label{class_mesh_a042cc2ef19b7090f830b915721818181}} 
 \index{Mesh@{Mesh}!element\+Array@{element\+Array}}
@@ -82,15 +71,11 @@ Definition at line 25 of file Mesh.\+cpp.
 Get the element array. 
 
 \begin{DoxyReturn}{Returns}
-\mbox{\hyperlink{class_a}{A}} pointer to the element pool.
+A pointer to the element pool.
 \end{DoxyReturn}
 \begin{DoxyNote}{Note}
 There are two ways to query a node/element\+: mesh.\+node\+Array()\mbox{[}i\mbox{]} OR mesh.\+get\+Node(i) 
 \end{DoxyNote}
-
-
-Definition at line 221 of file Mesh.\+cpp.
-
 \mbox{\Hypertarget{class_mesh_aa1b2aafa40bd4b335e9bf6306e482881}\label{class_mesh_aa1b2aafa40bd4b335e9bf6306e482881}} 
 \index{Mesh@{Mesh}!element\+Count@{element\+Count}}
 \index{element\+Count@{element\+Count}!Mesh@{Mesh}}
@@ -104,10 +89,6 @@ Get the total number of the elements.
 \begin{DoxyReturn}{Returns}
 The total number of the elements. 
 \end{DoxyReturn}
-
-
-Definition at line 201 of file Mesh.\+cpp.
-
 \mbox{\Hypertarget{class_mesh_ada2ae7b8640a3999780d7e738ee4154e}\label{class_mesh_ada2ae7b8640a3999780d7e738ee4154e}} 
 \index{Mesh@{Mesh}!get\+Element@{get\+Element}}
 \index{get\+Element@{get\+Element}!Mesh@{Mesh}}
@@ -124,12 +105,8 @@ Get the element at given zero-\/based index.
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-\mbox{\hyperlink{class_a}{A}} pointer to the element being queried. 
+A pointer to the element being queried. 
 \end{DoxyReturn}
-
-
-Definition at line 211 of file Mesh.\+cpp.
-
 \mbox{\Hypertarget{class_mesh_a071a8dfe15c00fcabc9c4071306487d4}\label{class_mesh_a071a8dfe15c00fcabc9c4071306487d4}} 
 \index{Mesh@{Mesh}!get\+Node@{get\+Node}}
 \index{get\+Node@{get\+Node}!Mesh@{Mesh}}
@@ -146,12 +123,8 @@ Get the node at given zero-\/based index.
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-\mbox{\hyperlink{class_a}{A}} pointer to the node being queried. 
+A pointer to the node being queried. 
 \end{DoxyReturn}
-
-
-Definition at line 206 of file Mesh.\+cpp.
-
 \mbox{\Hypertarget{class_mesh_ae596a597115563fb308d99e5e15a62e6}\label{class_mesh_ae596a597115563fb308d99e5e15a62e6}} 
 \index{Mesh@{Mesh}!node\+Array@{node\+Array}}
 \index{node\+Array@{node\+Array}!Mesh@{Mesh}}
@@ -163,12 +136,8 @@ Definition at line 206 of file Mesh.\+cpp.
 Get the node array. 
 
 \begin{DoxyReturn}{Returns}
-\mbox{\hyperlink{class_a}{A}} pointer to the node pool. 
+A pointer to the node pool. 
 \end{DoxyReturn}
-
-
-Definition at line 216 of file Mesh.\+cpp.
-
 \mbox{\Hypertarget{class_mesh_a6a535f67f00ed39f945aaa1e8039a277}\label{class_mesh_a6a535f67f00ed39f945aaa1e8039a277}} 
 \index{Mesh@{Mesh}!node\+Count@{node\+Count}}
 \index{node\+Count@{node\+Count}!Mesh@{Mesh}}
@@ -182,10 +151,6 @@ Get the total number of the nodes.
 \begin{DoxyReturn}{Returns}
 The total number of the nodes. 
 \end{DoxyReturn}
-
-
-Definition at line 196 of file Mesh.\+cpp.
-
 \mbox{\Hypertarget{class_mesh_a519813e103dbb3fb1739a2c40b3e1153}\label{class_mesh_a519813e103dbb3fb1739a2c40b3e1153}} 
 \index{Mesh@{Mesh}!read\+From\+File@{read\+From\+File}}
 \index{read\+From\+File@{read\+From\+File}!Mesh@{Mesh}}
@@ -203,10 +168,6 @@ Read in all the information and build the mesh.
 \end{DoxyParams}
 
 
-Definition at line 45 of file Mesh.\+cpp.
-
-
-
 \subsection{Member Data Documentation}
 \mbox{\Hypertarget{class_mesh_a5a1c5739ef85c8f9071f689e790b5251}\label{class_mesh_a5a1c5739ef85c8f9071f689e790b5251}} 
 \index{Mesh@{Mesh}!boundary\+Node\+List@{boundary\+Node\+List}}
@@ -216,15 +177,11 @@ Definition at line 45 of file Mesh.\+cpp.
 
 
 
-\mbox{\hyperlink{class_a}{A}} list of the degree of freedom that are at boundary. 
+A list of the degree of freedom that are at boundary. 
 
 \begin{DoxyNote}{Note}
 Actually this is not N\+O\+DE list, but degree of freedom list, e.\+g., if node 1,2 are X\&Y fixed, node 4 is x fixed, then the D\+OF list is (2,3 $\vert$ 4,5 $\vert$ 8) and the boundary value list below is (0,0,0,0,0). 
 \end{DoxyNote}
-
-
-Definition at line 100 of file Mesh.\+h.
-
 
 
 The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}

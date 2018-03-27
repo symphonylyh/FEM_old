@@ -140,10 +140,7 @@ MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <tr class="memdesc:adb81184f683d1eebb5b3a28887ff8df4"><td class="mdescLeft">&#160;</td><td class="mdescRight">The 2n-by-2n local stiffness matrix where n is the number of nodes. <br /></td></tr>
 <tr class="separator:adb81184f683d1eebb5b3a28887ff8df4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_element_8h_source.html#l00023">23</a> of file <a class="el" href="_element_8h_source.html">Element.h</a>.</p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a05c744ed2de597b38da74c7765f5ed1b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a05c744ed2de597b38da74c7765f5ed1b">&#9670;&nbsp;</a></span>Element()</h2>
 
@@ -181,13 +178,11 @@ MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
   <table class="params">
     <tr><td class="paramname">index</td><td>The index number of current element. </td></tr>
     <tr><td class="paramname">nodeList</td><td>The list of node indices this element is consist of. </td></tr>
-    <tr><td class="paramname">meshNode</td><td><a class="el" href="class_a.html">A</a> const pointer to the node pool of the mesh.</td></tr>
+    <tr><td class="paramname">meshNode</td><td>A const pointer to the node pool of the mesh.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section note"><dt>Note</dt><dd>Old version of this function pass in all the nodes, which is expensive. This optimized version only pass in a pointer to access the node pool of the mesh. </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="_element_8cpp_source.html#l00016">16</a> of file <a class="el" href="_element_8cpp_source.html">Element.cpp</a>.</p>
 
 </div>
 </div>
@@ -217,8 +212,6 @@ MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <p>Destructor. </p>
 <dl class="section note"><dt>Note</dt><dd>As an abstract class, the destructor must be virtual. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_element_8cpp_source.html#l00041">41</a> of file <a class="el" href="_element_8cpp_source.html">Element.cpp</a>.</p>
-
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -247,14 +240,14 @@ MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 </div><div class="memdoc">
 
 <p>Compute the strain-displacement constitutive matrix. </p>
-<p>e = D*u = D*(N*u) = (D*N)u = Bu, so <a class="el" href="class_b.html">B</a> is the differential matrix multiplying the shape function.</p>
+<p>e = D*u = D*(N*u) = (D*N)u = Bu, so B is the differential matrix multiplying the shape function.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">gaussianPoint</td><td>The Gaussian point where the <a class="el" href="class_b.html">B</a> matrix to be evaluated. </td></tr>
+    <tr><td class="paramname">gaussianPoint</td><td>The Gaussian point where the B matrix to be evaluated. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The 4-by-2n <a class="el" href="class_b.html">B</a> matrix where n is the number of nodes belong to this element. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The 4-by-2n B matrix where n is the number of nodes belong to this element. </dd></dl>
 
 <p>Implemented in <a class="el" href="class_element_q8.html#afb41facf96d5bb4be5162724699e3e02">ElementQ8</a>, and <a class="el" href="class_element_q4.html#a092a9584a1b3b22cd929246ba100f91a">ElementQ4</a>.</p>
 
@@ -278,8 +271,6 @@ MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <p>Get the stress-strain constitutive matrix of the element. </p>
 <dl class="section return"><dt>Returns</dt><dd>The 4-by-4 E matrix. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_element_8cpp_source.html#l00059">59</a> of file <a class="el" href="_element_8cpp_source.html">Element.cpp</a>.</p>
-
 </div>
 </div>
 <a id="a85dc312253f1d39c29659393fbb1d485"></a>
@@ -299,8 +290,6 @@ MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <p>Get the index of this element. </p>
 <dl class="section return"><dt>Returns</dt><dd>The index. </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="_element_8cpp_source.html#l00064">64</a> of file <a class="el" href="_element_8cpp_source.html">Element.cpp</a>.</p>
 
 </div>
 </div>
@@ -322,8 +311,6 @@ MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <p>Get the stacked coordinates matrix of the nodes belong to this element. </p>
 <dl class="section return"><dt>Returns</dt><dd>The node coordinates as a n-by-2 matrix. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_element_8cpp_source.html#l00079">79</a> of file <a class="el" href="_element_8cpp_source.html">Element.cpp</a>.</p>
-
 </div>
 </div>
 <a id="a763e0e4a46e68823903557a605dc5474"></a>
@@ -343,8 +330,6 @@ MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <p>Get the list of nodes belong to this element. </p>
 <dl class="section return"><dt>Returns</dt><dd>The node list as a n-by-1 vector. </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="_element_8cpp_source.html#l00074">74</a> of file <a class="el" href="_element_8cpp_source.html">Element.cpp</a>.</p>
 
 </div>
 </div>
@@ -372,7 +357,7 @@ MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 </div><div class="memdoc">
 
 <p>Get the shape object of this element. </p>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="class_a.html">A</a> pointer to the shape object of this element.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to the shape object of this element.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>For different element, we would have different shape property, so we return a generic polymorphed <a class="el" href="class_shape.html">Shape</a> class pointer to achieve the standardized behavior of our program. It should also be noted that this is a virtual method, and the <a class="el" href="class_shape.html">Shape</a> property of each element type is stored as a static member of that class. This is really an elegant solution to pave our path towards the hybrid element case. And returning a const pointer secures the usage of shape object. </dd></dl>
 
 <p>Implemented in <a class="el" href="class_element_q8.html#a06118e8d0c0a0cb247c249f22e11eeaf">ElementQ8</a>, and <a class="el" href="class_element_q4.html#a3e2b762e838f20a10c184f55d3d4ff85">ElementQ4</a>.</p>
@@ -396,8 +381,6 @@ MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <p>Get the size/type of this element. </p>
 <dl class="section return"><dt>Returns</dt><dd>The size/type. </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="_element_8cpp_source.html#l00069">69</a> of file <a class="el" href="_element_8cpp_source.html">Element.cpp</a>.</p>
 
 </div>
 </div>
@@ -503,13 +486,11 @@ MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_element_8cpp_source.html#l00046">46</a> of file <a class="el" href="_element_8cpp_source.html">Element.cpp</a>.</p>
-
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li><a class="el" href="_element_8h_source.html">Element.h</a></li>
-<li><a class="el" href="_element_8cpp_source.html">Element.cpp</a></li>
+<li><a class="el" href="_element_8h.html">Element.h</a></li>
+<li><a class="el" href="_element_8cpp.html">Element.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
