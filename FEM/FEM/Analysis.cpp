@@ -8,10 +8,12 @@
 
 #include "Analysis.h"
 #include <iostream>
-#include "ElementQ8.h"
-#include "ShapeQ8.h"
 #define _USE_MATH_DEFINES
+#include <cmath>
 
+Analysis::Analysis()
+{
+}
 
 Analysis::Analysis(std::string const & fileName) : mesh(fileName)
 {
@@ -89,17 +91,16 @@ void Analysis::applyForce()
   nodalForce.setZero();
   for (unsigned i = 0; i < mesh.loadNodeList.size(); i++)
       nodalForce(mesh.loadNodeList[i]) = mesh.loadValue[i] * 2 * M_PI;
-  // nodalForce(67) = -30 * 2 * M_PI;
-  // nodalForce(69) = -30 * 2 * M_PI;
-  // nodalForce(71) = -30 * 2 * M_PI;
 }
 
 /* This function will modify the global stiffness matrix and force vector based on boundary conditions
   @ DOFList the DOF of the nodes that are restricted as boundary
   @ boundaryValue the boundary values. Can be zero or non-zero
 */
-void Analysis::boundaryCondition(std::vector<int> & DOFList, std::vector<double> & boundaryValue)
+void Analysis::boundaryCondition()
 {
+    std::vector<int> DOFList = mesh.boundaryNodeList;
+    std::vector<double> boundaryValue = mesh.boundaryValue;
     for (unsigned i = 0; i < DOFList.size(); i++) {
         // Modify stiffness matrix
         double temp = globalStiffness.coeffRef(DOFList[i], DOFList[i]);

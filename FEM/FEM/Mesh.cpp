@@ -4,6 +4,8 @@
  *
  * @author Haohang Huang
  * @date Feburary 5, 2018
+ * @TODO line 95, 98, change to T3, Q6 element later
+ * @TODO line 124, various load pattern
  */
 
 #include "Mesh.h"
@@ -16,83 +18,38 @@
 #include <string>
 #include <vector>
 
+Mesh::Mesh()
+{
+}
+
 Mesh::Mesh(std::string const & fileName)
 {
     readFromFile(fileName);
 }
 
-// Helper function for readFromFile()
-bool Mesh::dataCount(std::string const & fileName)
+Mesh::~Mesh()
 {
-    std::ifstream inFile(fileName);
-    if(!inFile) {
-        std::cout << "Cannot open input file." << std::endl;
-        return false;
+    // Delete all nodes
+    for (int i = 0; i < nodeCount_; i++) {
+        delete meshNode_[i]; meshNode_[i] = NULL;
     }
+    delete[] meshNode_; meshNode_ = NULL;
 
-    int nodeCount = 0;
-    int elementCount = 0;
-
-    std::string byLine; // separate lines
-    while(!inFile.eof()) { // reach end of file
-        std::getline(inFile, byLine);
-        std::stringstream oneLine(byLine); // get the stream
-        // Parse by file structure
-        if (byLine[0] == 'v') {
-            nodeCount++;
-        } else if (byLine[0] == 'f') {
-            elementCount++;
-        }
+    // Delete all elements
+    for (int i = 0; i < elementCount_; i++) {
+        delete meshElement_[i]; meshElement_[i] = NULL;
     }
-    inFile.close();
-
-    nodeCount_ = nodeCount;
-    elementCount_ = elementCount;
-
-    return true;
+    delete[] meshElement_; meshElement_ = NULL;
 }
 
-template<typename T>
-void parseLine(std::string const & readLine, std::vector<T> & parseLine)
-{
-    // Idea:
-    // use stringstream to parse the string (separate with " " by default) into segments
-    // or if we want to specify the delimiter, use string.find()
-
-    std::stringstream ss(readLine);
-    T segment;
-    parseLine.clear();
-    while (ss >> segment)
-        parseLine.push_back(segment);
-
-    // Option2: a more general string segmentation approach
-    // void parse(const std::string & s, char delimiter, std::vector<std::string> & v) {
-    //     // Note:
-    //     // 1. std::string.find(delimiter, start) finds the given "delimiter" in a given range ["start", end]
-    //     // 2. std::string.substr(start, length) gives the substring begins at "start" and spans "length". "length" can be oversize
-    //     // 3. std::string::npos is a special sign for "not found", typically a very large number
-    //     std::string::size_type i = 0; // at head
-    //     std::string::size_type j = s.find(delimiter, 0); // find the location of first delimiter
-    //     while (j != std::string::npos) { // find until the last delimiter
-    //         v.push_back(s.substr(i, j - i)); // parse the substring segment before the delimiter
-    //         i = ++j; // move start point to one-pass the found delimiter
-    //         j = s.find(delimiter, i); // find next delimiter in the string left
-    //     }
-    //     if(j == std::string::npos) // if finally no delimiter (reach the end), read in the last segment (an oversized length is ok). Here we use s.length() b/c when there's no delimiter we can just read the whole string.
-    //         v.push_back(s.substr(i, s.length()));
-    // }
-    // // Usage
-    // std::string str = "Hello World!";
-    // std::vector<std::string> v;
-    // parse(str,' ',v); // use space as delimiter
-    // for(auto & e : v)
-    //     std::cout << e << " "; // output is exactly the same
-}
-
-bool Mesh::readFromFile(std::string const & fileName)
+void Mesh::readFromFile(std::string const & fileName)
 {
     std::ifstream file(fileName); // open file as read-only stream // same as std::ifstream file; file.open(fileName); // ifstream is read-only type
     std::string readLine; // for each single line
+    if (!file) {
+        std::cerr << "ERROR: Cannot open file... Please check your file name or file path. Aborting." << std::endl;
+        exit(-1);
+    } // error handling
 
     // Read the first line of the file as mesh summary info including:
     // Total number of nodes
@@ -112,10 +69,10 @@ bool Mesh::readFromFile(std::string const & fileName)
     int loadY = meshSummary[4];
     int boundaryX = meshSummary[5];
     int boundaryY = meshSummary[6];
-    std::vector<int>().swap(meshSummary);
+    std::vector<int>().swap(meshSummary); // enforce to free the vector memory
 
     // Create node & element array on HEAP
-    meshNode_ = new Node*[nodeCount_]; // this will call the default ctor of Node()
+    meshNode_ = new Node*[nodeCount_];
     meshElement_ = new Element*[elementCount_];
 
     // Read node coordinates
@@ -125,7 +82,7 @@ bool Mesh::readFromFile(std::string const & fileName)
         parseLine(readLine, nodeCoord);
         meshNode_[i] = new Node(i, nodeCoord[0], nodeCoord[1]);
     }
-    std::vector<double>().swap(nodeCoord); // enforce free the vector memory
+    std::vector<double>().swap(nodeCoord);
 
     // Read element's node list and create the corresponding element type
     std::vector<int> elementNodeList;
@@ -136,10 +93,10 @@ bool Mesh::readFromFile(std::string const & fileName)
         // Create instances of different types of element
         switch (elementNodeList.size()) {
             case 3 :
-                meshElement_[i] = new ElementQ8(i, elementNodeList, meshNode_); // change to Q3 later
+                meshElement_[i] = new ElementQ8(i, elementNodeList, meshNode_); // @TODO change to Q3 later
                 break;
             case 6 :
-                meshElement_[i] = new ElementQ8(i, elementNodeList, meshNode_); // change to Q6 later
+                meshElement_[i] = new ElementQ8(i, elementNodeList, meshNode_); // @TODO change to Q6 later
                 break;
             case 8 :
                 meshElement_[i] = new ElementQ8(i, elementNodeList, meshNode_);
@@ -234,104 +191,71 @@ bool Mesh::readFromFile(std::string const & fileName)
 
     // Complete read-in
     file.close();
-
-    return true;
-
-    // Previous version
-    // dataCount(fileName);
-    //
-    // std::ifstream inFile(fileName);
-    // if(!inFile) {
-    //     std::cout << "Cannot open input file." << std::endl;
-    //     return false;
-    // }
-    //
-    // // Create node & element array on heap
-    // meshNode_ = new Node[nodeCount_];
-    // meshElement_ = new Element*[elementCount_];
-    //
-    // char c; // token for 'v' and 'f'
-    // double x, y;
-    // int i1, i2, i3, i4, i5, i6, i7, i8;
-    //
-    // // Read and create all nodes
-    // std::string byLine; // this record the line we are at
-    // for (int i = 0; i < nodeCount_; i++) {
-    //     std::getline(inFile, byLine);
-    //     std::stringstream oneLine(byLine);
-    //     oneLine >> c >> x >> y; // ">>" is by default separated by space
-    //     meshNode_[i] = Node(i, x, y);
-    // }
-    //
-    // // Read and create all elements
-    // std::vector<Node> nodeList;
-    // nodeList.reserve(8); // reserve+emplace_back will behave better. reserve can be the highest possible type number of element. e.g., you can also use reserve(100) here
-    // for (int i = 0; i < elementCount_; i++) {
-    //     std::getline(inFile, byLine);
-    //     std::stringstream oneLine(byLine);
-    //     oneLine >> c >> i1 >> i2 >> i3 >> i4 >> i5 >> i6 >> i7 >> i8; // should revise this line to a while loop when one line reaches end, and count how many nodes we read in, which tells us the element type (since our mesh can contain different types of element)
-    //
-    //     nodeList.emplace_back(meshNode_[i1]);
-    //     nodeList.emplace_back(meshNode_[i2]);
-    //     nodeList.emplace_back(meshNode_[i3]);
-    //     nodeList.emplace_back(meshNode_[i4]);
-    //     nodeList.emplace_back(meshNode_[i5]);
-    //     nodeList.emplace_back(meshNode_[i6]);
-    //     nodeList.emplace_back(meshNode_[i7]);
-    //     nodeList.emplace_back(meshNode_[i8]);
-    //     meshElement_[i] = new ElementQ8(i, nodeList);
-    //     nodeList.clear(); // clear the data storage, but the vector nodeList is still there and can be recycled
-    // }
-    //
-    // std::vector<Node> ().swap(nodeList); // enforce free the vector memory to prevent memory leak
-    //
-    // inFile.close();
-    //
-    // return true;
-
 }
 
-Node* & Mesh::getNode(int index) const
-{
-    return meshNode_[index];
-}
-
-Element* & Mesh::getElement(int index) const
-{
-    return meshElement_[index];
-}
-
-int Mesh::nodeCount() const
+const int & Mesh::nodeCount() const
 {
     return nodeCount_;
 }
 
-int Mesh::elementCount() const
+const int & Mesh::elementCount() const
 {
     return elementCount_;
 }
 
-Node** Mesh::nodeArray() const
+Node* const Mesh::getNode(const int & index) const
+{
+    return meshNode_[index];
+}
+
+Element* const Mesh::getElement(const int & index) const
+{
+    return meshElement_[index];
+}
+
+Node** const Mesh::nodeArray() const
 {
     return meshNode_;
 }
 
-Element** Mesh::elementArray() const
+Element** const Mesh::elementArray() const
 {
     return meshElement_;
 }
 
-Mesh::~Mesh()
+template<typename T>
+void Mesh::parseLine(std::string const & readLine, std::vector<T> & parseLine) const
 {
-    // Delete all nodes
-    for (int i = 0; i < nodeCount_; i++) {
-        delete meshNode_[i]; meshNode_[i] = NULL;
-    }
-    delete[] meshNode_; meshNode_ = NULL;
+    // Idea:
+    // use stringstream to parse the string (separate with " " by default) into segments
+    // or if we want to specify the delimiter, use string.find() as in option 2
 
-    // Delete all elements
-    for (int i = 0; i < elementCount_; i++) {
-        delete meshElement_[i]; meshElement_[i] = NULL;
-    }
-    delete[] meshElement_; meshElement_ = NULL;
+    std::stringstream ss(readLine);
+    T segment;
+    parseLine.clear();
+    while (ss >> segment)
+        parseLine.push_back(segment);
+
+    // Option 2: a more general string segmentation approach
+    // void parse(const std::string & s, char delimiter, std::vector<std::string> & v) {
+    //     // Note:
+    //     // 1. std::string.find(delimiter, start) finds the given "delimiter" in a given range ["start", end]
+    //     // 2. std::string.substr(start, length) gives the substring begins at "start" and spans "length". "length" can be oversize
+    //     // 3. std::string::npos is a special sign for "not found", typically a very large number
+    //     std::string::size_type i = 0; // at head
+    //     std::string::size_type j = s.find(delimiter, 0); // find the location of first delimiter
+    //     while (j != std::string::npos) { // find until the last delimiter
+    //         v.push_back(s.substr(i, j - i)); // parse the substring segment before the delimiter
+    //         i = ++j; // move start point to one-pass the found delimiter
+    //         j = s.find(delimiter, i); // find next delimiter in the string left
+    //     }
+    //     if(j == std::string::npos) // if finally no delimiter (reach the end), read in the last segment (an oversized length is ok). Here we use s.length() b/c when there's no delimiter we can just read the whole string.
+    //         v.push_back(s.substr(i, s.length()));
+    // }
+    // // Usage
+    // std::string str = "Hello World!";
+    // std::vector<std::string> v;
+    // parse(str,' ',v); // use space as delimiter
+    // for(auto & e : v)
+    //     std::cout << e << " "; // output is exactly the same
 }
