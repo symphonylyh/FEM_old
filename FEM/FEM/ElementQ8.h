@@ -82,7 +82,7 @@ class ElementQ8 : public Element
         ElementQ8();
         ElementQ8(const int & index, const std::vector<int> & nodeList, Node** const meshNode);
         ~ElementQ8();
-        MatrixXd localStiffness() const;
+        const MatrixXd & localStiffness();
         MatrixXd jacobian(const Vector2d & point) const;
         MatrixXd BMatrix(const Vector2d & point) const;
         Shape* const getShape() const;

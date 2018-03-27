@@ -22,9 +22,9 @@ class ElementQ4 : public Element
         ElementQ4();
         ElementQ4(const int & index, const std::vector<int> & nodeList, Node** const meshNode);
         ~ElementQ4();
-        MatrixXd localStiffness() const;
-        MatrixXd jacobian() const;
-        MatrixXd BMatrix() const;
+        const MatrixXd & localStiffness();
+        MatrixXd jacobian(const Vector2d & point) const;
+        MatrixXd BMatrix(const Vector2d & gaussianPoint) const;
         Shape* const getShape() const;
     private:
 

@@ -18,7 +18,7 @@ LinearElastic::~LinearElastic()
 
 void LinearElastic::solveDisp()
 {
-    assembleStiffness(); globalStiffness_ = globalStiffness; // make a copy
+    assembleStiffness();
     applyForce();
     boundaryCondition();
 
@@ -29,12 +29,12 @@ void LinearElastic::solveDisp()
     SimplicialLDLT <SparseMatrix<double> > solver;
     solver.compute(globalStiffness);
     nodalDisp = solver.solve(nodalForce);
-    responseForce_ = globalStiffness_ * nodalDisp;
+    VectorXd responseForce = globalStiffness * nodalDisp;
 
     // Write into node information
     for (int i = 0; i < mesh.nodeCount(); i++) {
         mesh.nodeArray()[i]->setDisp(nodalDisp(2 * i), nodalDisp(2 * i + 1));
-        mesh.nodeArray()[i]->setForce(responseForce_(2 * i), responseForce_(2 * i + 1));
+        mesh.nodeArray()[i]->setForce(responseForce(2 * i), responseForce(2 * i + 1));
     }
 
 }

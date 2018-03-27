@@ -17,17 +17,26 @@
  *
  * Key concepts of during the design of this class:
  *
- * 1.
+ * 1. One of the benefits of C++ inheritance feature is the code can be kept
+ * in the most concise way. For example, we defined a Analysis base class here,
+ * and we will have derived class such as linear elastic class, nonlinear elastic,
+ * viscoelastic, etc. Furthermore, we can also have classes derived from the
+ * already derived class, like linear isotropic and linear anisotropic class from
+ * the linear elastic class. The subroutines/functions/procedures that are
+ * shared by the derived classes can be abstracted and defined in the base class,
+ * while derived classes can still define other subroutines/functions/procedures
+ * as their own features. In this way, our program is elegantly organized and
+ * extendable, with the minimum redundancy in codes.
  *
- * 2.
- * Since all the information such as mesh, global stiffness, force, etc
- have been made public in Analysis class, by inheritance we have all those info
- in this derived class. To use them, just say mesh, globalStiffness is okay
- because we don't define the member variable of the same name.
- In addition, from a memory allocation view, the base class's memory space is allocated
- inside the memory space of this derived class. But these space are just copies
- from the base class, i.e., if we have a second derived class, these space are
- independent and uniquely of their own.
+ * 2. The information such as mesh, global stiffness, force, etc should be used
+ * in any type of the problems, so they have been made public (specifically,
+ * protected) in Analysis class. By inheritance we have all those info as public
+ * in the derived classes. It is noted that we should avoid name confliction
+ * when we define the own variables of the derived classes.
+ * In addition, from a memory allocation view, the base class's memory space is
+ * allocated inside the memory space of this derived class. But these space are
+ * just copies from the base class, i.e., if we have a second derived class,
+ * these space are independent and uniquely of their own.
  */
 class Analysis
 {
@@ -97,6 +106,11 @@ class Analysis
          * Print the nodal stress.
          */
         void printStress() const;
+
+        /**
+         * Write the outputs to file.
+         */
+        void writeToFile(std::string const & fileName) const;
 
     protected: // "protected" is a good choice. Only visible to the derived class
 

@@ -123,19 +123,23 @@ int main() {
     // A.format(CleanFmt);
 
     // Get file name
-    std::string fileName;
-    std::cout << "Enter the input file:";
-    std::getline(std::cin,fileName);
+    std::string inFileName;
+    std::cout << "Enter the input file name: ";
+    std::getline(std::cin, inFileName);
+    // std::string outFileName;
+    // std::cout << "Enter the output file name: ";
+    // std::getline(std::cin, outFileName);
 
 auto start = std::chrono::high_resolution_clock::now();
 
-    Analysis* case1 = new LinearElastic(fileName);
+    Analysis* case1 = new LinearElastic(inFileName);
     case1->solveDisp();
     case1->printDisp();
 
     case1->computeStrainAndStress();
     case1->printStrain();
     case1->printStress();
+    // case1->writeToFile(outFileName);
 
     delete case1; case1 = NULL;
 
@@ -143,5 +147,10 @@ auto finish = std::chrono::high_resolution_clock::now();
 // std::chrono::duration<double> elapsed = finish - start;
 auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
 std::cout << "Elapsed time: " << elapsed.count() << " ms" << std::endl;
+
+std::cout << "-----------------------------------------------------";
+std::cout << std::endl;
+std::cout << "Mission Completed! Thanks for using our program!" << std::endl;
+
     return 0;
 }

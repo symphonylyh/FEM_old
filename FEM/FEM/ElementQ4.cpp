@@ -22,18 +22,18 @@ ElementQ4::~ElementQ4()
 {
 }
 
-MatrixXd ElementQ4::localStiffness() const
+const MatrixXd & ElementQ4::localStiffness()
 {
-   return MatrixXd::Identity(8,8);
+   return localStiff;
 }
 
-MatrixXd ElementQ4::jacobian() const
+MatrixXd ElementQ4::jacobian(const Vector2d & point) const
 {
 
     return MatrixXd::Identity(2,2);
 }
 
-MatrixXd ElementQ4::BMatrix() const
+MatrixXd ElementQ4::BMatrix(const Vector2d & gaussianPoint) const
 {
     return MatrixXd::Identity(4,8);
 }

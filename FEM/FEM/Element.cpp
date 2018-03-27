@@ -16,7 +16,7 @@ Element::Element()
 Element::Element(const int & index, const std::vector<int> & nodeList, Node** const meshNode) // @TODO previously here I pass in vector<Node> which is very expensive, now I pass in vector<int> & and a pointer the pool of nodes create in mesh
   : index_(index), size_(static_cast<int>(nodeList.size())),
     nodeList_(size_), nodeCoord_(size_, 2), poissonRatio_(0), modulus_(0),
-    E_(MatrixXd::Zero(4,4))
+    E_(MatrixXd::Zero(4,4)), localStiff(MatrixXd::Zero(2 * size_, 2 * size_))
 { // use initializer list
     for (int i = 0; i < size_; i++) {
       nodeList_(i) = nodeList[i];
@@ -94,4 +94,5 @@ void Element::copy_(Element const & other)
     poissonRatio_ = other.poissonRatio_;
     modulus_ = other.modulus_;
     E_ = other.E_;
+    localStiff = other.localStiff;
 }

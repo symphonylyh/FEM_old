@@ -27,14 +27,13 @@ ElementQ8::~ElementQ8()
 {
 }
 
-MatrixXd ElementQ8::localStiffness() const
+const MatrixXd & ElementQ8::localStiffness()
 {
-    MatrixXd result = MatrixXd::Zero(2 * getSize(), 2 * getSize()); // 16x16, local stiffness matrix
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++)
-            result += 2 * M_PI * termsAtGaussianPt((statics.shape->gaussianPoint())[3 * i + j]) * (statics.shape->gaussianWeight())[i] * (statics.shape->gaussianWeight())[j];
+            localStiff += 2 * M_PI * termsAtGaussianPt((statics.shape->gaussianPoint())[3 * i + j]) * (statics.shape->gaussianWeight())[i] * (statics.shape->gaussianWeight())[j];
     }
-    return result;
+    return localStiff;
 }
 
 MatrixXd ElementQ8::jacobian(const Vector2d & point) const

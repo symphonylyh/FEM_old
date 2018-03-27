@@ -80,7 +80,7 @@ class Element
          * @return The 2n-by-2n element stiffness matrix where n is number of
          * nodes belong to this element.
          */
-        virtual MatrixXd localStiffness() const = 0;
+        virtual const MatrixXd & localStiffness() = 0;
 
         /**
          * Compute the Jacobian coordinates transformation matrix at a given
@@ -181,6 +181,10 @@ class Element
          * constructor and assignment operator.
          */
         void copy_(Element const & other);
+
+    public:
+        /** The 2n-by-2n local stiffness matrix where n is the number of nodes */
+        MatrixXd localStiff;
 };
 
 #endif /* Element_h */
