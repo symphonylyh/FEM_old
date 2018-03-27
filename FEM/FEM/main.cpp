@@ -118,9 +118,9 @@ int main() {
     //--------------------------------Main program------------------------------
     //--------------------------------------------------------------------------
     // Get file name
-    std::string inFileName;
-    std::cout << "Enter the input file name: ";
-    std::getline(std::cin, inFileName);
+    std::string inFileName = "meshData.txt";
+    // std::cout << "Enter the input file name: ";
+    // std::getline(std::cin, inFileName);
     // std::string outFileName;
     // std::cout << "Enter the output file name: ";
     // std::getline(std::cin, outFileName);
