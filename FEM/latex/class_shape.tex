@@ -1,0 +1,158 @@
+\hypertarget{class_shape}{}\section{Shape Class Reference}
+\label{class_shape}\index{Shape@{Shape}}
+Inheritance diagram for Shape\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_shape}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_shape_ac3b9fc48965274893f25b18aa14ba665}\label{class_shape_ac3b9fc48965274893f25b18aa14ba665}} 
+virtual \mbox{\hyperlink{class_shape_ac3b9fc48965274893f25b18aa14ba665}{$\sim$\+Shape}} ()
+\begin{DoxyCompactList}\small\item\em Destructor for \mbox{\hyperlink{class_shape}{Shape}}. \end{DoxyCompactList}\item 
+virtual Vector\+Xd \mbox{\hyperlink{class_shape_a0e0400bca54c29b5097c84ace51ecc7b}{function\+Vec}} (const Vector2d \&point) const =0
+\begin{DoxyCompactList}\small\item\em Compute the shape Function N in a column vector at a given point. \end{DoxyCompactList}\item 
+virtual Matrix\+Xd \mbox{\hyperlink{class_shape_ab6e0d64b40e09c176ce2ece24bc94a37}{function}} (const Vector2d \&point) const =0
+\begin{DoxyCompactList}\small\item\em Stack and interleave the shape Function N above into a matrix for the convenience of stiffness matrix computation. \end{DoxyCompactList}\item 
+virtual Matrix\+Xd \mbox{\hyperlink{class_shape_a55575394f656e3ee4b5ac37ea04af8c9}{local\+Deriv}} (const Vector2d \&point) const =0
+\begin{DoxyCompactList}\small\item\em Compute the local derivatives d\+N/d(xi) and d\+N/d(eta) of the shape function at a given point in isoparametric coordinates. \end{DoxyCompactList}\item 
+virtual const std\+::vector$<$ Vector2d $>$ \& \mbox{\hyperlink{class_shape_afa8029d0991fc5d9054a667823224bd0}{gaussian\+Point}} () const =0
+\begin{DoxyCompactList}\small\item\em Get the gaussian integration points to be used in load distribution and stress/strain computation. \end{DoxyCompactList}\item 
+virtual const std\+::vector$<$ double $>$ \& \mbox{\hyperlink{class_shape_a4257697bb443af2871a7cc7a82c8c823}{gaussian\+Weight}} () const =0
+\begin{DoxyCompactList}\small\item\em Get the gaussian integration weights to be used in load distribution and stress/strain computation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 26 of file Shape.\+h.
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_shape_ab6e0d64b40e09c176ce2ece24bc94a37}\label{class_shape_ab6e0d64b40e09c176ce2ece24bc94a37}} 
+\index{Shape@{Shape}!function@{function}}
+\index{function@{function}!Shape@{Shape}}
+\subsubsection{\texorpdfstring{function()}{function()}}
+{\footnotesize\ttfamily virtual Matrix\+Xd Shape\+::function (\begin{DoxyParamCaption}\item[{const Vector2d \&}]{point }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Stack and interleave the shape Function N above into a matrix for the convenience of stiffness matrix computation. 
+
+If n is the number of nodes of this element type, then this function will returns a 2-\/by-\/2n matrix\+:
+
+\mbox{[} N1(x) 0 $\vert$ N2(x) 0 $\vert$ ... $\vert$ Nn(x) 0 \mbox{]} \mbox{[} 0 N1(x) $\vert$ 0 N2(x) $\vert$ ... $\vert$ 0 Nn(x) \mbox{]}
+
+this is because our displacement vector is stored in an interleaving form as \mbox{[}r1, z1, r2, z2, ..., rn, zn\mbox{]}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em point} & \mbox{\hyperlink{class_a}{A}} 2D point x(r,z) at which the shape function to be evaluated. Pass-\/by-\/ref. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The stacked and interleaved shape function N as a matrix at given point. 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{class_shape_q8_a7e859a85ee52c8d3ab3051326fc09ab0}{Shape\+Q8}}, and \mbox{\hyperlink{class_shape_q4_a306cacfd4d87384b3d06c2788cafd4ba}{Shape\+Q4}}.
+
+\mbox{\Hypertarget{class_shape_a0e0400bca54c29b5097c84ace51ecc7b}\label{class_shape_a0e0400bca54c29b5097c84ace51ecc7b}} 
+\index{Shape@{Shape}!function\+Vec@{function\+Vec}}
+\index{function\+Vec@{function\+Vec}!Shape@{Shape}}
+\subsubsection{\texorpdfstring{function\+Vec()}{functionVec()}}
+{\footnotesize\ttfamily virtual Vector\+Xd Shape\+::function\+Vec (\begin{DoxyParamCaption}\item[{const Vector2d \&}]{point }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Compute the shape Function N in a column vector at a given point. 
+
+If n is the number of nodes of this element type, then this function will returns a n-\/by-\/1 column vector\+:
+
+\mbox{[} N1(x), N2(x), ..., Nn(x) \mbox{]}
+
+where Ni(x) is the shape function with respect to ith node at point x.
+
+
+\begin{DoxyParams}{Parameters}
+{\em point} & \mbox{\hyperlink{class_a}{A}} 2D point x(r,z) at which the shape function to be evaluated. Pass-\/by-\/ref. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The shape function N as a column vector at given point.
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+Use a const qualifier for reference variable is the recommended programming style. \mbox{\hyperlink{class_shape}{Shape}} function depends on given point, so we can only return-\/by-\/value, no more space for optimization. 
+\end{DoxyNote}
+
+
+Implemented in \mbox{\hyperlink{class_shape_q8_a7e2de42658deff3c6912cc102b12cc96}{Shape\+Q8}}.
+
+\mbox{\Hypertarget{class_shape_afa8029d0991fc5d9054a667823224bd0}\label{class_shape_afa8029d0991fc5d9054a667823224bd0}} 
+\index{Shape@{Shape}!gaussian\+Point@{gaussian\+Point}}
+\index{gaussian\+Point@{gaussian\+Point}!Shape@{Shape}}
+\subsubsection{\texorpdfstring{gaussian\+Point()}{gaussianPoint()}}
+{\footnotesize\ttfamily virtual const std\+::vector$<$Vector2d$>$\& Shape\+::gaussian\+Point (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Get the gaussian integration points to be used in load distribution and stress/strain computation. 
+
+\begin{DoxyReturn}{Returns}
+An array of 2D points. Since the whole \mbox{\hyperlink{class_shape}{Shape}} object is dynamically allocated on heap, we can return-\/by-\/ref. 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{class_shape_q8_a197f1e2109c7ee6c29d27198c96928a4}{Shape\+Q8}}, and \mbox{\hyperlink{class_shape_q4_a5c185036352eabf489007b92f6d48ad2}{Shape\+Q4}}.
+
+\mbox{\Hypertarget{class_shape_a4257697bb443af2871a7cc7a82c8c823}\label{class_shape_a4257697bb443af2871a7cc7a82c8c823}} 
+\index{Shape@{Shape}!gaussian\+Weight@{gaussian\+Weight}}
+\index{gaussian\+Weight@{gaussian\+Weight}!Shape@{Shape}}
+\subsubsection{\texorpdfstring{gaussian\+Weight()}{gaussianWeight()}}
+{\footnotesize\ttfamily virtual const std\+::vector$<$double$>$\& Shape\+::gaussian\+Weight (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Get the gaussian integration weights to be used in load distribution and stress/strain computation. 
+
+\begin{DoxyReturn}{Returns}
+An array of weight values. Since the whole \mbox{\hyperlink{class_shape}{Shape}} object is dynamically allocated on heap, we can return-\/by-\/ref. 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{class_shape_q8_a30891417d7ba6d6457b8b5567add07f5}{Shape\+Q8}}, and \mbox{\hyperlink{class_shape_q4_a51233dd1caaabbe8404c06b5b0db5755}{Shape\+Q4}}.
+
+\mbox{\Hypertarget{class_shape_a55575394f656e3ee4b5ac37ea04af8c9}\label{class_shape_a55575394f656e3ee4b5ac37ea04af8c9}} 
+\index{Shape@{Shape}!local\+Deriv@{local\+Deriv}}
+\index{local\+Deriv@{local\+Deriv}!Shape@{Shape}}
+\subsubsection{\texorpdfstring{local\+Deriv()}{localDeriv()}}
+{\footnotesize\ttfamily virtual Matrix\+Xd Shape\+::local\+Deriv (\begin{DoxyParamCaption}\item[{const Vector2d \&}]{point }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Compute the local derivatives d\+N/d(xi) and d\+N/d(eta) of the shape function at a given point in isoparametric coordinates. 
+
+If n is the number of nodes of this element type, then this function will returns a 2-\/by-\/n matrix\+:
+
+\mbox{[} d\+N1(x)/d(xi) d\+N2(x)/d(xi) ... d\+Nn(x)/d(xi) \mbox{]} \mbox{[} d\+N1(x)/d(eta) d\+N2(x)/d(eta) ... d\+Nn(x)/d(eta) \mbox{]}
+
+
+\begin{DoxyParams}{Parameters}
+{\em point} & \mbox{\hyperlink{class_a}{A}} 2D point x(r,z) at which the shape function to be evaluated. Pass-\/by-\/ref. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The stacked and interleaved shape function N as a matrix at given point. 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{class_shape_q8_ac62182e6804216500c2b290efd5fd06a}{Shape\+Q8}}, and \mbox{\hyperlink{class_shape_q4_ad3e1f5e25aee96cd21b1c8770c35afd0}{Shape\+Q4}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{_shape_8h}{Shape.\+h}}\end{DoxyCompactItemize}
