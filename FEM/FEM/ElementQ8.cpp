@@ -42,7 +42,7 @@ MatrixXd ElementQ8::jacobian(const Vector2d & point) const
 }
 
 MatrixXd ElementQ8::BMatrix(const Vector2d & point) const {
-    MatrixXd nodeCoord = getNodeCoord(); // 8x2, stores (r,z) of 8 nodes
+    const MatrixXd & nodeCoord = getNodeCoord(); // 8x2, stores (r,z) of 8 nodes
     MatrixXd B = MatrixXd::Zero(4, 2 * getSize()); // 4x16, B matrix
     VectorXd shapeFunction = statics.shape->functionVec(point); // 8x1 vector
     double radius = shapeFunction.transpose() * nodeCoord.col(0); // term Ni/r where r = sum(Ni*ri)

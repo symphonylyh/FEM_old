@@ -4,7 +4,7 @@
  *
  * @author Haohang Huang
  * @date Feburary 4, 2018
- * @note Efficiency optimized by return-by-ref on March 26, 2018.
+ * @note Efficiency optimized by pass/return-by-ref on March 26, 2018
  */
 
 #ifndef Node_h

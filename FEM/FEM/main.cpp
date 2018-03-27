@@ -1,26 +1,18 @@
-//
-//  main.cpp
-//  FEM
-//
-//  Created by 黄浩航 on 04/02/2018.
-//  Copyright © 2018 HHH. All rights reserved.
-//
+/**
+ * @file main.cpp
+ * Main execution interface.
+ *
+ * @author Haohang Huang
+ * @date Feburary 4, 2018
+ */
 
-// #include "Element.h"
-// #include "Node.h"
-// #include "Mesh.h"
-//#include "Eigen/Eigen"
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <chrono>
 
 #include "LinearElastic.h"
-#include "IO.h"
-//#include "Matrix/src/Core/IO.h" // to change the folder name, you can just change in Node.h and Shape.h into "include Matrix/Eigen"
-
-
-//using namespace Eigen;
+#include "IO.h" //#include "Matrix/src/Core/IO.h" // to change the folder name, you can just change in Node.h and Shape.h into "include Matrix/Eigen"
 
 int main() {
     //IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
@@ -107,7 +99,7 @@ int main() {
     // Above this line is before Analysis{.h, .cpp} is added
     //-------------------------------------------------------------------------
     // Test Analysis.h and LinearElastic.h
-    // @MEMO
+    // @memo
     // Compute condition number, determinant and rank of a matrix:
     // JacobiSVD<MatrixXd> svd(A);
     // double cond = svd.singularValues()(0) / svd.singularValues()(svd.singularValues().size()-1);
@@ -122,6 +114,9 @@ int main() {
     // IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
     // A.format(CleanFmt);
 
+    //--------------------------------------------------------------------------
+    //--------------------------------Main program------------------------------
+    //--------------------------------------------------------------------------
     // Get file name
     std::string inFileName;
     std::cout << "Enter the input file name: ";

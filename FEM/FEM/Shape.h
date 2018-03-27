@@ -4,8 +4,9 @@
  *
  * @author Haohang Huang
  * @date Feburary 10, 2018
- * @note Efficiency optimized by return-by-ref of Gaussian points on March 25,
- * 2018.
+ * @note Efficiency optimized by pass/return-by-ref of Gaussian points on March 25,
+ * 2018
+ * @todo T3, Q4, Q6 shape functions to be implemented.
  */
 
 #ifndef Shape_h

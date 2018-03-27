@@ -4,6 +4,8 @@
  *
  * @author Haohang Huang
  * @date Feburary 13, 2018
+ * @note Efficiency optimized by pass/return-by-ref of Gaussian points on March 25,
+ * 2018
  */
 
 #ifndef ShapeQ8_h

@@ -4,7 +4,7 @@
  *
  * @author Haohang Huang
  * @date Feburary 5, 2018
- * @note No efficiency optimization required on March 26, 2018.
+ * @note No efficiency optimization required on March 26, 2018
  */
 
 #ifndef Mesh_h

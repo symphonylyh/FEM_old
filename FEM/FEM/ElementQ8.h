@@ -4,7 +4,7 @@
  *
  * @author Haohang Huang
  * @date Feburary 13, 2018
- * @note Efficiency optimized by polymorph shape on March 26, 2018.
+ * @note Efficiency optimized by polymorph shape on March 26, 2018
  */
 
 #ifndef ElementQ8_h

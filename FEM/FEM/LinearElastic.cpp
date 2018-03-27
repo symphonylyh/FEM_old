@@ -26,6 +26,7 @@ void LinearElastic::solveDisp()
     // Option2: ConjugateGradient <SparseMatrix<double> > solver;
     // SimplicialLDLT is direct solver: Recommended for very sparse and not too large problems (e.g., 2D Poisson eq.)
     // ConjugateGradient is iterative solver: Recommended for large symmetric problems (e.g., 3D Poisson eq.)
+    // Ref: https://eigen.tuxfamily.org/dox/group__TutorialLinearAlgebra.html
     SimplicialLDLT <SparseMatrix<double> > solver;
     solver.compute(globalStiffness);
     nodalDisp = solver.solve(nodalForce);

@@ -4,8 +4,8 @@
  *
  * @author Haohang Huang
  * @date Feburary 26, 2018
- * @note No efficiency optimization required on March 26, 2018.
- * @TODO Query point method.
+ * @note Efficiency optimized by local stiffness matrix return-by-ref  on March 27, 2018
+ * @todo Query point method.
  */
 
 #ifndef Analysis_h

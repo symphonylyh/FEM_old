@@ -4,7 +4,6 @@
  *
  * @author Haohang Huang
  * @date Feburary 10, 2018
- * @TODO Gaussian points and functionVec not implemented yet.
  */
 
 #include "ShapeQ4.h"

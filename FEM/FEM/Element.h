@@ -4,7 +4,9 @@
  *
  * @author Haohang Huang
  * @date Feburary 4, 2018
- * @note Efficiency optimized by return-by-ref on March 26, 2018.
+ * @note Efficiency optimized by pass/return-by-ref on March 26, 2018
+ * @note Efficiency optimized by storing local stiffness matrix and return-by-ref
+ * on March 27, 2018
  */
 
 #ifndef Element_h
@@ -184,7 +186,7 @@ class Element
 
     public:
         /** The 2n-by-2n local stiffness matrix where n is the number of nodes */
-        MatrixXd localStiff;
+        MatrixXd localStiff; // member variable cannot have the same name as member function
 };
 
 #endif /* Element_h */

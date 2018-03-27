@@ -4,7 +4,9 @@
  *
  * @author Haohang Huang
  * @date Feburary 10, 2018
- * @TODO Gaussian points and functionVec not implemented yet.
+ * @note Efficiency optimized by pass/return-by-ref of Gaussian points on March 25,
+ * 2018
+ * @todo Gaussian points and functionVec not implemented yet.
  */
 
 #ifndef ShapeQ4_h

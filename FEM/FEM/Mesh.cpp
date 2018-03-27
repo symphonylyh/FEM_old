@@ -4,8 +4,8 @@
  *
  * @author Haohang Huang
  * @date Feburary 5, 2018
- * @TODO line 95, 98, change to T3, Q6 element later
- * @TODO line 124, various load pattern
+ * @todo line 95, 98, change to T3, Q6 element later.
+ * @todo line 124, various load pattern.
  */
 
 #include "Mesh.h"
