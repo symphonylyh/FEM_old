@@ -14,6 +14,74 @@
 		FBA7F8AD2027F50400BA5297 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBA7F8AC2027F50400BA5297 /* main.cpp */; };
 		FBA7F8B52027F55B00BA5297 /* Node.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBA7F8B42027F55B00BA5297 /* Node.cpp */; };
 		FBA7F8B82027F57300BA5297 /* Element.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBA7F8B62027F57300BA5297 /* Element.cpp */; };
+		FBAF780F206BEA3F00DEFBC4 /* libboost_type_erasure-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77CB206BEA3C00DEFBC4 /* libboost_type_erasure-mt.a */; };
+		FBAF7810206BEA3F00DEFBC4 /* libboost_container-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77CC206BEA3C00DEFBC4 /* libboost_container-mt.a */; };
+		FBAF7811206BEA3F00DEFBC4 /* libboost_context-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77CD206BEA3C00DEFBC4 /* libboost_context-mt.a */; };
+		FBAF7812206BEA3F00DEFBC4 /* libboost_stacktrace_addr2line.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77CE206BEA3C00DEFBC4 /* libboost_stacktrace_addr2line.a */; };
+		FBAF7813206BEA3F00DEFBC4 /* libboost_filesystem-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77CF206BEA3C00DEFBC4 /* libboost_filesystem-mt.a */; };
+		FBAF7814206BEA3F00DEFBC4 /* libboost_fiber-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77D0206BEA3C00DEFBC4 /* libboost_fiber-mt.a */; };
+		FBAF7815206BEA3F00DEFBC4 /* libboost_exception-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77D1206BEA3C00DEFBC4 /* libboost_exception-mt.a */; };
+		FBAF7816206BEA3F00DEFBC4 /* libboost_graph-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77D2206BEA3C00DEFBC4 /* libboost_graph-mt.a */; };
+		FBAF7817206BEA3F00DEFBC4 /* libboost_math_c99l-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77D3206BEA3C00DEFBC4 /* libboost_math_c99l-mt.a */; };
+		FBAF7818206BEA3F00DEFBC4 /* libboost_stacktrace_basic.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77D4206BEA3C00DEFBC4 /* libboost_stacktrace_basic.a */; };
+		FBAF7819206BEA3F00DEFBC4 /* libboost_math_c99f-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77D5206BEA3C00DEFBC4 /* libboost_math_c99f-mt.a */; };
+		FBAF781A206BEA3F00DEFBC4 /* libboost_timer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77D6206BEA3C00DEFBC4 /* libboost_timer.a */; };
+		FBAF781B206BEA3F00DEFBC4 /* libboost_atomic-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77D7206BEA3D00DEFBC4 /* libboost_atomic-mt.a */; };
+		FBAF781C206BEA3F00DEFBC4 /* libboost_chrono.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77D8206BEA3D00DEFBC4 /* libboost_chrono.a */; };
+		FBAF781D206BEA3F00DEFBC4 /* libboost_math_tr1-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77D9206BEA3D00DEFBC4 /* libboost_math_tr1-mt.a */; };
+		FBAF781E206BEA3F00DEFBC4 /* libboost_prg_exec_monitor-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77DA206BEA3D00DEFBC4 /* libboost_prg_exec_monitor-mt.a */; };
+		FBAF781F206BEA3F00DEFBC4 /* libboost_unit_test_framework-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77DB206BEA3D00DEFBC4 /* libboost_unit_test_framework-mt.a */; };
+		FBAF7820206BEA3F00DEFBC4 /* libboost_wserialization-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77DC206BEA3D00DEFBC4 /* libboost_wserialization-mt.a */; };
+		FBAF7821206BEA3F00DEFBC4 /* libboost_thread-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77DD206BEA3D00DEFBC4 /* libboost_thread-mt.a */; };
+		FBAF7822206BEA3F00DEFBC4 /* libboost_chrono-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77DE206BEA3D00DEFBC4 /* libboost_chrono-mt.a */; };
+		FBAF7823206BEA3F00DEFBC4 /* libboost_stacktrace_noop.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77DF206BEA3D00DEFBC4 /* libboost_stacktrace_noop.a */; };
+		FBAF7824206BEA3F00DEFBC4 /* libboost_stacktrace_noop-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77E0206BEA3D00DEFBC4 /* libboost_stacktrace_noop-mt.a */; };
+		FBAF7825206BEA3F00DEFBC4 /* libboost_graph.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77E1206BEA3D00DEFBC4 /* libboost_graph.a */; };
+		FBAF7826206BEA3F00DEFBC4 /* libboost_coroutine-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77E2206BEA3D00DEFBC4 /* libboost_coroutine-mt.a */; };
+		FBAF7827206BEA3F00DEFBC4 /* libboost_type_erasure.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77E3206BEA3D00DEFBC4 /* libboost_type_erasure.a */; };
+		FBAF7828206BEA3F00DEFBC4 /* libboost_regex-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77E4206BEA3D00DEFBC4 /* libboost_regex-mt.a */; };
+		FBAF7829206BEA3F00DEFBC4 /* libboost_regex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77E5206BEA3D00DEFBC4 /* libboost_regex.a */; };
+		FBAF782A206BEA3F00DEFBC4 /* libboost_date_time.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77E6206BEA3D00DEFBC4 /* libboost_date_time.a */; };
+		FBAF782B206BEA3F00DEFBC4 /* libboost_math_tr1f-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77E7206BEA3D00DEFBC4 /* libboost_math_tr1f-mt.a */; };
+		FBAF782C206BEA3F00DEFBC4 /* libboost_serialization.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77E8206BEA3D00DEFBC4 /* libboost_serialization.a */; };
+		FBAF782D206BEA3F00DEFBC4 /* libboost_stacktrace_basic-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77E9206BEA3D00DEFBC4 /* libboost_stacktrace_basic-mt.a */; };
+		FBAF782E206BEA3F00DEFBC4 /* libboost_wave-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77EA206BEA3D00DEFBC4 /* libboost_wave-mt.a */; };
+		FBAF782F206BEA3F00DEFBC4 /* libboost_iostreams-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77EB206BEA3D00DEFBC4 /* libboost_iostreams-mt.a */; };
+		FBAF7830206BEA3F00DEFBC4 /* libboost_log_setup.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77EC206BEA3D00DEFBC4 /* libboost_log_setup.a */; };
+		FBAF7831206BEA3F00DEFBC4 /* libboost_math_c99f.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77ED206BEA3D00DEFBC4 /* libboost_math_c99f.a */; };
+		FBAF7832206BEA3F00DEFBC4 /* libboost_signals.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77EE206BEA3D00DEFBC4 /* libboost_signals.a */; };
+		FBAF7833206BEA3F00DEFBC4 /* libboost_math_tr1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77EF206BEA3D00DEFBC4 /* libboost_math_tr1.a */; };
+		FBAF7834206BEA3F00DEFBC4 /* libboost_stacktrace_addr2line-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77F0206BEA3E00DEFBC4 /* libboost_stacktrace_addr2line-mt.a */; };
+		FBAF7835206BEA3F00DEFBC4 /* libboost_random.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77F1206BEA3E00DEFBC4 /* libboost_random.a */; };
+		FBAF7836206BEA3F00DEFBC4 /* libboost_test_exec_monitor-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77F2206BEA3E00DEFBC4 /* libboost_test_exec_monitor-mt.a */; };
+		FBAF7837206BEA3F00DEFBC4 /* libboost_exception.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77F3206BEA3E00DEFBC4 /* libboost_exception.a */; };
+		FBAF7838206BEA3F00DEFBC4 /* libboost_system.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77F4206BEA3E00DEFBC4 /* libboost_system.a */; };
+		FBAF7839206BEA3F00DEFBC4 /* libboost_math_tr1f.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77F5206BEA3E00DEFBC4 /* libboost_math_tr1f.a */; };
+		FBAF783A206BEA3F00DEFBC4 /* libboost_container.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77F6206BEA3E00DEFBC4 /* libboost_container.a */; };
+		FBAF783B206BEA3F00DEFBC4 /* libboost_random-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77F7206BEA3E00DEFBC4 /* libboost_random-mt.a */; };
+		FBAF783C206BEA3F00DEFBC4 /* libboost_unit_test_framework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77F8206BEA3E00DEFBC4 /* libboost_unit_test_framework.a */; };
+		FBAF783D206BEA3F00DEFBC4 /* libboost_filesystem.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77F9206BEA3E00DEFBC4 /* libboost_filesystem.a */; };
+		FBAF783E206BEA3F00DEFBC4 /* libboost_log.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77FA206BEA3E00DEFBC4 /* libboost_log.a */; };
+		FBAF783F206BEA3F00DEFBC4 /* libboost_math_tr1l-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77FB206BEA3E00DEFBC4 /* libboost_math_tr1l-mt.a */; };
+		FBAF7840206BEA3F00DEFBC4 /* libboost_wserialization.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77FC206BEA3E00DEFBC4 /* libboost_wserialization.a */; };
+		FBAF7841206BEA3F00DEFBC4 /* libboost_program_options.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77FD206BEA3E00DEFBC4 /* libboost_program_options.a */; };
+		FBAF7842206BEA3F00DEFBC4 /* libboost_iostreams.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77FE206BEA3E00DEFBC4 /* libboost_iostreams.a */; };
+		FBAF7843206BEA3F00DEFBC4 /* libboost_prg_exec_monitor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF77FF206BEA3E00DEFBC4 /* libboost_prg_exec_monitor.a */; };
+		FBAF7844206BEA3F00DEFBC4 /* libboost_math_c99-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF7800206BEA3E00DEFBC4 /* libboost_math_c99-mt.a */; };
+		FBAF7845206BEA3F00DEFBC4 /* libboost_log_setup-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF7801206BEA3E00DEFBC4 /* libboost_log_setup-mt.a */; };
+		FBAF7846206BEA3F00DEFBC4 /* libboost_signals-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF7802206BEA3E00DEFBC4 /* libboost_signals-mt.a */; };
+		FBAF7847206BEA3F00DEFBC4 /* libboost_test_exec_monitor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF7803206BEA3E00DEFBC4 /* libboost_test_exec_monitor.a */; };
+		FBAF7848206BEA3F00DEFBC4 /* libboost_math_tr1l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF7804206BEA3E00DEFBC4 /* libboost_math_tr1l.a */; };
+		FBAF7849206BEA3F00DEFBC4 /* libboost_serialization-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF7805206BEA3E00DEFBC4 /* libboost_serialization-mt.a */; };
+		FBAF784A206BEA3F00DEFBC4 /* libboost_system-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF7806206BEA3E00DEFBC4 /* libboost_system-mt.a */; };
+		FBAF784B206BEA3F00DEFBC4 /* libboost_locale-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF7807206BEA3E00DEFBC4 /* libboost_locale-mt.a */; };
+		FBAF784C206BEA3F00DEFBC4 /* libboost_timer-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF7808206BEA3F00DEFBC4 /* libboost_timer-mt.a */; };
+		FBAF784D206BEA3F00DEFBC4 /* libboost_math_c99.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF7809206BEA3F00DEFBC4 /* libboost_math_c99.a */; };
+		FBAF784E206BEA3F00DEFBC4 /* libboost_math_c99l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF780A206BEA3F00DEFBC4 /* libboost_math_c99l.a */; };
+		FBAF784F206BEA3F00DEFBC4 /* libboost_program_options-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF780B206BEA3F00DEFBC4 /* libboost_program_options-mt.a */; };
+		FBAF7850206BEA3F00DEFBC4 /* libboost_log-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF780C206BEA3F00DEFBC4 /* libboost_log-mt.a */; };
+		FBAF7851206BEA3F00DEFBC4 /* libboost_coroutine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF780D206BEA3F00DEFBC4 /* libboost_coroutine.a */; };
+		FBAF7852206BEA3F00DEFBC4 /* libboost_date_time-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAF780E206BEA3F00DEFBC4 /* libboost_date_time-mt.a */; };
 		FBDC60CE2028FE8800B402E2 /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBDC60CD2028FE8800B402E2 /* Mesh.cpp */; };
 		FBE4BE0D202FA6F600DC83C8 /* ShapeQ4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBE4BE0C202FA6F600DC83C8 /* ShapeQ4.cpp */; };
 		FBE4BE11202FFB8900DC83C8 /* ElementQ4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBE4BE10202FFB8900DC83C8 /* ElementQ4.cpp */; };
@@ -347,6 +415,74 @@
 		FBA7FB632027F78B00BA5297 /* SuperLUSupport */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SuperLUSupport; sourceTree = "<group>"; };
 		FBA7FB642027F78B00BA5297 /* SVD */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SVD; sourceTree = "<group>"; };
 		FBA7FB652027F78B00BA5297 /* UmfPackSupport */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = UmfPackSupport; sourceTree = "<group>"; };
+		FBAF77CB206BEA3C00DEFBC4 /* libboost_type_erasure-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_type_erasure-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_type_erasure-mt.a"; sourceTree = "<group>"; };
+		FBAF77CC206BEA3C00DEFBC4 /* libboost_container-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_container-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_container-mt.a"; sourceTree = "<group>"; };
+		FBAF77CD206BEA3C00DEFBC4 /* libboost_context-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_context-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_context-mt.a"; sourceTree = "<group>"; };
+		FBAF77CE206BEA3C00DEFBC4 /* libboost_stacktrace_addr2line.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_stacktrace_addr2line.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_stacktrace_addr2line.a; sourceTree = "<group>"; };
+		FBAF77CF206BEA3C00DEFBC4 /* libboost_filesystem-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_filesystem-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_filesystem-mt.a"; sourceTree = "<group>"; };
+		FBAF77D0206BEA3C00DEFBC4 /* libboost_fiber-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_fiber-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_fiber-mt.a"; sourceTree = "<group>"; };
+		FBAF77D1206BEA3C00DEFBC4 /* libboost_exception-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_exception-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_exception-mt.a"; sourceTree = "<group>"; };
+		FBAF77D2206BEA3C00DEFBC4 /* libboost_graph-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_graph-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_graph-mt.a"; sourceTree = "<group>"; };
+		FBAF77D3206BEA3C00DEFBC4 /* libboost_math_c99l-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_math_c99l-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_math_c99l-mt.a"; sourceTree = "<group>"; };
+		FBAF77D4206BEA3C00DEFBC4 /* libboost_stacktrace_basic.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_stacktrace_basic.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_stacktrace_basic.a; sourceTree = "<group>"; };
+		FBAF77D5206BEA3C00DEFBC4 /* libboost_math_c99f-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_math_c99f-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_math_c99f-mt.a"; sourceTree = "<group>"; };
+		FBAF77D6206BEA3C00DEFBC4 /* libboost_timer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_timer.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_timer.a; sourceTree = "<group>"; };
+		FBAF77D7206BEA3D00DEFBC4 /* libboost_atomic-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_atomic-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_atomic-mt.a"; sourceTree = "<group>"; };
+		FBAF77D8206BEA3D00DEFBC4 /* libboost_chrono.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_chrono.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_chrono.a; sourceTree = "<group>"; };
+		FBAF77D9206BEA3D00DEFBC4 /* libboost_math_tr1-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_math_tr1-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_math_tr1-mt.a"; sourceTree = "<group>"; };
+		FBAF77DA206BEA3D00DEFBC4 /* libboost_prg_exec_monitor-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_prg_exec_monitor-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_prg_exec_monitor-mt.a"; sourceTree = "<group>"; };
+		FBAF77DB206BEA3D00DEFBC4 /* libboost_unit_test_framework-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_unit_test_framework-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_unit_test_framework-mt.a"; sourceTree = "<group>"; };
+		FBAF77DC206BEA3D00DEFBC4 /* libboost_wserialization-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_wserialization-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_wserialization-mt.a"; sourceTree = "<group>"; };
+		FBAF77DD206BEA3D00DEFBC4 /* libboost_thread-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_thread-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_thread-mt.a"; sourceTree = "<group>"; };
+		FBAF77DE206BEA3D00DEFBC4 /* libboost_chrono-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_chrono-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_chrono-mt.a"; sourceTree = "<group>"; };
+		FBAF77DF206BEA3D00DEFBC4 /* libboost_stacktrace_noop.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_stacktrace_noop.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_stacktrace_noop.a; sourceTree = "<group>"; };
+		FBAF77E0206BEA3D00DEFBC4 /* libboost_stacktrace_noop-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_stacktrace_noop-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_stacktrace_noop-mt.a"; sourceTree = "<group>"; };
+		FBAF77E1206BEA3D00DEFBC4 /* libboost_graph.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_graph.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_graph.a; sourceTree = "<group>"; };
+		FBAF77E2206BEA3D00DEFBC4 /* libboost_coroutine-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_coroutine-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_coroutine-mt.a"; sourceTree = "<group>"; };
+		FBAF77E3206BEA3D00DEFBC4 /* libboost_type_erasure.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_type_erasure.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_type_erasure.a; sourceTree = "<group>"; };
+		FBAF77E4206BEA3D00DEFBC4 /* libboost_regex-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_regex-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_regex-mt.a"; sourceTree = "<group>"; };
+		FBAF77E5206BEA3D00DEFBC4 /* libboost_regex.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_regex.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_regex.a; sourceTree = "<group>"; };
+		FBAF77E6206BEA3D00DEFBC4 /* libboost_date_time.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_date_time.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_date_time.a; sourceTree = "<group>"; };
+		FBAF77E7206BEA3D00DEFBC4 /* libboost_math_tr1f-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_math_tr1f-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_math_tr1f-mt.a"; sourceTree = "<group>"; };
+		FBAF77E8206BEA3D00DEFBC4 /* libboost_serialization.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_serialization.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_serialization.a; sourceTree = "<group>"; };
+		FBAF77E9206BEA3D00DEFBC4 /* libboost_stacktrace_basic-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_stacktrace_basic-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_stacktrace_basic-mt.a"; sourceTree = "<group>"; };
+		FBAF77EA206BEA3D00DEFBC4 /* libboost_wave-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_wave-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_wave-mt.a"; sourceTree = "<group>"; };
+		FBAF77EB206BEA3D00DEFBC4 /* libboost_iostreams-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_iostreams-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_iostreams-mt.a"; sourceTree = "<group>"; };
+		FBAF77EC206BEA3D00DEFBC4 /* libboost_log_setup.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_log_setup.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_log_setup.a; sourceTree = "<group>"; };
+		FBAF77ED206BEA3D00DEFBC4 /* libboost_math_c99f.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_math_c99f.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_math_c99f.a; sourceTree = "<group>"; };
+		FBAF77EE206BEA3D00DEFBC4 /* libboost_signals.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_signals.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_signals.a; sourceTree = "<group>"; };
+		FBAF77EF206BEA3D00DEFBC4 /* libboost_math_tr1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_math_tr1.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_math_tr1.a; sourceTree = "<group>"; };
+		FBAF77F0206BEA3E00DEFBC4 /* libboost_stacktrace_addr2line-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_stacktrace_addr2line-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_stacktrace_addr2line-mt.a"; sourceTree = "<group>"; };
+		FBAF77F1206BEA3E00DEFBC4 /* libboost_random.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_random.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_random.a; sourceTree = "<group>"; };
+		FBAF77F2206BEA3E00DEFBC4 /* libboost_test_exec_monitor-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_test_exec_monitor-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_test_exec_monitor-mt.a"; sourceTree = "<group>"; };
+		FBAF77F3206BEA3E00DEFBC4 /* libboost_exception.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_exception.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_exception.a; sourceTree = "<group>"; };
+		FBAF77F4206BEA3E00DEFBC4 /* libboost_system.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_system.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_system.a; sourceTree = "<group>"; };
+		FBAF77F5206BEA3E00DEFBC4 /* libboost_math_tr1f.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_math_tr1f.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_math_tr1f.a; sourceTree = "<group>"; };
+		FBAF77F6206BEA3E00DEFBC4 /* libboost_container.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_container.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_container.a; sourceTree = "<group>"; };
+		FBAF77F7206BEA3E00DEFBC4 /* libboost_random-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_random-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_random-mt.a"; sourceTree = "<group>"; };
+		FBAF77F8206BEA3E00DEFBC4 /* libboost_unit_test_framework.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_unit_test_framework.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_unit_test_framework.a; sourceTree = "<group>"; };
+		FBAF77F9206BEA3E00DEFBC4 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_filesystem.a; sourceTree = "<group>"; };
+		FBAF77FA206BEA3E00DEFBC4 /* libboost_log.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_log.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_log.a; sourceTree = "<group>"; };
+		FBAF77FB206BEA3E00DEFBC4 /* libboost_math_tr1l-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_math_tr1l-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_math_tr1l-mt.a"; sourceTree = "<group>"; };
+		FBAF77FC206BEA3E00DEFBC4 /* libboost_wserialization.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_wserialization.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_wserialization.a; sourceTree = "<group>"; };
+		FBAF77FD206BEA3E00DEFBC4 /* libboost_program_options.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_program_options.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_program_options.a; sourceTree = "<group>"; };
+		FBAF77FE206BEA3E00DEFBC4 /* libboost_iostreams.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_iostreams.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_iostreams.a; sourceTree = "<group>"; };
+		FBAF77FF206BEA3E00DEFBC4 /* libboost_prg_exec_monitor.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_prg_exec_monitor.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_prg_exec_monitor.a; sourceTree = "<group>"; };
+		FBAF7800206BEA3E00DEFBC4 /* libboost_math_c99-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_math_c99-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_math_c99-mt.a"; sourceTree = "<group>"; };
+		FBAF7801206BEA3E00DEFBC4 /* libboost_log_setup-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_log_setup-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_log_setup-mt.a"; sourceTree = "<group>"; };
+		FBAF7802206BEA3E00DEFBC4 /* libboost_signals-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_signals-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_signals-mt.a"; sourceTree = "<group>"; };
+		FBAF7803206BEA3E00DEFBC4 /* libboost_test_exec_monitor.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_test_exec_monitor.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_test_exec_monitor.a; sourceTree = "<group>"; };
+		FBAF7804206BEA3E00DEFBC4 /* libboost_math_tr1l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_math_tr1l.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_math_tr1l.a; sourceTree = "<group>"; };
+		FBAF7805206BEA3E00DEFBC4 /* libboost_serialization-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_serialization-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_serialization-mt.a"; sourceTree = "<group>"; };
+		FBAF7806206BEA3E00DEFBC4 /* libboost_system-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_system-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_system-mt.a"; sourceTree = "<group>"; };
+		FBAF7807206BEA3E00DEFBC4 /* libboost_locale-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_locale-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_locale-mt.a"; sourceTree = "<group>"; };
+		FBAF7808206BEA3F00DEFBC4 /* libboost_timer-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_timer-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_timer-mt.a"; sourceTree = "<group>"; };
+		FBAF7809206BEA3F00DEFBC4 /* libboost_math_c99.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_math_c99.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_math_c99.a; sourceTree = "<group>"; };
+		FBAF780A206BEA3F00DEFBC4 /* libboost_math_c99l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_math_c99l.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_math_c99l.a; sourceTree = "<group>"; };
+		FBAF780B206BEA3F00DEFBC4 /* libboost_program_options-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_program_options-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_program_options-mt.a"; sourceTree = "<group>"; };
+		FBAF780C206BEA3F00DEFBC4 /* libboost_log-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_log-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_log-mt.a"; sourceTree = "<group>"; };
+		FBAF780D206BEA3F00DEFBC4 /* libboost_coroutine.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_coroutine.a; path = ../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_coroutine.a; sourceTree = "<group>"; };
+		FBAF780E206BEA3F00DEFBC4 /* libboost_date_time-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_date_time-mt.a"; path = "../../../../../usr/local/Cellar/boost/1.66.0/lib/libboost_date_time-mt.a"; sourceTree = "<group>"; };
 		FBDC60CD2028FE8800B402E2 /* Mesh.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh.cpp; sourceTree = "<group>"; };
 		FBDC60CF2028FEB400B402E2 /* Mesh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mesh.h; sourceTree = "<group>"; };
 		FBDC60D32029650800B402E2 /* meshData.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = meshData.txt; sourceTree = "<group>"; };
@@ -362,6 +498,74 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FBAF780F206BEA3F00DEFBC4 /* libboost_type_erasure-mt.a in Frameworks */,
+				FBAF7810206BEA3F00DEFBC4 /* libboost_container-mt.a in Frameworks */,
+				FBAF7811206BEA3F00DEFBC4 /* libboost_context-mt.a in Frameworks */,
+				FBAF7812206BEA3F00DEFBC4 /* libboost_stacktrace_addr2line.a in Frameworks */,
+				FBAF7813206BEA3F00DEFBC4 /* libboost_filesystem-mt.a in Frameworks */,
+				FBAF7814206BEA3F00DEFBC4 /* libboost_fiber-mt.a in Frameworks */,
+				FBAF7815206BEA3F00DEFBC4 /* libboost_exception-mt.a in Frameworks */,
+				FBAF7816206BEA3F00DEFBC4 /* libboost_graph-mt.a in Frameworks */,
+				FBAF7817206BEA3F00DEFBC4 /* libboost_math_c99l-mt.a in Frameworks */,
+				FBAF7818206BEA3F00DEFBC4 /* libboost_stacktrace_basic.a in Frameworks */,
+				FBAF7819206BEA3F00DEFBC4 /* libboost_math_c99f-mt.a in Frameworks */,
+				FBAF781A206BEA3F00DEFBC4 /* libboost_timer.a in Frameworks */,
+				FBAF781B206BEA3F00DEFBC4 /* libboost_atomic-mt.a in Frameworks */,
+				FBAF781C206BEA3F00DEFBC4 /* libboost_chrono.a in Frameworks */,
+				FBAF781D206BEA3F00DEFBC4 /* libboost_math_tr1-mt.a in Frameworks */,
+				FBAF781E206BEA3F00DEFBC4 /* libboost_prg_exec_monitor-mt.a in Frameworks */,
+				FBAF781F206BEA3F00DEFBC4 /* libboost_unit_test_framework-mt.a in Frameworks */,
+				FBAF7820206BEA3F00DEFBC4 /* libboost_wserialization-mt.a in Frameworks */,
+				FBAF7821206BEA3F00DEFBC4 /* libboost_thread-mt.a in Frameworks */,
+				FBAF7822206BEA3F00DEFBC4 /* libboost_chrono-mt.a in Frameworks */,
+				FBAF7823206BEA3F00DEFBC4 /* libboost_stacktrace_noop.a in Frameworks */,
+				FBAF7824206BEA3F00DEFBC4 /* libboost_stacktrace_noop-mt.a in Frameworks */,
+				FBAF7825206BEA3F00DEFBC4 /* libboost_graph.a in Frameworks */,
+				FBAF7826206BEA3F00DEFBC4 /* libboost_coroutine-mt.a in Frameworks */,
+				FBAF7827206BEA3F00DEFBC4 /* libboost_type_erasure.a in Frameworks */,
+				FBAF7828206BEA3F00DEFBC4 /* libboost_regex-mt.a in Frameworks */,
+				FBAF7829206BEA3F00DEFBC4 /* libboost_regex.a in Frameworks */,
+				FBAF782A206BEA3F00DEFBC4 /* libboost_date_time.a in Frameworks */,
+				FBAF782B206BEA3F00DEFBC4 /* libboost_math_tr1f-mt.a in Frameworks */,
+				FBAF782C206BEA3F00DEFBC4 /* libboost_serialization.a in Frameworks */,
+				FBAF782D206BEA3F00DEFBC4 /* libboost_stacktrace_basic-mt.a in Frameworks */,
+				FBAF782E206BEA3F00DEFBC4 /* libboost_wave-mt.a in Frameworks */,
+				FBAF782F206BEA3F00DEFBC4 /* libboost_iostreams-mt.a in Frameworks */,
+				FBAF7830206BEA3F00DEFBC4 /* libboost_log_setup.a in Frameworks */,
+				FBAF7831206BEA3F00DEFBC4 /* libboost_math_c99f.a in Frameworks */,
+				FBAF7832206BEA3F00DEFBC4 /* libboost_signals.a in Frameworks */,
+				FBAF7833206BEA3F00DEFBC4 /* libboost_math_tr1.a in Frameworks */,
+				FBAF7834206BEA3F00DEFBC4 /* libboost_stacktrace_addr2line-mt.a in Frameworks */,
+				FBAF7835206BEA3F00DEFBC4 /* libboost_random.a in Frameworks */,
+				FBAF7836206BEA3F00DEFBC4 /* libboost_test_exec_monitor-mt.a in Frameworks */,
+				FBAF7837206BEA3F00DEFBC4 /* libboost_exception.a in Frameworks */,
+				FBAF7838206BEA3F00DEFBC4 /* libboost_system.a in Frameworks */,
+				FBAF7839206BEA3F00DEFBC4 /* libboost_math_tr1f.a in Frameworks */,
+				FBAF783A206BEA3F00DEFBC4 /* libboost_container.a in Frameworks */,
+				FBAF783B206BEA3F00DEFBC4 /* libboost_random-mt.a in Frameworks */,
+				FBAF783C206BEA3F00DEFBC4 /* libboost_unit_test_framework.a in Frameworks */,
+				FBAF783D206BEA3F00DEFBC4 /* libboost_filesystem.a in Frameworks */,
+				FBAF783E206BEA3F00DEFBC4 /* libboost_log.a in Frameworks */,
+				FBAF783F206BEA3F00DEFBC4 /* libboost_math_tr1l-mt.a in Frameworks */,
+				FBAF7840206BEA3F00DEFBC4 /* libboost_wserialization.a in Frameworks */,
+				FBAF7841206BEA3F00DEFBC4 /* libboost_program_options.a in Frameworks */,
+				FBAF7842206BEA3F00DEFBC4 /* libboost_iostreams.a in Frameworks */,
+				FBAF7843206BEA3F00DEFBC4 /* libboost_prg_exec_monitor.a in Frameworks */,
+				FBAF7844206BEA3F00DEFBC4 /* libboost_math_c99-mt.a in Frameworks */,
+				FBAF7845206BEA3F00DEFBC4 /* libboost_log_setup-mt.a in Frameworks */,
+				FBAF7846206BEA3F00DEFBC4 /* libboost_signals-mt.a in Frameworks */,
+				FBAF7847206BEA3F00DEFBC4 /* libboost_test_exec_monitor.a in Frameworks */,
+				FBAF7848206BEA3F00DEFBC4 /* libboost_math_tr1l.a in Frameworks */,
+				FBAF7849206BEA3F00DEFBC4 /* libboost_serialization-mt.a in Frameworks */,
+				FBAF784A206BEA3F00DEFBC4 /* libboost_system-mt.a in Frameworks */,
+				FBAF784B206BEA3F00DEFBC4 /* libboost_locale-mt.a in Frameworks */,
+				FBAF784C206BEA3F00DEFBC4 /* libboost_timer-mt.a in Frameworks */,
+				FBAF784D206BEA3F00DEFBC4 /* libboost_math_c99.a in Frameworks */,
+				FBAF784E206BEA3F00DEFBC4 /* libboost_math_c99l.a in Frameworks */,
+				FBAF784F206BEA3F00DEFBC4 /* libboost_program_options-mt.a in Frameworks */,
+				FBAF7850206BEA3F00DEFBC4 /* libboost_log-mt.a in Frameworks */,
+				FBAF7851206BEA3F00DEFBC4 /* libboost_coroutine.a in Frameworks */,
+				FBAF7852206BEA3F00DEFBC4 /* libboost_date_time-mt.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -373,6 +577,7 @@
 			children = (
 				FBA7F8AB2027F50400BA5297 /* FEM */,
 				FBA7F8AA2027F50400BA5297 /* Products */,
+				FBAF77CA206BEA3C00DEFBC4 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1041,6 +1246,81 @@
 			path = UmfPackSupport;
 			sourceTree = "<group>";
 		};
+		FBAF77CA206BEA3C00DEFBC4 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FBAF77D7206BEA3D00DEFBC4 /* libboost_atomic-mt.a */,
+				FBAF77DE206BEA3D00DEFBC4 /* libboost_chrono-mt.a */,
+				FBAF77D8206BEA3D00DEFBC4 /* libboost_chrono.a */,
+				FBAF77CC206BEA3C00DEFBC4 /* libboost_container-mt.a */,
+				FBAF77F6206BEA3E00DEFBC4 /* libboost_container.a */,
+				FBAF77CD206BEA3C00DEFBC4 /* libboost_context-mt.a */,
+				FBAF77E2206BEA3D00DEFBC4 /* libboost_coroutine-mt.a */,
+				FBAF780D206BEA3F00DEFBC4 /* libboost_coroutine.a */,
+				FBAF780E206BEA3F00DEFBC4 /* libboost_date_time-mt.a */,
+				FBAF77E6206BEA3D00DEFBC4 /* libboost_date_time.a */,
+				FBAF77D1206BEA3C00DEFBC4 /* libboost_exception-mt.a */,
+				FBAF77F3206BEA3E00DEFBC4 /* libboost_exception.a */,
+				FBAF77D0206BEA3C00DEFBC4 /* libboost_fiber-mt.a */,
+				FBAF77CF206BEA3C00DEFBC4 /* libboost_filesystem-mt.a */,
+				FBAF77F9206BEA3E00DEFBC4 /* libboost_filesystem.a */,
+				FBAF77D2206BEA3C00DEFBC4 /* libboost_graph-mt.a */,
+				FBAF77E1206BEA3D00DEFBC4 /* libboost_graph.a */,
+				FBAF77EB206BEA3D00DEFBC4 /* libboost_iostreams-mt.a */,
+				FBAF77FE206BEA3E00DEFBC4 /* libboost_iostreams.a */,
+				FBAF7807206BEA3E00DEFBC4 /* libboost_locale-mt.a */,
+				FBAF7801206BEA3E00DEFBC4 /* libboost_log_setup-mt.a */,
+				FBAF77EC206BEA3D00DEFBC4 /* libboost_log_setup.a */,
+				FBAF780C206BEA3F00DEFBC4 /* libboost_log-mt.a */,
+				FBAF77FA206BEA3E00DEFBC4 /* libboost_log.a */,
+				FBAF7800206BEA3E00DEFBC4 /* libboost_math_c99-mt.a */,
+				FBAF7809206BEA3F00DEFBC4 /* libboost_math_c99.a */,
+				FBAF77D5206BEA3C00DEFBC4 /* libboost_math_c99f-mt.a */,
+				FBAF77ED206BEA3D00DEFBC4 /* libboost_math_c99f.a */,
+				FBAF77D3206BEA3C00DEFBC4 /* libboost_math_c99l-mt.a */,
+				FBAF780A206BEA3F00DEFBC4 /* libboost_math_c99l.a */,
+				FBAF77D9206BEA3D00DEFBC4 /* libboost_math_tr1-mt.a */,
+				FBAF77EF206BEA3D00DEFBC4 /* libboost_math_tr1.a */,
+				FBAF77E7206BEA3D00DEFBC4 /* libboost_math_tr1f-mt.a */,
+				FBAF77F5206BEA3E00DEFBC4 /* libboost_math_tr1f.a */,
+				FBAF77FB206BEA3E00DEFBC4 /* libboost_math_tr1l-mt.a */,
+				FBAF7804206BEA3E00DEFBC4 /* libboost_math_tr1l.a */,
+				FBAF77DA206BEA3D00DEFBC4 /* libboost_prg_exec_monitor-mt.a */,
+				FBAF77FF206BEA3E00DEFBC4 /* libboost_prg_exec_monitor.a */,
+				FBAF780B206BEA3F00DEFBC4 /* libboost_program_options-mt.a */,
+				FBAF77FD206BEA3E00DEFBC4 /* libboost_program_options.a */,
+				FBAF77F7206BEA3E00DEFBC4 /* libboost_random-mt.a */,
+				FBAF77F1206BEA3E00DEFBC4 /* libboost_random.a */,
+				FBAF77E4206BEA3D00DEFBC4 /* libboost_regex-mt.a */,
+				FBAF77E5206BEA3D00DEFBC4 /* libboost_regex.a */,
+				FBAF7805206BEA3E00DEFBC4 /* libboost_serialization-mt.a */,
+				FBAF77E8206BEA3D00DEFBC4 /* libboost_serialization.a */,
+				FBAF7802206BEA3E00DEFBC4 /* libboost_signals-mt.a */,
+				FBAF77EE206BEA3D00DEFBC4 /* libboost_signals.a */,
+				FBAF77F0206BEA3E00DEFBC4 /* libboost_stacktrace_addr2line-mt.a */,
+				FBAF77CE206BEA3C00DEFBC4 /* libboost_stacktrace_addr2line.a */,
+				FBAF77E9206BEA3D00DEFBC4 /* libboost_stacktrace_basic-mt.a */,
+				FBAF77D4206BEA3C00DEFBC4 /* libboost_stacktrace_basic.a */,
+				FBAF77E0206BEA3D00DEFBC4 /* libboost_stacktrace_noop-mt.a */,
+				FBAF77DF206BEA3D00DEFBC4 /* libboost_stacktrace_noop.a */,
+				FBAF7806206BEA3E00DEFBC4 /* libboost_system-mt.a */,
+				FBAF77F4206BEA3E00DEFBC4 /* libboost_system.a */,
+				FBAF77F2206BEA3E00DEFBC4 /* libboost_test_exec_monitor-mt.a */,
+				FBAF7803206BEA3E00DEFBC4 /* libboost_test_exec_monitor.a */,
+				FBAF77DD206BEA3D00DEFBC4 /* libboost_thread-mt.a */,
+				FBAF7808206BEA3F00DEFBC4 /* libboost_timer-mt.a */,
+				FBAF77D6206BEA3C00DEFBC4 /* libboost_timer.a */,
+				FBAF77CB206BEA3C00DEFBC4 /* libboost_type_erasure-mt.a */,
+				FBAF77E3206BEA3D00DEFBC4 /* libboost_type_erasure.a */,
+				FBAF77DB206BEA3D00DEFBC4 /* libboost_unit_test_framework-mt.a */,
+				FBAF77F8206BEA3E00DEFBC4 /* libboost_unit_test_framework.a */,
+				FBAF77EA206BEA3D00DEFBC4 /* libboost_wave-mt.a */,
+				FBAF77DC206BEA3D00DEFBC4 /* libboost_wserialization-mt.a */,
+				FBAF77FC206BEA3E00DEFBC4 /* libboost_wserialization.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1222,6 +1502,8 @@
 			buildSettings = {
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
+				HEADER_SEARCH_PATHS = /usr/local/Cellar/boost/1.66.0/include;
+				LIBRARY_SEARCH_PATHS = /usr/local/Cellar/boost/1.66.0/lib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -1231,6 +1513,8 @@
 			buildSettings = {
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
+				HEADER_SEARCH_PATHS = /usr/local/Cellar/boost/1.66.0/include;
+				LIBRARY_SEARCH_PATHS = /usr/local/Cellar/boost/1.66.0/lib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

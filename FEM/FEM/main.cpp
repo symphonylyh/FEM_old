@@ -13,7 +13,7 @@
 
 #include "LinearElastic.h"
 #include "IO.h" //#include "Matrix/src/Core/IO.h" // to change the folder name, you can just change in Node.h and Shape.h into "include Matrix/Eigen"
-
+#include <boost/scoped_ptr.hpp>
 int main() {
     //IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
     /* Test Node.h and Mesh.h
@@ -146,6 +146,10 @@ std::cout << "Elapsed time: " << elapsed.count() << " ms" << std::endl;
 std::cout << "-----------------------------------------------------";
 std::cout << std::endl;
 std::cout << "Mission Completed! Thanks for using our program!" << std::endl;
-
+    boost::scoped_ptr<int> i(new int);
+    *i = 1;
+    *i.get() = 2;
+    i.reset(new int);
+    
     return 0;
 }
