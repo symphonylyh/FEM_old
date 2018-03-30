@@ -121,7 +121,7 @@ int main() {
     std::string inFileName = "meshData.txt";
     // std::cout << "Enter the input file name: ";
     // std::getline(std::cin, inFileName);
-    // std::string outFileName;
+    std::string outFileName = "output.txt";
     // std::cout << "Enter the output file name: ";
     // std::getline(std::cin, outFileName);
 
@@ -134,7 +134,7 @@ auto start = std::chrono::high_resolution_clock::now();
     case1->computeStrainAndStress();
     case1->printStrain();
     case1->printStress();
-    // case1->writeToFile(outFileName);
+    case1->writeToFile(outFileName);
 
     delete case1; case1 = NULL;
 
@@ -146,6 +146,6 @@ std::cout << "Elapsed time: " << elapsed.count() << " ms" << std::endl;
 std::cout << "-----------------------------------------------------";
 std::cout << std::endl;
 std::cout << "Mission Completed! Thanks for using our program!" << std::endl;
-    
+
     return 0;
 }

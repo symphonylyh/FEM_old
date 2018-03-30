@@ -10,6 +10,8 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <iostream>
+#include <fstream>
+#include <iomanip>
 
 Analysis::Analysis()
 {
@@ -210,5 +212,110 @@ void Analysis::printStress() const
 
 void Analysis::writeToFile(std::string const & fileName) const
 {
-    // @TODO your code here
+    std::string END1, END2;
+    std::ofstream file;
+    int temp = std::log10(mesh.nodeCount() - 1);
+    if (temp <= 0){
+        END1 = "                  ";
+        END2 = "        ";
+    }
+    else if (temp == 1){
+        END1 = "                  ";
+        END2 = "       ";
+    }
+    else if (temp == 2){
+        END1 = "                  ";
+        END2 = "      ";
+    }
+    else if (temp == 3){
+        END1 = "                 ";
+        END2 = "      ";
+    }
+    else if (temp == 4){
+        END1 = "                 ";
+        END2 = "     ";
+    }
+    else if (temp == 5){
+        END1 = "                 ";
+        END2 = "    ";
+    }
+    else if (temp == 6){
+        END1 = "                ";
+        END2 = "    ";
+    }
+    else if (temp == 7){
+        END1 = "                ";
+        END2 = "   ";
+    }
+    else if (temp == 8){
+        END1 = "                ";
+        END2 = " ";
+    }
+    else {
+        END1 = "                ";
+        END2 = "";
+    }
+
+    file.open (fileName);
+    file << "\n";
+    file << "\n";
+    file << "%-------------------------------------------------------------------------------------------------------%\n";
+    file << "                                     "<<"Linear Finite Element Program\n";
+    file << "%-------------------------------------------------------------------------------------------------------%\n";
+    file << "\n";
+    file << "\n";
+    file << "%---------------------------------------------------------------%\n";
+    file << "                 "<<"FEM Program Standard Output\n";
+    file << "%---------------------------------------------------------------%\n";
+    file << "\n";
+    file << "                     "<<"Nodal Displacements (in.): \n";
+    file << "\n";
+    file << "            "<<"  Nodal Index  |      Displacement (R, Z)\n";
+    file << "            "<<"--------------------------------------------------\n";
+    for (int i = 0; i < mesh.nodeCount(); i++){
+        file << END1 <<std::setw(temp + 1) << std::setfill('0')
+        << i << END2 <<"|      "<<std::fixed<<std::scientific<<std::setprecision(3)
+        <<"("<<mesh.nodeArray()[i]->getDisp().transpose()[0]<<", "<<mesh.nodeArray()[i]->getDisp().transpose()[1]
+        <<")\n";
+    }
+    file << "            "<<"--------------------------------------------------\n";
+    file << "\n";
+    file << "\n";
+
+
+    file << "%-------------------------------------------------------------------------------------------------------%\n";
+    file << "                                         "<<"FEM Program Standard Output\n";
+    file << "%-------------------------------------------------------------------------------------------------------%\n";
+    file << "\n";
+    file << "                                            "<<"Averaged Nodal Strain (no unit): \n";
+    file << "\n";
+    file << "            "<<"  Nodal Index  |                     Strain (R, TH, Z, RZ) \n";
+    file << "            "<<"--------------------------------------------------------------------------------------\n";
+    for (int i = 0; i < mesh.nodeCount(); i++){
+        file << END1 <<std::setw(temp + 1) << std::setfill('0')
+        << i << END2 <<"|      "<<std::fixed<<std::scientific<<std::setprecision(6)
+        <<"("<<nodalStrain.row(i)[0]<<", "<<nodalStrain.row(i)[1]<<", "<<nodalStrain.row(i)[2]<<", "<<nodalStrain.row(i)[3]
+        <<")\n";
+    }
+    file << "            "<<"--------------------------------------------------------------------------------------\n";
+    file << "\n";
+    file << "\n";
+
+    file << "%-------------------------------------------------------------------------------------------------------%\n";
+    file << "                                         "<<"FEM Program Standard Output\n";
+    file << "%-------------------------------------------------------------------------------------------------------%\n";
+    file << "\n";
+    file << "                                            "<<"Averaged Nodal Stress (psi.): \n";
+    file << "\n";
+    file << "            "<<"  Nodal Index  |                     Stress (R, TH, Z, RZ) \n";
+    file << "            "<<"--------------------------------------------------------------------------------------\n";
+    for (int i = 0; i < mesh.nodeCount(); i++){
+        file << END1 <<std::setw(temp + 1) << std::setfill('0')
+        << i << END2 <<"|      "<<std::fixed<<std::scientific<<std::setprecision(6)
+        <<"("<<nodalStress.row(i)[0]<<", "<<nodalStress.row(i)[1]<<", "<<nodalStress.row(i)[2]<<", "<<nodalStress.row(i)[3]
+        <<")\n";
+    }
+    file << "            "<<"--------------------------------------------------------------------------------------\n";
+
+    file.close();
 }
