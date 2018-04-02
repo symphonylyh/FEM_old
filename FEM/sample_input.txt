@@ -1,13 +1,16 @@
+// -------------------------------------------------------
+// Summary information:
 // Total number of nodes
 // Total number of elements
 // Total number of different property combinations these elements should be assigned to
 // Total number of loads in X-direction
 // Total number of loads in Y-direction
+// Total number of edge loads
 // Total number of displacement constraints in X-direction
 // Total number of displacement constraints in Y-direction
-40 9 1 0 3 19 7 
+40 9 1 0 3 1 19 7 
 // -------------------------------------------------------
-// Node (r,z) coordinates
+// Node (r,z) coordinates:
 0 0
 3 0
 6 0
@@ -49,7 +52,7 @@
 15 18
 18 18
 // -------------------------------------------------------
-// Element's node indices
+// Indexed element's node:
 0 2 13 11 1 8 12 7
 2 4 15 13 3 9 14 8
 4 6 17 15 5 10 16 9
@@ -60,20 +63,25 @@
 24 26 37 35 25 31 36 30
 26 28 39 37 27 32 38 31
 // -------------------------------------------------------
-// Element index to assign material property
+// Element index to assign material property:
 0 1 2 3 4 5 6 7 8
-// Material property to be assigned (Modulus, Poisson's ratio)
+// Material property to be assigned (Modulus, Poisson's ratio):
 30000 0.3
 // -------------------------------------------------------
-// Node index to assign X-direction load (N/A in this case)
+// Node index to assign X-direction load (void in this case)
 
-// Magnitude of X-direction load (N/A in this case)
+// Magnitude of X-direction load (void in this case)
 
 // -------------------------------------------------------
 // Node index to assign Y-direction load
 33 34 35
 // Magnitude of Y-direction load
 -30 -30 -30
+// -------------------------------------------------------
+// Element index to assign edge load and edge numbers (e.g., assign to edge 2 and 3 of element No.6)
+6 2 3
+// Magnitude of edge load in X and Y direction
+0 0 0 -15
 // -------------------------------------------------------
 // Node index to assign X-direction boundary condition
 0 1 2 3 4 5 6 7 11 18 22 29 33 10 17 21 28 32 39

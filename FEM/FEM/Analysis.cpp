@@ -291,8 +291,9 @@ void Analysis::printStress() const
 
 void Analysis::writeToFile(std::string const & fileName) const
 {
+    std::ofstream file(fileName);
     std::string END1, END2;
-    std::ofstream file;
+
     int temp = std::log10(mesh.nodeCount() - 1);
     if (temp <= 0){
         END1 = "                  ";
@@ -335,11 +336,10 @@ void Analysis::writeToFile(std::string const & fileName) const
         END2 = "";
     }
 
-    file.open (fileName);
     file << "\n";
     file << "\n";
     file << "%-------------------------------------------------------------------------------------------------------%\n";
-    file << "                                     "<<"Linear Finite Element Program\n";
+    file << "                  "<< "2D Axisymmetric Finite Element Analysis (Linear Elastic version)\n";
     file << "%-------------------------------------------------------------------------------------------------------%\n";
     file << "\n";
     file << "\n";
