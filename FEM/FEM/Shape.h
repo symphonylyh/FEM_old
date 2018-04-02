@@ -69,6 +69,11 @@ class Shape
          */
         virtual MatrixXd function(const Vector2d & point) const = 0;
 
+        virtual VectorXd edgeFunctionVec(const double & point) const = 0;
+        virtual MatrixXd edgeFunction(const double & point) const = 0;
+        virtual VectorXd edgeDeriv(const double & point) const = 0;
+        virtual VectorXd edgePoint() const = 0;
+
         /**
          * Compute the local derivatives dN/d(xi) and dN/d(eta) of the shape function
          * at a given point in isoparametric coordinates.

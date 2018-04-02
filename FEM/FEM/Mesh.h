@@ -108,6 +108,18 @@ class Mesh
         /** The load values at the node */
         std::vector<double> loadValue;
 
+        /** A list of the elements with applied edge load */
+        std::vector<int> loadElementList;
+
+        /** A list of loaded edges in each element */
+        std::vector<std::vector<int> > loadEdgeList;
+
+        /** A list of the edge load values for each element above */
+        std::vector<std::vector<double> > edgeLoadValue;
+
+        /** The universal body force */
+        std::vector<double> bodyForce;
+
     private:
         /** Total number of nodes */
         int nodeCount_;

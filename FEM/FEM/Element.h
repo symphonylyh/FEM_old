@@ -148,6 +148,9 @@ class Element
          */
         const MatrixXd & getNodeCoord() const;
 
+        /** A pointer to the node pool of the mesh */
+        // Node** meshNode; // used in updating the body force
+
     private:
         /** Zero-based index of the element */
         int index_;

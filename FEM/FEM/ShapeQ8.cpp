@@ -89,13 +89,69 @@ MatrixXd ShapeQ8::function(const Vector2d & point) const
           // Ni = (1-xi^2)(1+eta_i*eta)/2
           Ni = (1 - point(0) * point(0)) * (1 + nodeArray_[i](1) * point(1)) / 2;
         }
-        if (i== 5 || i == 7) { // eta = 0 mid-side nodes
+        if (i == 5 || i == 7) { // eta = 0 mid-side nodes
           // Ni = (1+xi_i*xi)(1-eta^2)/2
           Ni = (1 + nodeArray_[i](0) * point(0)) * (1 - point(1) * point(1)) / 2;
         }
         result(0, 2 * i) = Ni;
         result(1, 2 * i + 1) = Ni;
     }
+    return result;
+}
+
+VectorXd ShapeQ8::edgeFunctionVec(const double & point) const
+{ // 3x1 vector
+    VectorXd result(3);
+    for (int i = 0; i < 3; i++) {
+        double Ni = 0;
+        if (i == 0) // left/bottom point
+          Ni = - point * (1 - point) / 2; // Ni = -x(1-x)/2
+        if (i == 2) // right/top point
+          Ni = point * (1 + point) / 2; // Ni = x(1+x)/2
+        if (i == 1) // mid-side point
+          Ni = 1 - point * point; // Ni = (1-x^2)
+        result(i) = Ni;
+    }
+    return result;
+}
+
+MatrixXd ShapeQ8::edgeFunction(const double & point) const
+{ // 2x6 matrix, 3 gaussian point and 3 node at each edge
+    MatrixXd result = MatrixXd::Zero(2, 6);
+    for (int i = 0; i < 3; i++) {
+        double Ni = 0;
+        if (i == 0) // left/bottom point
+          Ni = - point * (1 - point) / 2; // Ni = -x(1-x)/2
+        if (i == 2) // right/top point
+          Ni = point * (1 + point) / 2; // Ni = x(1+x)/2
+        if (i == 1) // mid-side point
+          Ni = 1 - point * point; // Ni = (1-x^2)
+        result(0, 2 * i) = Ni;
+        result(1, 2 * i + 1) = Ni;
+    }
+    return result;
+}
+
+VectorXd ShapeQ8::edgeDeriv(const double & point) const
+{
+    VectorXd result(3);
+    for (int i = 0; i < 3; i++) {
+        double Ni = 0;
+        if (i == 0) // left/bottom point
+          Ni = (2 * point - 1) / 2; // dNi/dx = (2x-1)/2
+        if (i == 2) // right/top point
+          Ni = (2 * point + 1) / 2; // dNi/dx = (2x+1)/2
+        if (i == 1) // mid-side point
+          Ni = - 2 * point; // dNi/dx = -2x
+        result(i) = Ni;
+    }
+    return result;
+}
+
+VectorXd ShapeQ8::edgePoint() const
+{
+    double temp = std::sqrt(0.6);
+    Vector3d result(-temp, 0, temp);
     return result;
 }
 

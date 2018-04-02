@@ -39,6 +39,10 @@ class ShapeQ8 : public Shape
         ~ShapeQ8();
         VectorXd functionVec(const Vector2d & point) const;
         MatrixXd function(const Vector2d & point) const;
+        VectorXd edgeFunctionVec(const double & point) const;
+        MatrixXd edgeFunction(const double & point) const;
+        VectorXd edgeDeriv(const double & point) const;
+        VectorXd edgePoint() const;
         MatrixXd localDeriv(const Vector2d & point) const;
         const std::vector<Vector2d> & gaussianPoint() const;
         const std::vector<double> & gaussianWeight() const;

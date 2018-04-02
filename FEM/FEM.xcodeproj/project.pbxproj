@@ -347,9 +347,10 @@
 		FBA7FB632027F78B00BA5297 /* SuperLUSupport */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SuperLUSupport; sourceTree = "<group>"; };
 		FBA7FB642027F78B00BA5297 /* SVD */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SVD; sourceTree = "<group>"; };
 		FBA7FB652027F78B00BA5297 /* UmfPackSupport */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = UmfPackSupport; sourceTree = "<group>"; };
+		FBD19CD12071F0D900EA4A8A /* edge.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = edge.txt; sourceTree = "<group>"; };
+		FBD19CD22071F0D900EA4A8A /* point.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = point.txt; sourceTree = "<group>"; };
 		FBDC60CD2028FE8800B402E2 /* Mesh.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh.cpp; sourceTree = "<group>"; };
 		FBDC60CF2028FEB400B402E2 /* Mesh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mesh.h; sourceTree = "<group>"; };
-		FBDC60D32029650800B402E2 /* meshData.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = meshData.txt; sourceTree = "<group>"; };
 		FBE4BE0C202FA6F600DC83C8 /* ShapeQ4.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ShapeQ4.cpp; sourceTree = "<group>"; };
 		FBE4BE0E202FA70A00DC83C8 /* Shape.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Shape.h; sourceTree = "<group>"; };
 		FBE4BE0F202FD9E300DC83C8 /* ShapeQ4.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShapeQ4.h; sourceTree = "<group>"; };
@@ -388,7 +389,8 @@
 		FBA7F8AB2027F50400BA5297 /* FEM */ = {
 			isa = PBXGroup;
 			children = (
-				FBDC60D32029650800B402E2 /* meshData.txt */,
+				FBD19CD12071F0D900EA4A8A /* edge.txt */,
+				FBD19CD22071F0D900EA4A8A /* point.txt */,
 				FBA7FA102027F78B00BA5297 /* Eigen */,
 				FBA7F8AC2027F50400BA5297 /* main.cpp */,
 				FBA7F8B62027F57300BA5297 /* Element.cpp */,

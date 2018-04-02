@@ -55,8 +55,9 @@ void Mesh::readFromFile(std::string const & fileName)
     // Total number of nodes
     // Total number of elements
     // Total number of different property combinations these elements should be assigned to
-    // Total number of loads in X-direction
-    // Total number of loads in Y-direction
+    // Total number of point loads in X-direction
+    // Total number of point loads in Y-direction
+    // Total number of edge loads
     // Total number of displacement constraints in X-direction
     // Total number of displacement constraints in Y-direction
     std::vector<int> meshSummary;
@@ -67,8 +68,9 @@ void Mesh::readFromFile(std::string const & fileName)
     int elementProperties = meshSummary[2];
     int loadX = meshSummary[3];
     int loadY = meshSummary[4];
-    int boundaryX = meshSummary[5];
-    int boundaryY = meshSummary[6];
+    int edgeLoad = meshSummary[5];
+    int boundaryX = meshSummary[6];
+    int boundaryY = meshSummary[7];
     std::vector<int>().swap(meshSummary); // enforce to free the vector memory
 
     // Create node & element array on HEAP
@@ -154,6 +156,35 @@ void Mesh::readFromFile(std::string const & fileName)
         std::vector<double>().swap(loadYValue);
     }
 
+    loadElementList.clear();
+    loadEdgeList.clear();
+    edgeLoadValue.clear();
+    // Read edge loads
+    if (edgeLoad > 0) {
+        loadElementList.reserve(edgeLoad);
+        loadEdgeList.reserve(4 * edgeLoad); // at most all edges loaded
+        edgeLoadValue.reserve(8 * edgeLoad); // X-Y direction
+
+        std::vector<int> temp;
+        std::vector<int> temp2;
+        std::vector<double> temp3;
+        for (int i = 0; i < edgeLoad; i++) {
+            std::getline(file, readLine);
+            parseLine(readLine, temp);
+            loadElementList.emplace_back(temp.front()); // the element index
+            temp2.assign(temp.begin() + 1, temp.end()); // the edge list // Note: assign() will rewrite temp2
+            loadEdgeList.emplace_back(temp2);
+
+            std::getline(file, readLine);
+            parseLine(readLine, temp3);
+            edgeLoadValue.emplace_back(temp3);
+        }
+    }
+
+    // Read body force
+    bodyForce.clear();
+    std::getline(file, readLine);
+    parseLine(readLine, bodyForce);
 
     boundaryNodeList.clear();
     boundaryValue.clear(); // these two are the public member variables of Mesh class, to be used in Analysis->boundaryCondition()

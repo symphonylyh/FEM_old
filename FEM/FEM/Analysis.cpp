@@ -6,9 +6,9 @@
  * @date Feburary 26, 2018
  */
 
-#include "Analysis.h"
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include "Analysis.h"
 #include <iostream>
 #include <fstream>
 #include <iomanip>
@@ -75,8 +75,87 @@ void Analysis::applyForce()
 {
   nodalForce.resize(globalStiffness.cols());
   nodalForce.setZero();
+
+  // Apply point load
   for (unsigned i = 0; i < mesh.loadNodeList.size(); i++)
-      nodalForce(mesh.loadNodeList[i]) = mesh.loadValue[i] * 2 * M_PI; // *2 M_PI due to the axisymmetric property
+      nodalForce(mesh.loadNodeList[i]) += mesh.loadValue[i] * 2 * M_PI; // *2 M_PI due to the axisymmetric property
+
+  // Apply edge load
+  Element* curr;
+  // Traverse all elements with edge load
+  for (unsigned i = 0; i < mesh.loadElementList.size(); i++) {
+      curr = mesh.getElement(mesh.loadElementList[i]);
+      std::vector<int> edges = mesh.loadEdgeList[i];
+
+      std::vector<double> loads = mesh.edgeLoadValue[i];
+      VectorXi nodeList = curr->getNodeList();
+
+      VectorXd force(2 * curr->getSize());
+      force.setZero();
+
+      // Traverse all loaded edges in this element
+      for (unsigned j = 0; j < edges.size(); j++) {
+          Vector2d load(loads[2 * j], loads[2 * j + 1]); // 2x1 load vector
+          VectorXd gaussianPoint = curr->getShape()->edgePoint(); // 3x1 vector
+          std::vector<double> fullWeight = curr->getShape()->gaussianWeight();
+          VectorXd gaussianWeight(3);
+          gaussianWeight << fullWeight[0], fullWeight[1], fullWeight[2]; // 3x1 vector
+
+          MatrixXd nodeCoord (2,3);
+          // Vary by edge
+          switch (edges[j]) {
+              case 1:
+                  nodeCoord << mesh.getNode(nodeList(0))->getGlobalCoord(), mesh.getNode(nodeList(4))->getGlobalCoord(), mesh.getNode(nodeList(1))->getGlobalCoord(); // xi direction, node 1, 5, 2
+                  break;
+              case 2:
+                  nodeCoord << mesh.getNode(nodeList(1))->getGlobalCoord(), mesh.getNode(nodeList(5))->getGlobalCoord(), mesh.getNode(nodeList(2))->getGlobalCoord(); // eta direction, node 2, 6, 3
+                  break;
+              case 3:
+                  nodeCoord << mesh.getNode(nodeList(3))->getGlobalCoord(), mesh.getNode(nodeList(6))->getGlobalCoord(), mesh.getNode(nodeList(2))->getGlobalCoord(); // xi direction, node 4, 7, 3
+                  break;
+              case 4:
+                  nodeCoord << mesh.getNode(nodeList(0))->getGlobalCoord(), mesh.getNode(nodeList(7))->getGlobalCoord(), mesh.getNode(nodeList(3))->getGlobalCoord();// eta direction, node 1, 8, 4
+                  break;
+          }
+
+          // Integration at gaussian points
+          VectorXd result(2 * 3); result.setZero(); // 6x1 vector
+          for (int g = 0; g < 3; g++) { // later the "3" should be related to different Shape
+              MatrixXd N = curr->getShape()->edgeFunction(gaussianPoint(g)); // 2x6 shape matrix
+              VectorXd localDeriv = curr->getShape()->edgeDeriv(gaussianPoint(g)); // 3x1 vector
+              double dr = nodeCoord.row(0) * localDeriv;
+              double dz = nodeCoord.row(1) * localDeriv;
+              double jacobian = std::sqrt(dr * dr + dz * dz);
+              double radius = nodeCoord.row(0) * curr->getShape()->edgeFunctionVec(gaussianPoint(g));
+              result += 2 * M_PI * N.transpose() * load * jacobian * radius * gaussianWeight(g);
+          }
+
+          // Add load to the global force vector
+          std::vector<int> edge1{0,4,1};
+          std::vector<int> edge2{1,5,2};
+          std::vector<int> edge3{3,6,2};
+          std::vector<int> edge4{0,7,3};
+          std::vector<std::vector<int> > map{edge1, edge2, edge3, edge4};
+          std::vector<int> idx = map[edges[j] - 1];
+          for (int g = 0; g < 3; g++) {
+              force(2 * idx[g]) += result(2 * g);
+              force(2 * idx[g] + 1) += result(2 * g + 1);
+          }
+
+      }
+
+      // Assign element force to the global force vector
+      for (int k = 0; k < 8; k++) {
+          nodalForce(2 * nodeList(k)) += force(2 * k);
+          nodalForce(2 * nodeList(k) + 1) += force(2 * k + 1);
+      }
+
+  }
+
+  // Apply body force, this can be embedded into element.cpp
+  // load can be wrapped into a Load object
+  // Shape should store the gaussian matrix b/c every time we evaluate at gausspt
+
 }
 
 void Analysis::boundaryCondition()
