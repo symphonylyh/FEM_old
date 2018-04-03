@@ -83,6 +83,9 @@
 // Magnitude of edge load in X and Y direction
 0 0 0 -15
 // -------------------------------------------------------
+// Body force
+0 -10
+// -------------------------------------------------------
 // Node index to assign X-direction boundary condition
 0 1 2 3 4 5 6 7 11 18 22 29 33 10 17 21 28 32 39
 // X-direction boundary value
