@@ -16,7 +16,8 @@ Element::Element()
 Element::Element(const int & index, const std::vector<int> & nodeList, Node** const meshNode) // @TODO previously here I pass in vector<Node> which is very expensive, now I pass in vector<int> & and a pointer the pool of nodes create in mesh
   : /* meshNode(meshNode), */ index_(index), size_(static_cast<int>(nodeList.size())),
     nodeList_(size_), nodeCoord_(size_, 2), poissonRatio_(0), modulus_(0),
-    E_(MatrixXd::Zero(4,4)), localStiff(MatrixXd::Zero(2 * size_, 2 * size_))
+    E_(MatrixXd::Zero(4,4)), localStiff(MatrixXd::Zero(2 * size_, 2 * size_)),
+    nodalForce(VectorXd::Zero(2 * size_))
 { // use initializer list
     for (int i = 0; i < size_; i++) {
       nodeList_(i) = nodeList[i];
@@ -43,8 +44,10 @@ Element::~Element()
     clear_();
 }
 
-void Element::setMaterial(const double & M, const double & v)
+void Element::setMaterial(const std::vector<double> & properties)
 {
+    double M = properties[0];
+    double v = properties[1];
     modulus_ = M;
     poissonRatio_ = v;
 
@@ -54,6 +57,16 @@ void Element::setMaterial(const double & M, const double & v)
           v,   v,  1-v, 0,
           0,  0,    0,  (1-2*v)/2;
     E_ = E_ * M / (1+v) /(1-2*v);
+
+    // Assign body force (unit weight)
+    bodyForce_ << properties[2], properties[3];
+
+    // Assign thermal parameters
+    thermalCoeff_ = properties[4];
+    deltaT_ = properties[5];
+    thermalStrain_.resize(4);
+    double strain = thermalCoeff_ * deltaT_;
+    thermalStrain_ << strain, strain, strain, 0;
 }
 
 const MatrixXd & Element::EMatrix() const
@@ -79,6 +92,16 @@ const VectorXi & Element::getNodeList() const
 const MatrixXd & Element::getNodeCoord() const
 {
     return nodeCoord_;
+}
+
+const VectorXd & Element::getNodalForce() const
+{
+    return nodalForce;
+}
+
+const VectorXd & Element::getThermalStrain() const
+{
+    return thermalStrain_;
 }
 
 void Element::clear_()

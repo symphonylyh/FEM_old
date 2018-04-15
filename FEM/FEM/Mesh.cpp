@@ -117,7 +117,7 @@ void Mesh::readFromFile(std::string const & fileName)
         std::getline(file, readLine);
         parseLine(readLine, elementProperty);
         for (int j = 0; j < elementList.size(); j++)
-            meshElement_[elementList[j]]->setMaterial(elementProperty[0], elementProperty[1]);
+            meshElement_[elementList[j]]->setMaterial(elementProperty);
     }
     std::vector<int>().swap(elementList);
     std::vector<double>().swap(elementProperty);
@@ -181,10 +181,10 @@ void Mesh::readFromFile(std::string const & fileName)
         }
     }
 
-    // Read body force
-    bodyForce.clear();
-    std::getline(file, readLine);
-    parseLine(readLine, bodyForce);
+    // Read body force (move body force to the material property line)
+    // bodyForce.clear();
+    // std::getline(file, readLine);
+    // parseLine(readLine, bodyForce);
 
     boundaryNodeList.clear();
     boundaryValue.clear(); // these two are the public member variables of Mesh class, to be used in Analysis->boundaryCondition()

@@ -30,8 +30,14 @@ ElementQ8::~ElementQ8()
 const MatrixXd & ElementQ8::localStiffness()
 {
     for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++)
+        for (int j = 0; j < 3; j++) {
+            Vector2d gaussianPt = (statics.shape->gaussianPoint())[3 * i + j];
             localStiff += 2 * M_PI * termsAtGaussianPt((statics.shape->gaussianPoint())[3 * i + j]) * (statics.shape->gaussianWeight())[i] * (statics.shape->gaussianWeight())[j];
+            // Body force
+            nodalForce += 2 * M_PI * statics.shape->function(gaussianPt).transpose() * bodyForce_ * jacobian(gaussianPt).determinant() * radiusR(gaussianPt) * (statics.shape->gaussianWeight())[i] * (statics.shape->gaussianWeight())[j];
+            // Temperature load
+            nodalForce += 2 * M_PI * BMatrix(gaussianPt).transpose() * EMatrix() * thermalStrain_ * jacobian(gaussianPt).determinant() * radiusR(gaussianPt) * (statics.shape->gaussianWeight())[i] * (statics.shape->gaussianWeight())[j];
+        }
     }
     return localStiff;
 }
@@ -76,4 +82,9 @@ MatrixXd ElementQ8::termsAtGaussianPt(const Vector2d & point) const
 
     MatrixXd result = B.transpose() * EMatrix() * B * J.determinant() * r;
     return result;
+}
+
+double ElementQ8::radiusR(const Vector2d & point) const
+{
+    return statics.shape->functionVec(point).transpose() * getNodeCoord().col(0);
 }

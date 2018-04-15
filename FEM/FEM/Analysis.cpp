@@ -36,6 +36,9 @@ void Analysis::assembleStiffness()
     globalStiffness.reserve(maxNum);
     globalStiffness.setZero();
 
+    nodalForce.resize(globalStiffness.cols());
+    nodalForce.setZero();
+
     // Assemble global matrix from local matrix of each element
     Element* curr;
     for (int i = 0; i < mesh.elementCount(); i++) {
@@ -51,6 +54,14 @@ void Analysis::assembleStiffness()
                 globalStiffness.coeffRef(2 * nodeList(j) + 1, 2 * nodeList(k) + 1) += localStiffness(2 * j + 1, 2 * k + 1);
             }
         }
+
+        // Also assemble the body force and temperature load vector
+        const VectorXd & forceVec = curr->getNodalForce();
+        for (int n = 0; n < size; n++) {
+            nodalForce(2 * nodeList(n)) += forceVec(2 * n);
+            nodalForce(2 * nodeList(n) + 1) += forceVec(2 * n + 1);
+        }
+
     }
     globalStiffness.makeCompressed();
 
@@ -73,8 +84,8 @@ void Analysis::assembleStiffness()
 
 void Analysis::applyForce()
 {
-  nodalForce.resize(globalStiffness.cols());
-  nodalForce.setZero();
+  // nodalForce.resize(globalStiffness.cols());
+  // nodalForce.setZero();
 
   // Apply point load
   for (unsigned i = 0; i < mesh.loadNodeList.size(); i++)
@@ -152,6 +163,7 @@ void Analysis::applyForce()
 
   }
 
+  // Notes:
   // Apply body force, this can be embedded into element.cpp
   // load can be wrapped into a Load object
   // Shape should store the gaussian matrix b/c every time we evaluate at gausspt
@@ -235,7 +247,7 @@ void Analysis::computeStrainAndStress()
         const MatrixXd & E = curr->EMatrix();
         for (int n = 0; n < numNodes; n++) {
             VectorXd strain = strainAtNodes.row(n);
-            VectorXd stress = E * strain;
+            VectorXd stress = E * (strain - curr->getThermalStrain()); // subtract thermal strain, stress = E * (strain - thermal strain)
             mesh.nodeArray()[nodeList(n)]->setStrainAndStress(strain, stress);
         }
 

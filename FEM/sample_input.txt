@@ -65,8 +65,8 @@
 // -------------------------------------------------------
 // Element index to assign material property:
 0 1 2 3 4 5 6 7 8
-// Material property to be assigned (Modulus, Poisson's ratio):
-30000 0.3
+// Material property to be assigned (Modulus, Poisson's ratio, body force (r,z), thermal coefficient, temperature change):
+30000 0.3 0 -0.0807 6.5e-6 100
 // -------------------------------------------------------
 // Node index to assign X-direction load (void in this case)
 
@@ -80,11 +80,8 @@
 // -------------------------------------------------------
 // Element index to assign edge load and edge numbers (e.g., assign to edge 2 and 3 of element No.6)
 6 2 3
-// Magnitude of edge load in X and Y direction
+// Magnitude of edge load in X and Y direction (according to number of edges in the line above, 2 edges then 4 load components, 3 edges then 6 load components)
 0 0 0 -15
-// -------------------------------------------------------
-// Body force
-0 -10
 // -------------------------------------------------------
 // Node index to assign X-direction boundary condition
 0 1 2 3 4 5 6 7 11 18 22 29 33 10 17 21 28 32 39

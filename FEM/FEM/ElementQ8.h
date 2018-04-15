@@ -99,6 +99,8 @@ class ElementQ8 : public Element
          * @return The internal result of the stiffness matrix computation.
          */
         MatrixXd termsAtGaussianPt(const Vector2d & point) const;
+
+        double radiusR(const Vector2d & point) const;
 };
 
 #endif /* ElementQ8_h */

@@ -62,10 +62,9 @@ class Element
         /**
          * Assign the material properties of the element.
          *
-         * @param M The modulus.
-         * @param v The Poisson's ratio.
+         * @param properties A list of the property parameters.
          */
-        void setMaterial(const double & M, const double & v);
+        void setMaterial(const std::vector<double> & properties);
 
         /**
          * Get the stress-strain constitutive matrix of the element.
@@ -151,7 +150,21 @@ class Element
         /** A pointer to the node pool of the mesh */
         // Node** meshNode; // used in updating the body force
 
-    private:
+        /**
+         * Get the distributed nodal force from body force and temperature loads.
+         *
+         * @return The nodal force as a 2n-by-1 vector.
+         */
+        const VectorXd & getNodalForce() const;
+
+        /**
+         * Get the thermal strain to be used in the stress computation.
+         *
+         * @return The thermal strain as a 4-by-1 vector for 2D axisymmetric problem.
+         */
+        const VectorXd & getThermalStrain() const;
+        
+    protected: // make as protected for Q8 to access much easier!
         /** Zero-based index of the element */
         int index_;
 
@@ -166,11 +179,23 @@ class Element
          */
         MatrixXd nodeCoord_;
 
+        /** The modulus */
+        double modulus_;
+
         /** The Poisson's ratio */
         double poissonRatio_;
 
-        /** The modulus */
-        double modulus_;
+        /** The body force (unit weight) */
+        Vector2d bodyForce_;
+
+        /** The coefficient of thermal effect */
+        double thermalCoeff_;
+
+        /** The temperature change (assume same across the entire element) */
+        double deltaT_;
+
+        /** The thermal strain */
+        VectorXd thermalStrain_;
 
         /** The 4-by-4 stress-strain constitutive matrix sigma = E * e */
         MatrixXd E_;
@@ -187,9 +212,11 @@ class Element
          */
         void copy_(Element const & other);
 
-    public:
         /** The 2n-by-2n local stiffness matrix where n is the number of nodes */
         MatrixXd localStiff; // member variable cannot have the same name as member function
+
+        /** The 2n-by-1 nodal force vector where n is the number of nodes */
+        VectorXd nodalForce;
 };
 
 #endif /* Element_h */
