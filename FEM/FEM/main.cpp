@@ -118,10 +118,10 @@ int main() {
     //--------------------------------Main program------------------------------
     //--------------------------------------------------------------------------
     // Get file name
-    std::string inFileName = "input_temperature.txt";
+    std::string inFileName = "input_edge.txt";
     // std::cout << "Enter the input file name: ";
     // std::getline(std::cin, inFileName);
-    std::string outFileName = "output_temperature.txt";
+    std::string outFileName = "output_edge.txt";
     // std::cout << "Enter the output file name: ";
     // std::getline(std::cin, outFileName);
 

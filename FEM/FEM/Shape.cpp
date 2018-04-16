@@ -52,7 +52,7 @@ const std::vector<double> & Shape::gaussianWt() const
     return gaussianWt_;
 }
 
-const double & gaussianWt(const int & i) const
+const double & Shape::gaussianWt(const int & i) const
 {
     return gaussianWt_[i];
 }

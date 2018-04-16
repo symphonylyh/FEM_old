@@ -101,7 +101,7 @@ void Analysis::applyForce()
         // The shape function for each edge in an isoparametric element is the same
         const std::vector<double> & gaussianPoint = curr->shape()->edgeGaussianPt(); // length 3 vector
         const std::vector<double> & gaussianWeight = curr->shape()->edgeGaussianWt(); // length 3 vector
-        int numGaussianPts = gaussianPoint.size();
+        int numGaussianPts = (int)gaussianPoint.size();
 
         // The edge load information
         const std::vector<int> & edges = mesh.loadEdgeList[i];
@@ -116,10 +116,11 @@ void Analysis::applyForce()
 
             // The global coordinates of the edge nodes
             const std::vector<int> & edgeNodes = curr->shape()->edge(edges[j]);
-            int numEdgeNodes = edgeNodes.size();
+            int numEdgeNodes = (int)edgeNodes.size();
             MatrixXd nodeCoord (2, numEdgeNodes);
             for (int n = 0; n < numEdgeNodes; n++)
-                nodeCoord.col(n) = mesh.getNode(edgeNodes[n])->getGlobalCoord();
+                nodeCoord.col(n) = mesh.getNode(nodeList(edgeNodes[n]))->getGlobalCoord();
+                // (Solved) @BUG here, previous wrote mesh.getNode(edgeNodes[n]), should map to the node index in the mesh
 
             // Integration at gaussian points
             // sum: 2PI * N^T * F * |J| * r * W(i)
@@ -131,7 +132,7 @@ void Analysis::applyForce()
                 double dz = globalDeriv(1);
                 double jacobianDet = std::sqrt(dr * dr + dz * dz);
                 double radius = nodeCoord.row(0) * curr->shape()->edgeFunctionVec(g);
-                result += 2 * M_PI * N.transpose() * load * jacobianDet * radius * edgeGaussianWt[g];
+                result += 2 * M_PI * N.transpose() * load * jacobianDet * radius * gaussianWeight[g];
             }
 
             // Assemble edge force vector to the element force vector
@@ -199,7 +200,7 @@ void Analysis::computeStrainAndStress()
         curr = mesh.elementArray()[i];
         const VectorXi & nodeList = curr->getNodeList();
         numNodes = curr->getSize();
-        numGaussianPt = curr->shape()->gaussianPt().size();
+        numGaussianPt = (int)curr->shape()->gaussianPt().size();
 
         // Assemble the nodal displacement vector for an element
         VectorXd nodeDisp(2 * numNodes);

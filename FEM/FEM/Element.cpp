@@ -73,11 +73,13 @@ void Element::setMaterial(const std::vector<double> & properties)
     thermalStrain_.resize(4);
     double strain = thermalCoeff_ * deltaT_;
     thermalStrain_ << strain, strain, strain, 0;
+
+    _computeStiffnessAndForce(); // bootstrap the computation of stiffness matrix and force vector. After callling this function, the member variables are all computed
+    
 }
 
 const MatrixXd & Element::localStiffness() const
 {
-    _computeStiffnessAndForce(); // bootstrap the computation of stiffness matrix and force vector. After callling this function, the member variables are all computed
     return localStiffness_;
 }
 

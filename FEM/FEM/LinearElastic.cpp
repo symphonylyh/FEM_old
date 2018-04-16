@@ -18,7 +18,7 @@ LinearElastic::~LinearElastic()
 
 void LinearElastic::solveDisp()
 {
-    assembleStiffness();
+    assembleStiffnessAndForce();
     applyForce();
     boundaryCondition();
 
