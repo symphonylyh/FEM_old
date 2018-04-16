@@ -25,7 +25,7 @@ Analysis::~Analysis()
 {
 }
 
-void Analysis::assembleStiffness()
+void Analysis::assembleStiffnessAndForce()
 {
     // Initialize global stiffness  matrix
     globalStiffness.resize(2 * mesh.nodeCount(),2 * mesh.nodeCount());
@@ -36,6 +36,7 @@ void Analysis::assembleStiffness()
     globalStiffness.reserve(maxNum);
     globalStiffness.setZero();
 
+    // Initialize global force vector
     nodalForce.resize(globalStiffness.cols());
     nodalForce.setZero();
 
@@ -44,22 +45,24 @@ void Analysis::assembleStiffness()
     for (int i = 0; i < mesh.elementCount(); i++) {
         curr = mesh.elementArray()[i];
         int size = curr->getSize();// element type, for Q4 element, size=4; for Q8, size=8, etc
-        const MatrixXi & nodeList = curr->getNodeList();// the index of nodes belong to this element, e.g., for element8, it will give you a vector contain (10,11,15,14), use this to locate row & column in globalStiffness matrix
+        const VectorXi & nodeList = curr->getNodeList();// the index of nodes belong to this element, e.g., for element8, it will give you a vector contain (10,11,15,14), use this to locate row & column in globalStiffness matrix
         const MatrixXd & localStiffness = curr->localStiffness();
+
+        // Traverse each node and assemble the values to global stiffness matrix and global force vector
         for (int j = 0; j < size; j++){
+
             for (int k = 0; k < size; k++){
                 globalStiffness.coeffRef(2 * nodeList(j), 2 * nodeList(k)) += localStiffness(2 * j , 2 * k);
                 globalStiffness.coeffRef(2 * nodeList(j), 2 * nodeList(k) + 1) += localStiffness(2 * j , 2 * k + 1);
                 globalStiffness.coeffRef(2 * nodeList(j) + 1, 2 * nodeList(k)) += localStiffness(2 * j + 1, 2 * k);
                 globalStiffness.coeffRef(2 * nodeList(j) + 1, 2 * nodeList(k) + 1) += localStiffness(2 * j + 1, 2 * k + 1);
             }
-        }
 
-        // Also assemble the body force and temperature load vector
-        const VectorXd & forceVec = curr->getNodalForce();
-        for (int n = 0; n < size; n++) {
-            nodalForce(2 * nodeList(n)) += forceVec(2 * n);
-            nodalForce(2 * nodeList(n) + 1) += forceVec(2 * n + 1);
+            // Also assemble the body force and temperature load vector
+            const VectorXd & forceVec = curr->nodalForce();
+            nodalForce(2 * nodeList(j)) += forceVec(2 * j);
+            nodalForce(2 * nodeList(j) + 1) += forceVec(2 * j + 1);
+
         }
 
     }
@@ -84,89 +87,68 @@ void Analysis::assembleStiffness()
 
 void Analysis::applyForce()
 {
-  // nodalForce.resize(globalStiffness.cols());
-  // nodalForce.setZero();
+    // Apply point load
+    for (unsigned i = 0; i < mesh.loadNodeList.size(); i++)
+        nodalForce(mesh.loadNodeList[i]) += 2 * M_PI * mesh.loadValue[i]; // *2 M_PI due to the axisymmetric property
 
-  // Apply point load
-  for (unsigned i = 0; i < mesh.loadNodeList.size(); i++)
-      nodalForce(mesh.loadNodeList[i]) += mesh.loadValue[i] * 2 * M_PI; // *2 M_PI due to the axisymmetric property
+    // Apply edge load
+    Element* curr;
+    // Traverse all elements with edge load
+    for (unsigned i = 0; i < mesh.loadElementList.size(); i++) {
+        curr = mesh.getElement(mesh.loadElementList[i]);
+        const VectorXi & nodeList = curr->getNodeList();
+        int elementType = curr->getSize();
+        // The shape function for each edge in an isoparametric element is the same
+        const std::vector<double> & gaussianPoint = curr->shape()->edgeGaussianPt(); // length 3 vector
+        const std::vector<double> & gaussianWeight = curr->shape()->edgeGaussianWt(); // length 3 vector
+        int numGaussianPts = gaussianPoint.size();
 
-  // Apply edge load
-  Element* curr;
-  // Traverse all elements with edge load
-  for (unsigned i = 0; i < mesh.loadElementList.size(); i++) {
-      curr = mesh.getElement(mesh.loadElementList[i]);
-      std::vector<int> edges = mesh.loadEdgeList[i];
+        // The edge load information
+        const std::vector<int> & edges = mesh.loadEdgeList[i];
+        const std::vector<double> & loads = mesh.edgeLoadValue[i];
 
-      std::vector<double> loads = mesh.edgeLoadValue[i];
-      VectorXi nodeList = curr->getNodeList();
+        VectorXd forceVec(2 * elementType);
+        forceVec.setZero();
+        // Traverse all loaded edges in this element
+        for (unsigned j = 0; j < edges.size(); j++) {
 
-      VectorXd force(2 * curr->getSize());
-      force.setZero();
+            Vector2d load(loads[2 * j], loads[2 * j + 1]); // 2x1 load vector
 
-      // Traverse all loaded edges in this element
-      for (unsigned j = 0; j < edges.size(); j++) {
-          Vector2d load(loads[2 * j], loads[2 * j + 1]); // 2x1 load vector
-          VectorXd gaussianPoint = curr->getShape()->edgePoint(); // 3x1 vector
-          std::vector<double> fullWeight = curr->getShape()->gaussianWeight();
-          VectorXd gaussianWeight(3);
-          gaussianWeight << fullWeight[0], fullWeight[1], fullWeight[2]; // 3x1 vector
+            // The global coordinates of the edge nodes
+            const std::vector<int> & edgeNodes = curr->shape()->edge(edges[j]);
+            int numEdgeNodes = edgeNodes.size();
+            MatrixXd nodeCoord (2, numEdgeNodes);
+            for (int n = 0; n < numEdgeNodes; n++)
+                nodeCoord.col(n) = mesh.getNode(edgeNodes[n])->getGlobalCoord();
 
-          MatrixXd nodeCoord (2,3);
-          // Vary by edge
-          switch (edges[j]) {
-              case 0:
-                  nodeCoord << mesh.getNode(nodeList(0))->getGlobalCoord(), mesh.getNode(nodeList(4))->getGlobalCoord(), mesh.getNode(nodeList(1))->getGlobalCoord(); // xi direction, node 1, 5, 2
-                  break;
-              case 1:
-                  nodeCoord << mesh.getNode(nodeList(1))->getGlobalCoord(), mesh.getNode(nodeList(5))->getGlobalCoord(), mesh.getNode(nodeList(2))->getGlobalCoord(); // eta direction, node 2, 6, 3
-                  break;
-              case 2:
-                  nodeCoord << mesh.getNode(nodeList(3))->getGlobalCoord(), mesh.getNode(nodeList(6))->getGlobalCoord(), mesh.getNode(nodeList(2))->getGlobalCoord(); // xi direction, node 4, 7, 3
-                  break;
-              case 3:
-                  nodeCoord << mesh.getNode(nodeList(0))->getGlobalCoord(), mesh.getNode(nodeList(7))->getGlobalCoord(), mesh.getNode(nodeList(3))->getGlobalCoord();// eta direction, node 1, 8, 4
-                  break;
-          }
+            // Integration at gaussian points
+            // sum: 2PI * N^T * F * |J| * r * W(i)
+            VectorXd result(2 * numEdgeNodes); result.setZero(); // 6x1 vector
+            for (int g = 0; g < numGaussianPts; g++) {
+                MatrixXd N = curr->shape()->edgeFunctionMat(g); // 2x6 shape matrix
+                VectorXd globalDeriv = nodeCoord * curr->shape()->edgeFunctionDeriv(g); // 2x3 matrix * 3x1 vector = 2x1 vector [dr; dz]
+                double dr = globalDeriv(0);
+                double dz = globalDeriv(1);
+                double jacobianDet = std::sqrt(dr * dr + dz * dz);
+                double radius = nodeCoord.row(0) * curr->shape()->edgeFunctionVec(g);
+                result += 2 * M_PI * N.transpose() * load * jacobianDet * radius * edgeGaussianWt[g];
+            }
 
-          // Integration at gaussian points
-          VectorXd result(2 * 3); result.setZero(); // 6x1 vector
-          for (int g = 0; g < 3; g++) { // later the "3" should be related to different Shape
-              MatrixXd N = curr->getShape()->edgeFunction(gaussianPoint(g)); // 2x6 shape matrix
-              VectorXd localDeriv = curr->getShape()->edgeDeriv(gaussianPoint(g)); // 3x1 vector
-              double dr = nodeCoord.row(0) * localDeriv;
-              double dz = nodeCoord.row(1) * localDeriv;
-              double jacobian = std::sqrt(dr * dr + dz * dz);
-              double radius = nodeCoord.row(0) * curr->getShape()->edgeFunctionVec(gaussianPoint(g));
-              result += 2 * M_PI * N.transpose() * load * jacobian * radius * gaussianWeight(g);
-          }
+            // Assemble edge force vector to the element force vector
+            for (int n = 0; n < numEdgeNodes; n++) {
+                forceVec(2 * edgeNodes[n]) += result(2 * n);
+                forceVec(2 * edgeNodes[n] + 1) += result(2 * n + 1);
+            }
 
-          // Add load to the global force vector
-          std::vector<int> edge1{0,4,1};
-          std::vector<int> edge2{1,5,2};
-          std::vector<int> edge3{3,6,2};
-          std::vector<int> edge4{0,7,3};
-          std::vector<std::vector<int> > map{edge1, edge2, edge3, edge4};
-          std::vector<int> idx = map[edges[j]];
-          for (int g = 0; g < 3; g++) {
-              force(2 * idx[g]) += result(2 * g);
-              force(2 * idx[g] + 1) += result(2 * g + 1);
-          }
+        } // After traverse all loaded edges of this element
 
-      }
+        // Assemble element force vector to the global force vector
+        for (int k = 0; k < elementType; k++) {
+            nodalForce(2 * nodeList(k)) += forceVec(2 * k);
+            nodalForce(2 * nodeList(k) + 1) += forceVec(2 * k + 1);
+        }
 
-      // Assign element force to the global force vector
-      for (int k = 0; k < 8; k++) {
-          nodalForce(2 * nodeList(k)) += force(2 * k);
-          nodalForce(2 * nodeList(k) + 1) += force(2 * k + 1);
-      }
-
-  }
-
-  // Notes:
-  // Apply body force, this can be embedded into element.cpp
-  // load can be wrapped into a Load object
-  // Shape should store the gaussian matrix b/c every time we evaluate at gausspt
+    }
 
 }
 
@@ -217,8 +199,7 @@ void Analysis::computeStrainAndStress()
         curr = mesh.elementArray()[i];
         const VectorXi & nodeList = curr->getNodeList();
         numNodes = curr->getSize();
-        const std::vector<Vector2d> & GaussianPt = curr->getShape()->gaussianPoint();
-        numGaussianPt = static_cast<int>(GaussianPt.size());
+        numGaussianPt = curr->shape()->gaussianPt().size();
 
         // Assemble the nodal displacement vector for an element
         VectorXd nodeDisp(2 * numNodes);
@@ -233,10 +214,10 @@ void Analysis::computeStrainAndStress()
 
         // Compute strain at gaussian points from e = Bu
         for (int g = 0; g < numGaussianPt; g++) {
-            MatrixXd B = curr->BMatrix(GaussianPt[g]);
-            VectorXd e = B * nodeDisp;
+            MatrixXd B = curr->BMatrix(curr->shape()->gaussianPt(g));
+            VectorXd e = B * nodeDisp; // e = B * u
             strainAtGaussPt.row(g) = e.transpose();
-            shapeAtGaussPt.row(g) = curr->getShape()->functionVec(GaussianPt[g]).transpose();
+            shapeAtGaussPt.row(g) = curr->shape()->functionVec(g).transpose();
         }
 
         // Solve/extrapolate for nodal strain value via a least square linear system using pesudo inverse
@@ -247,13 +228,13 @@ void Analysis::computeStrainAndStress()
         const MatrixXd & E = curr->EMatrix();
         for (int n = 0; n < numNodes; n++) {
             VectorXd strain = strainAtNodes.row(n);
-            VectorXd stress = E * (strain - curr->getThermalStrain()); // subtract thermal strain, stress = E * (strain - thermal strain)
+            VectorXd stress = E * (strain - curr->thermalStrain()); // subtract thermal strain, stress = E * (strain - thermal strain)
             mesh.nodeArray()[nodeList(n)]->setStrainAndStress(strain, stress);
         }
 
     }
 
-    // Write nodal strain and stress
+    // Average nodal strain and stress
     for (int i = 0; i < mesh.nodeCount(); i++) {
         nodalStrain.row(i) = mesh.nodeArray()[i]->averageStrain().transpose();
         nodalStress.row(i) = mesh.nodeArray()[i]->averageStress().transpose();

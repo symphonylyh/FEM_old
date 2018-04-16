@@ -62,7 +62,7 @@ class Analysis
          * Assemble the global stiffness matrix from the local stiffness matrix
          * of each element.
          */
-        void assembleStiffness();
+        void assembleStiffnessAndForce();
 
         /**
          * Apply the load at nodes.

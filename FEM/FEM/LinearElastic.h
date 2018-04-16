@@ -23,7 +23,6 @@ class LinearElastic : public Analysis
     ~LinearElastic();
     void solveDisp();
 
-  private:
 };
 
 #endif /* LinearElastic_h */

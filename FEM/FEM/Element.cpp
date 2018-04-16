@@ -77,12 +77,23 @@ void Element::setMaterial(const std::vector<double> & properties)
 
 const MatrixXd & Element::localStiffness() const
 {
+    _computeStiffnessAndForce(); // bootstrap the computation of stiffness matrix and force vector. After callling this function, the member variables are all computed
     return localStiffness_;
 }
 
 const VectorXd & Element::nodalForce() const
 {
     return nodalForce_;
+}
+
+const MatrixXd & Element::EMatrix() const
+{
+    return E_;
+}
+
+const VectorXd & Element::thermalStrain() const
+{
+    return thermalStrain_;
 }
 
 MatrixXd Element::jacobian(const Vector2d & point) const
@@ -112,17 +123,6 @@ MatrixXd Element::BMatrix(const Vector2d & point) const
     return B;
 }
 
-const MatrixXd & Element::EMatrix() const
-{
-    return E_;
-}
-
-const VectorXd & Element::getThermalStrain() const
-{
-    return thermalStrain_;
-}
-
-
 const int & Element::getIndex() const
 {
     return index_;
@@ -141,11 +141,6 @@ const VectorXi & Element::getNodeList() const
 const MatrixXd & Element::getNodeCoord() const
 {
     return nodeCoord_;
-}
-
-const VectorXd & Element::getNodalForce() const
-{
-    return nodalForce;
 }
 
 
@@ -214,9 +209,14 @@ void Element::copy_(Element const & other)
     size_ = other.size_;
     nodeList_ = other.nodeList_;
     nodeCoord_ = other.nodeCoord_;
-    poissonRatio_ = other.poissonRatio_;
-    modulus_ = other.modulus_;
     E_ = other.E_;
     localStiffness_ = other.localStiffness_;
     nodalForce_ = other.nodalForce_;
+    modulus_ = other.modulus_;
+    poissonRatio_ = other.poissonRatio_;
+    bodyForce_ = other.bodyForce_;
+    thermalCoeff_ = other.thermalCoeff_;
+    deltaT_ = other.deltaT_;
+    thermalStrain_ = other.thermalStrain_;
+
 }

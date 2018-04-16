@@ -124,6 +124,12 @@ class Element
          *
          * @param point The point where the Jacobian matrix to be evaluated.
          * @return The 2-by-2 (2D) Jacobian matrix.
+         *
+         * @note There are two sets of jacobian, radius, BMatrix methods in the
+         * class. These ones are for calculating at arbitrary point, therefore
+         * they are public method; the other ones  calculates at Gaussian points
+         * only, which are for the convenience of the formulation of stiffness
+         * matrix and force vector.
          */
         MatrixXd jacobian(const Vector2d & point) const;
 
@@ -146,8 +152,6 @@ class Element
          * this element.
          */
         MatrixXd BMatrix(const Vector2d & point) const;
-
-
 
         /**
          * Get the index of this element.
@@ -176,11 +180,6 @@ class Element
          * @return The node coordinates as a n-by-2 matrix.
          */
         const MatrixXd & getNodeCoord() const;
-
-        /** A pointer to the node pool of the mesh */
-        // Node** meshNode; // used in updating the body force
-
-
 
     protected: // make as protected for derived classes to access much easier!
 

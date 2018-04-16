@@ -193,7 +193,7 @@ MatrixXd ShapeQ8::edgeFunctionMat(const double & point) const
 }
 
 VectorXd ShapeQ8::edgeFunctionDeriv(const double & point) const
-{
+{ // 3x1 vector
     VectorXd result(numEdgeNodes_);
     for (int i = 0; i < 3; i++) {
         double Ni = 0;

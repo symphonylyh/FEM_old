@@ -6,9 +6,6 @@
  * @date Feburary 13, 2018
  */
 
-// for use of M_PI
-#define _USE_MATH_DEFINES
-#include <cmath>
 #include "ElementQ8.h"
 
 // static member should be initialized outside the class body because it doesn't

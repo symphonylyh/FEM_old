@@ -28,6 +28,7 @@ class ElementQ8 : public Element
     private:
         /** A static structure that manages all the static members used in this class */
         static staticMembers statics;
+        
 };
 
 #endif /* ElementQ8_h */
