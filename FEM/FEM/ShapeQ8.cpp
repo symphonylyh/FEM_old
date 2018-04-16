@@ -9,7 +9,7 @@
 #include "ShapeQ8.h"
 #include <cmath>
 
-ShapeQ8::ShapeQ8(int nodes, int gaussians, int edges, int edgeNodes, int edgeGaussians) :
+ShapeQ8::ShapeQ8(const int & nodes, const int & gaussians, const int & edges, const int & edgeNodes, const int & edgeGaussians) :
     Shape(nodes, gaussians, edges, edgeNodes, edgeGaussians) // Call the constructor of base class
 {
     // Set up shape parameters
@@ -44,19 +44,39 @@ ShapeQ8::ShapeQ8(int nodes, int gaussians, int edges, int edgeNodes, int edgeGau
     // Gaussian weights
     double corner = 5.0 / 9.0; // do not use 5/9! that is 0 due to rounding down!
     double side = 8.0 / 9.0;
-    gaussianWt_[0] = corner;
-    gaussianWt_[2] = corner;
-    gaussianWt_[6] = corner;
-    gaussianWt_[8] = corner;
-    gaussianWt_[1] = side;
-    gaussianWt_[3] = side;
-    gaussianWt_[5] = side;
-    gaussianWt_[7] = side;
-    gaussianWt_[4] = side;
+    // For the sake of better generailization in Element class, we directly compute
+    // the 2D overlapped Gaussian weights at each Gaussian weights instead of
+    // doing wi*wj later on. Thus, previously we need to:
+    // for i = 1:3
+    //     for j = 1:3
+    //           result += X * w(i) * w(j);
+    // Now we can just loop through all Gaussian points:
+    // for g = 1:9
+    //     result += X * W(g);
+    // And the methods of Element class can be highly abstract.
+    gaussianWt_[0] = corner * corner;
+    gaussianWt_[2] = corner * corner;
+    gaussianWt_[6] = corner * corner;
+    gaussianWt_[8] = corner * corner;
+    gaussianWt_[1] = side * corner;
+    gaussianWt_[3] = side * corner;
+    gaussianWt_[5] = side * corner;
+    gaussianWt_[7] = side * corner;
+    gaussianWt_[4] = side * side; // center
     // Edge Gaussian weights
     edgeGaussianWt_[0] = corner;
     edgeGaussianWt_[1] = side;
     edgeGaussianWt_[2] = corner;
+
+    // Edge list
+    std::vector<int> edge1{0,4,1};
+    std::vector<int> edge2{1,5,2};
+    std::vector<int> edge3{3,6,2};
+    std::vector<int> edge4{0,7,3};
+    edgeList_[0] = edge1;
+    edgeList_[1] = edge2;
+    edgeList_[2] = edge3;
+    edgeList_[3] = edge4;
 
     // After setting up the above parameters, pre-cache the shape function
     _cacheShape();

@@ -115,16 +115,16 @@ void Analysis::applyForce()
           MatrixXd nodeCoord (2,3);
           // Vary by edge
           switch (edges[j]) {
-              case 1:
+              case 0:
                   nodeCoord << mesh.getNode(nodeList(0))->getGlobalCoord(), mesh.getNode(nodeList(4))->getGlobalCoord(), mesh.getNode(nodeList(1))->getGlobalCoord(); // xi direction, node 1, 5, 2
                   break;
-              case 2:
+              case 1:
                   nodeCoord << mesh.getNode(nodeList(1))->getGlobalCoord(), mesh.getNode(nodeList(5))->getGlobalCoord(), mesh.getNode(nodeList(2))->getGlobalCoord(); // eta direction, node 2, 6, 3
                   break;
-              case 3:
+              case 2:
                   nodeCoord << mesh.getNode(nodeList(3))->getGlobalCoord(), mesh.getNode(nodeList(6))->getGlobalCoord(), mesh.getNode(nodeList(2))->getGlobalCoord(); // xi direction, node 4, 7, 3
                   break;
-              case 4:
+              case 3:
                   nodeCoord << mesh.getNode(nodeList(0))->getGlobalCoord(), mesh.getNode(nodeList(7))->getGlobalCoord(), mesh.getNode(nodeList(3))->getGlobalCoord();// eta direction, node 1, 8, 4
                   break;
           }
@@ -147,7 +147,7 @@ void Analysis::applyForce()
           std::vector<int> edge3{3,6,2};
           std::vector<int> edge4{0,7,3};
           std::vector<std::vector<int> > map{edge1, edge2, edge3, edge4};
-          std::vector<int> idx = map[edges[j] - 1];
+          std::vector<int> idx = map[edges[j]];
           for (int g = 0; g < 3; g++) {
               force(2 * idx[g]) += result(2 * g);
               force(2 * idx[g] + 1) += result(2 * g + 1);

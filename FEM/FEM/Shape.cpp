@@ -9,7 +9,7 @@
 #include "Shape.h"
 #include <cmath>
 
-Shape::Shape(int nodes, int gaussians, int edges, int edgeNodes, int edgeGaussians) :
+Shape::Shape(const int & nodes, const int & gaussians, const int & edges, const int & edgeNodes, const int & edgeGaussians) :
 // use initializer list to define the size of vector!
     numNodes_(nodes), nodeCoord_(nodes),
     numGaussianPts_(gaussians), gaussianPt_(gaussians), gaussianWt_(gaussians),
@@ -22,32 +22,52 @@ Shape::Shape(int nodes, int gaussians, int edges, int edgeNodes, int edgeGaussia
     // are done in the constructor of each derived class.
 }
 
-const VectorXd & Shape::functionVec(int i) const
+const VectorXd & Shape::functionVec(const int & i) const
 {
     return shapeVec_[i];
 }
 
-const MatrixXd & Shape::functionMat(int i) const
+const MatrixXd & Shape::functionMat(const int & i) const
 {
     return shapeMat_[i];
 }
 
-const MatrixXd & Shape::functionDeriv(int i) const
+const MatrixXd & Shape::functionDeriv(const int & i) const
 {
     return shapeDeriv_[i];
 }
 
-const VectorXd & Shape::edgeFunctionVec(int i) const
+const std::vector<Vector2d> & Shape::gaussianPt() const
+{
+    return gaussianPt_;
+}
+
+const Vector2d & Shape::gaussianPt(const int & i) const
+{
+    return gaussianPt_[i];
+}
+
+const std::vector<double> & Shape::gaussianWt() const
+{
+    return gaussianWt_;
+}
+
+const double & gaussianWt(const int & i) const
+{
+    return gaussianWt_[i];
+}
+
+const VectorXd & Shape::edgeFunctionVec(const int & i) const
 {
     return edgeShapeVec_[i];
 }
 
-const MatrixXd & Shape::edgeFunctionMat(int i) const
+const MatrixXd & Shape::edgeFunctionMat(const int & i) const
 {
     return edgeShapeMat_[i];
 }
 
-const VectorXd & Shape::edgeFunctionDeriv(int i) const
+const VectorXd & Shape::edgeFunctionDeriv(const int & i) const
 {
     return edgeShapeDeriv_[i];
 }
@@ -62,27 +82,22 @@ const std::vector<double> & Shape::edgeGaussianWt() const
     return edgeGaussianWt_;
 }
 
-const std::vector<Vector2d> & Shape::gaussianPt() const
+const std::vector<int> & Shape::edge(const int & i) const
 {
-    return gaussianPt_;
-}
-
-const std::vector<double> & Shape::gaussianWt() const
-{
-    return gaussianWt_;
+    return edgeList_[i];
 }
 
 void Shape::_cacheShape()
 {
     for (int g = 0; g < numGaussianPts_; g++) {
-        shapeVec_.push_back(functionVec(gaussianPt_[g]));
-        shapeMat_.push_back(functionMat(gaussianPt_[g]));
-        shapeDeriv_.push_back(functionDeriv(gaussianPt_[g]));
+        shapeVec_[g] = functionVec(gaussianPt_[g]);
+        shapeMat_[g] = functionMat(gaussianPt_[g]);
+        shapeDeriv_[g] = functionDeriv(gaussianPt_[g]);
     }
 
     for (int n = 0; n < numEdgeGaussianPts_; n++) {
-        edgeShapeVec_.push_back(edgeFunctionVec(edgeGaussianPt_[n]));
-        edgeShapeMat_.push_back(edgeFunctionMat(edgeGaussianPt_[n]));
-        edgeShapeDeriv_.push_back(edgeFunctionDeriv(edgeGaussianPt_[n]));
+        edgeShapeVec_[n] = edgeFunctionVec(edgeGaussianPt_[n]);
+        edgeShapeMat_[n] = edgeFunctionMat(edgeGaussianPt_[n]);
+        edgeShapeDeriv_[n] = edgeFunctionDeriv(edgeGaussianPt_[n]);
     }
 }

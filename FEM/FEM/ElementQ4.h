@@ -18,18 +18,14 @@
 class ElementQ4 : public Element
 {
     public:
-        /* See the documentation of base class Shape.
-         */
+        /* See the documentation of base class Shape. */
         ElementQ4();
         ElementQ4(const int & index, const std::vector<int> & nodeList, Node** const meshNode);
         ~ElementQ4();
-        const MatrixXd & localStiffness();
-        MatrixXd jacobian(const Vector2d & point) const;
-        MatrixXd BMatrix(const Vector2d & gaussianPoint) const;
-        Shape* const getShape() const;
+
     private:
-
-
+        Shape* const shape() const;
+        
 };
 
 #endif /* ElementQ4_h */

@@ -14,6 +14,7 @@
 
 #include "Node.h"
 #include "Shape.h"
+#include "ShapeQ8.h"
 
 /* Abstract base Element class with shared public methods and pure virtual methods.
  *
@@ -67,11 +68,24 @@ class Element
         void setMaterial(const std::vector<double> & properties);
 
         /**
-         * Get the stress-strain constitutive matrix of the element.
+         * Get the shape of this element.
          *
-         * @return The 4-by-4 E matrix.
+         * @return A pointer to the shape object of this element.
+         *
+         * @note For different element, we would have different shape property,
+         * so we return a generic polymorphed Shape class pointer to achieve
+         * the standardized behavior of our program.
+         * It should also be noted that this is the only pure virtual method
+         * in Element class, because the Shape property of each element type is stored
+         * as a static member of that derived class and cannot be generalized
+         * into a inheritable method.
+         * This is really an elegant solution to pave our path towards the hybrid
+         * element case. Note that we access using Shape pointer without storing
+         * a Shape instance or even a Shape pointer in the Element class, which
+         * is also memory efficient for large-scale problems.
+         * And returning a const pointer secures the usage of Shape object.
          */
-        const MatrixXd & EMatrix() const;
+        virtual Shape* const shape() const = 0; // return Shape * & is insecure
 
         /**
          * Compute the local element stiffness matrix formulated by
@@ -81,43 +95,59 @@ class Element
          * @return The 2n-by-2n element stiffness matrix where n is number of
          * nodes belong to this element.
          */
-        virtual const MatrixXd & localStiffness() = 0;
+        const MatrixXd & localStiffness() const;
 
         /**
-         * Compute the Jacobian coordinates transformation matrix at a given
+         * Get the distributed nodal force from body force and temperature loads.
+         *
+         * @return The nodal force as a 2n-by-1 vector.
+         */
+        const VectorXd & nodalForce() const;
+
+        /**
+         * Get the stress-strain constitutive matrix of the element.
+         *
+         * @return The 4-by-4 E matrix.
+         */
+        const MatrixXd & EMatrix() const;
+
+        /**
+         * Get the thermal strain to be used in the stress computation.
+         *
+         * @return The thermal strain as a 4-by-1 vector for 2D axisymmetric problem.
+         */
+        const VectorXd & thermalStrain() const;
+
+        /**
+         * Compute the Jacobian coordinates transformation matrix at an arbitrary
          * point.
          *
          * @param point The point where the Jacobian matrix to be evaluated.
          * @return The 2-by-2 (2D) Jacobian matrix.
          */
-        virtual MatrixXd jacobian(const Vector2d & point) const = 0;
+        MatrixXd jacobian(const Vector2d & point) const;
 
         /**
-         * Compute the strain-displacement constitutive matrix.
+         * Compute the averaged radius R at an arbitrary point.
+         *
+         * @param point The point where the radius to be evaluated.
+         * @return The averaged radius value.
+         */
+        double radius(const Vector2d & point) const;
+
+        /**
+         * Compute the strain-displacement constitutive matrix at an arbitrary point.
          *
          * e = D*u = D*(N*u) = (D*N)u = Bu, so B is the differential matrix
          * multiplying the shape function.
          *
-         * @param gaussianPoint The Gaussian point where the B matrix to be evaluated.
+         * @param point The point where the B matrix to be evaluated.
          * @return The 4-by-2n B matrix where n is the number of nodes belong to
          * this element.
          */
-        virtual MatrixXd BMatrix(const Vector2d & gaussianPoint) const = 0;
+        MatrixXd BMatrix(const Vector2d & point) const;
 
-        /**
-         * Get the shape object of this element.
-         *
-         * @return A pointer to the shape object of this element.
-         *
-         * @note For different element, we would have different shape property,
-         * so we return a generic polymorphed Shape class pointer to achieve
-         * the standardized behavior of our program. It should also be noted
-         * that this is a virtual method, and the Shape property of each element
-         * type is stored as a static member of that class. This is really an
-         * elegant solution to pave our path towards the hybrid element case.
-         * And returning a const pointer secures the usage of shape object.
-         */
-        virtual Shape* const getShape() const = 0;
+
 
         /**
          * Get the index of this element.
@@ -150,21 +180,91 @@ class Element
         /** A pointer to the node pool of the mesh */
         // Node** meshNode; // used in updating the body force
 
-        /**
-         * Get the distributed nodal force from body force and temperature loads.
-         *
-         * @return The nodal force as a 2n-by-1 vector.
-         */
-        const VectorXd & getNodalForce() const;
 
-        /**
-         * Get the thermal strain to be used in the stress computation.
+
+    protected: // make as protected for derived classes to access much easier!
+
+        /* Private helper structure for the bullet-proof memory management of
+         * the static members defined in the derived classes.
          *
-         * @return The thermal strain as a 4-by-1 vector for 2D axisymmetric problem.
+         * @note This is the most elegant solution to pave our path for a powerful
+         * hybrid element system. There are several improvements made throughout
+         * the design and development of this module:
+         *
+         * 1. "Shape" is a general property of a given element type, which does
+         * not depend on the instances of that class. In other words, if we
+         * add Shape as a class member, we will have 100 Shape objects in memory when
+         * we create 100 elements, which is very unwise. Thus, we use a static
+         * member that is a intrinsic property of the whole class and can be
+         * shared by all its instances (with memory just allocated once).
+         *
+         * 2. At first attempt we defined a static Shape object in the class as:
+         *
+         * in .h:   static ShapeQ8 shape;
+         * in .cpp: ShapeQ8 ElementQ8::shape;
+         *
+         * However, when we want to use the shape in our hybrid system (for
+         * apply load, strain and stress computation, etc), it is inconvenient
+         * that we need to figure out which type the element is and the choose
+         * the corresponding shape. This requires a if/else judge and becomes
+         * redundant when element types increase. Thus, a polymorphed Shape
+         * pointer is used to provide the flexibility.
+         *
+         * 3. So far so good. But, in order to use a pointer we need to allocate
+         * it on heap by Shape* shape = new ShapeQ8, then where can we delete it
+         * to prevent memory leak? One option is to delete this static pointer
+         * before we exit the main(), but this means this class is not
+         * self-consistent and requires the client to be careful enough to delete
+         * it at the end, which no one can promise. Thus, we use an internal
+         * structure to manage all the static members we have in the class, and
+         * the constructor & destructor of this structure takes over the
+         * create & destroy task for us. Before the program starts, the static
+         * structure is initialized by its constructor; when the program exists,
+         * the structure is destroyed and its destructor is called so that the
+         * shape object on heap is deallocated. This is a perfect solution for
+         * memory management.
+         *
+         * It is also good to noted that a nested class (class/struct defined inside a
+         * class) can be inherited.
          */
-        const VectorXd & getThermalStrain() const;
-        
-    protected: // make as protected for Q8 to access much easier!
+        struct staticMembers {
+              /** A pointer to the shape instance of this element type. */
+              Shape* shape; // we can have more static members, if needed
+
+              /**
+               * Constructor for the strucuture.
+               *
+               * @param nodes Number of nodes of this shape of element.
+               * @param gaussians Number of Gaussian integration points of this
+               * shape of element.
+               * @param edges Number of edges of this shape of element.
+               * @param edgeNodes Number of nodes each edge consists of.
+               * @param edgeGaussians Number of Gaussian intergration points at each
+               * edge.
+               */
+              staticMembers(int nodes, int gaussians, int edges, int edgeNodes, int edgeGaussians) {
+                  // Create instances of different types of shape
+                  switch (nodes) {
+                      case 3 :
+                          shape = new ShapeQ8(nodes, gaussians, edges, edgeNodes, edgeGaussians); // @TODO change to Q3 later
+                          break;
+                      case 6 :
+                          shape = new ShapeQ8(nodes, gaussians, edges, edgeNodes, edgeGaussians); // @TODO change to Q6 later
+                          break;
+                      case 8 :
+                          shape = new ShapeQ8(nodes, gaussians, edges, edgeNodes, edgeGaussians);
+                          break;
+                  }
+              }
+
+              /**
+               * Destructor for the strucuture.
+               */
+              ~staticMembers() {
+                  delete shape; shape = NULL;
+              }
+          };
+
         /** Zero-based index of the element */
         int index_;
 
@@ -178,6 +278,15 @@ class Element
          * n-by-2 matrix.
          */
         MatrixXd nodeCoord_;
+
+        /** The 4-by-4 stress-strain constitutive matrix sigma = E * e */
+        MatrixXd E_;
+
+        /** The 2n-by-2n local stiffness matrix where n is the number of nodes */
+        MatrixXd localStiffness_; // member variable cannot have the same name as member function
+
+        /** The 2n-by-1 nodal force vector where n is the number of nodes */
+        VectorXd nodalForce_;
 
         /** The modulus */
         double modulus_;
@@ -197,8 +306,37 @@ class Element
         /** The thermal strain */
         VectorXd thermalStrain_;
 
-        /** The 4-by-4 stress-strain constitutive matrix sigma = E * e */
-        MatrixXd E_;
+        /**
+         * Private helper function for the computation of element stiffness matrix
+         * and nodal force vector (body force and temperature load).
+         */
+        void _computeStiffnessAndForce();
+
+        /**
+         * Private helper function for computing the B matrix (the strain-displacement
+         * transformation matrix, e = D * u = D * N * u = B * u) at ith Gaussian point.
+         *
+         * @param i The Gaussian point where the B matrix to be evaluated.
+         * @return The B matrix.
+         */
+        MatrixXd _BMatrix(const int & i) const;
+
+        /**
+         * Private helper function for computing the determinant of Jacobian
+         * matrix at ith Gaussian point.
+         *
+         * @param i The Gaussian point where the Jacobian matrix to be evaluated.
+         * @return The determinant of Jacobian matrix.
+         */
+        double _jacobianDet(const int & i) const;
+
+        /**
+         * Private helper function for computing the averaged radius R at ith Gaussian point.
+         *
+         * @param i The Gaussian point where the radius to be evaluated.
+         * @return The averaged radius value.
+         */
+        double _radius(const int & i) const;
 
         /**
          * Private helper function for deleting the current element, used in destructor
@@ -212,11 +350,6 @@ class Element
          */
         void copy_(Element const & other);
 
-        /** The 2n-by-2n local stiffness matrix where n is the number of nodes */
-        MatrixXd localStiff; // member variable cannot have the same name as member function
-
-        /** The 2n-by-1 nodal force vector where n is the number of nodes */
-        VectorXd nodalForce;
 };
 
 #endif /* Element_h */

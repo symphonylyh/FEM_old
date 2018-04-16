@@ -56,7 +56,7 @@ class Shape
          * predetermined Node number-Edge number-Gaussian point number relation
          * exists.
          */
-        Shape(int nodes, int gaussians, int edges, int edgeNodes, int edgeGaussians);
+        Shape(const int & nodes, const int & gaussians, const int & edges, const int & edgeNodes, const int & edgeGaussians);
 
         /**
          * Destructor for Shape.
@@ -140,10 +140,6 @@ class Shape
          */
         virtual VectorXd edgeFunctionDeriv(const double & point) const = 0;
 
-        virtual VectorXd edgePoint() const = 0;
-
-
-
         /**
          * Get the gaussian integration points to be used in load distribution and
          * stress/strain computation.
@@ -152,6 +148,14 @@ class Shape
          * dynamically allocated on heap, we can return-by-ref.
          */
         const std::vector<Vector2d> & gaussianPt() const;
+
+        /**
+         * Get the ith gaussian integration points.
+         *
+         * @param i The index of Gaussian points to be queried.
+         * @return The Gaussian point.
+         */
+        const Vector2d & gaussianPt(const int & i) const;
 
         /**
          * Get the gaussian integration weights to be used in load distribution and
@@ -163,22 +167,12 @@ class Shape
         const std::vector<double> & gaussianWt() const;
 
         /**
-         * Get the edge gaussian integration points to be used in load distribution and
-         * stress/strain computation.
+         * Get the ith gaussian weights.
          *
-         * @return An array of 1D points. Since the whole Shape object is
-         * dynamically allocated on heap, we can return-by-ref.
+         * @param i The index of Gaussian points to be queried.
+         * @return The Gaussian weight.
          */
-        const std::vector<double> & edgeGaussianPt() const;
-
-        /**
-         * Get the edge gaussian integration weights to be used in load distribution and
-         * stress/strain computation.
-         *
-         * @return An array of weight values. Since the whole Shape object is
-         * dynamically allocated on heap, we can return-by-ref.
-         */
-        const std::vector<double> & edgeGaussianWt() const
+        const double & gaussianWt(const int & i) const;
 
         /**
          * Get pre-cached shape function (vector form) at certin Gaussian point.
@@ -191,42 +185,66 @@ class Shape
          * arbitrary point, this function is to get the pre-cached shape function
          * at Gaussian points.
          */
-        const VectorXd & functionVec(int i) const;
+        const VectorXd & functionVec(const int & i) const;
 
         /**
          * Get pre-cached shape function (matrix form) at certin Gaussian point.
          * @param i The index of Gaussian points to be queried.
          * @return The shape function N as a matrix (interleaved) at Gaussian point i.
          */
-        const MatrixXd & functionMat(int i) const;
+        const MatrixXd & functionMat(const int & i) const;
 
         /**
          * Get pre-cached shape function derivative matrix at certin Gaussian point.
          * @param i The index of Gaussian points to be queried.
          * @return The derivatives of shape function dN as a matrix (not interleaved) at Gaussian point i.
          */
-        const MatrixXd & functionDeriv(int i) const;
+        const MatrixXd & functionDeriv(const int & i) const;
 
         /**
          * Get pre-cached edge shape function (vector form) at certin Gaussian point.
          * @param i The index of Gaussian points to be queried.
          * @return The edge shape function N as a column vector at Gaussian point i.
          */
-        const VectorXd & edgeFunctionVec(int i) const;
+        const VectorXd & edgeFunctionVec(const int & i) const;
 
         /**
          * Get pre-cached edge shape function (matrix form) at certin Gaussian point.
          * @param i The index of Gaussian points to be queried.
          * @return The edge shape function N as a matrix (interleaved) at Gaussian point i.
          */
-        const MatrixXd & edgeFunctionMat(int i) const;
+        const MatrixXd & edgeFunctionMat(const int & i) const;
 
         /**
          * Get pre-cached edge shape function derivative matrix at certin Gaussian point.
          * @param i The index of Gaussian points to be queried.
          * @return The derivatives of shape function dN as a column vector at Gaussian point i.
          */
-        const VectorXd & edgeFunctionDeriv(int i) const;
+        const VectorXd & edgeFunctionDeriv(const int & i) const;
+
+        /**
+         * Get the edge gaussian integration points to be used in load distribution and
+         * stress/strain computation.
+         *
+         * @return An array of 1D points.
+         */
+        const std::vector<double> & edgeGaussianPt() const;
+
+        /**
+         * Get the edge gaussian integration weights to be used in load distribution and
+         * stress/strain computation.
+         *
+         * @return An array of weight values.
+         */
+        const std::vector<double> & edgeGaussianWt() const;
+
+        /**
+         * Get the node index of ith edge.
+         *
+         * @param i The zero-based edge index being queried.
+         * @return An array of node indices belonging to ith edge.
+         */
+        const std::vector<int> & edge(const int & i) const;
 
     protected:
 

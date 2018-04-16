@@ -5,7 +5,8 @@
  * @author Haohang Huang
  * @date Feburary 10, 2018
  * @note Efficiency optimized by pass/return-by-ref of Gaussian points on March 25,
- * 2018
+ * 2018; Efficiency optimized by pre-cached the shape functions evaluated at all
+ * Gaussian integraton points on Apr 22, 2018.
  * @todo Gaussian points and functionVec not implemented yet.
  */
 
@@ -31,7 +32,7 @@ class ShapeQ4 : public Shape
 {
     public:
         /* See the documentation of base class Shape. */
-        ShapeQ4(int nodes, int gaussians, int edges, int edgeNodes, int edgeGaussians);
+        ShapeQ4(const int & nodes, const int & gaussians, const int & edges, const int & edgeNodes, const int & edgeGaussians);
         ~ShapeQ4();
         MatrixXd functionMat(const Vector2d & point) const;
         MatrixXd functionDeriv(const Vector2d & point) const;

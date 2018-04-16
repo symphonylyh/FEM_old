@@ -8,7 +8,7 @@
 
 #include "ShapeQ4.h"
 
-ShapeQ4::ShapeQ4(int nodes, int gaussians, int edges, int edgeNodes, int edgeGaussians) :
+ShapeQ4::ShapeQ4(const int & nodes, const int & gaussians, const int & edges, const int & edgeNodes, const int & edgeGaussians) :
     Shape(nodes, gaussians, edges, edgeNodes, edgeGaussians) // Call the constructor of base class
 {
     // Four corner nodes
