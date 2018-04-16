@@ -12,44 +12,55 @@
 ShapeQ8::ShapeQ8(int nodes, int gaussians, int edges, int edgeNodes, int edgeGaussians) :
     Shape(nodes, gaussians, edges, edgeNodes, edgeGaussians) // Call the constructor of base class
 {
-    _cacheShape();
-
+    // Set up shape parameters
     // Local xi-eta coordinates of nodes
     // Corner nodes
-    nodeArray_[0] << -1, -1;
-    nodeArray_[1] << 1, -1;
-    nodeArray_[2] << 1, 1;
-    nodeArray_[3] << -1, 1;
+    nodeCoord_[0] << -1, -1;
+    nodeCoord_[1] << 1, -1;
+    nodeCoord_[2] << 1, 1;
+    nodeCoord_[3] << -1, 1;
     // Mid-side nodes
-    nodeArray_[4] << 0, -1;
-    nodeArray_[5] << 1, 0;
-    nodeArray_[6] << 0, 1;
-    nodeArray_[7] << -1, 0;
+    nodeCoord_[4] << 0, -1;
+    nodeCoord_[5] << 1, 0;
+    nodeCoord_[6] << 0, 1;
+    nodeCoord_[7] << -1, 0;
 
     // Local xi-eta coordinates of gaussian points
     double temp = std::sqrt(0.6);
-    gaussianPoint_[0] << -temp, -temp;
-    gaussianPoint_[1] << 0, -temp;
-    gaussianPoint_[2] << temp, -temp;
-    gaussianPoint_[3] << -temp, 0;
-    gaussianPoint_[4] << 0, 0;
-    gaussianPoint_[5] << temp, 0;
-    gaussianPoint_[6] << -temp, temp;
-    gaussianPoint_[7] << 0, temp;
-    gaussianPoint_[8] << temp, temp;
+    gaussianPt_[0] << -temp, -temp;
+    gaussianPt_[1] << 0, -temp;
+    gaussianPt_[2] << temp, -temp;
+    gaussianPt_[3] << -temp, 0;
+    gaussianPt_[4] << 0, 0;
+    gaussianPt_[5] << temp, 0;
+    gaussianPt_[6] << -temp, temp;
+    gaussianPt_[7] << 0, temp;
+    gaussianPt_[8] << temp, temp;
+    // Edge Gaussian points
+    edgeGaussianPt_[0] = -temp;
+    edgeGaussianPt_[1] = 0;
+    edgeGaussianPt_[2] = temp;
 
     // Gaussian weights
-    double corner = 5.0 / 9.0; // do not use 5/9! that is 0 due to trucation!
+    double corner = 5.0 / 9.0; // do not use 5/9! that is 0 due to rounding down!
     double side = 8.0 / 9.0;
-    gaussianWeight_[0] = corner;
-    gaussianWeight_[2] = corner;
-    gaussianWeight_[6] = corner;
-    gaussianWeight_[8] = corner;
-    gaussianWeight_[1] = side;
-    gaussianWeight_[3] = side;
-    gaussianWeight_[5] = side;
-    gaussianWeight_[7] = side;
-    gaussianWeight_[4] = side;
+    gaussianWt_[0] = corner;
+    gaussianWt_[2] = corner;
+    gaussianWt_[6] = corner;
+    gaussianWt_[8] = corner;
+    gaussianWt_[1] = side;
+    gaussianWt_[3] = side;
+    gaussianWt_[5] = side;
+    gaussianWt_[7] = side;
+    gaussianWt_[4] = side;
+    // Edge Gaussian weights
+    edgeGaussianWt_[0] = corner;
+    edgeGaussianWt_[1] = side;
+    edgeGaussianWt_[2] = corner;
+
+    // After setting up the above parameters, pre-cache the shape function
+    _cacheShape();
+
 }
 
 ShapeQ8::~ShapeQ8()
@@ -63,16 +74,16 @@ VectorXd ShapeQ8::functionVec(const Vector2d & point) const
         double Ni = 0;
         if (i < 4) { // 4 corner nodes
           // Ni = (1+xi_i*xi)(1+eta_i*eta)(xi_i*xi+eta_i*eta-1)/4
-          Ni = (1 + nodeArray_[i](0) * point(0)) * (1 + nodeArray_[i](1) * point(1)) * (nodeArray_[i](0) * point(0) + nodeArray_[i](1) * point(1) - 1) / 4;
-          // (Solved) @BUG here! Typo: wrote one nodeArray_[i](0) to be nodeArray_[0](0)
+          Ni = (1 + nodeCoord_[i](0) * point(0)) * (1 + nodeCoord_[i](1) * point(1)) * (nodeCoord_[i](0) * point(0) + nodeCoord_[i](1) * point(1) - 1) / 4;
+          // (Solved) @BUG here! Typo: wrote one nodeCoord_[i](0) to be nodeCoord_[0](0)
         }
         if (i == 4 || i == 6) { // xi = 0 mid-side nodes
           // Ni = (1-xi^2)(1+eta_i*eta)/2
-          Ni = (1 - point(0) * point(0)) * (1 + nodeArray_[i](1) * point(1)) / 2;
+          Ni = (1 - point(0) * point(0)) * (1 + nodeCoord_[i](1) * point(1)) / 2;
         }
         if (i== 5 || i == 7) { // eta = 0 mid-side nodes
           // Ni = (1+xi_i*xi)(1-eta^2)/2
-          Ni = (1 + nodeArray_[i](0) * point(0)) * (1 - point(1) * point(1)) / 2;
+          Ni = (1 + nodeCoord_[i](0) * point(0)) * (1 - point(1) * point(1)) / 2;
         }
         result(i) = Ni;
     }
@@ -86,15 +97,15 @@ MatrixXd ShapeQ8::functionMat(const Vector2d & point) const
         double Ni = 0;
         if (i < 4) { // 4 corner nodes
           // Ni = (1+xi_i*xi)(1+eta_i*eta)(xi_i*xi+eta_i*eta-1)/4
-          Ni = (1 + nodeArray_[i](0) * point(0)) * (1 + nodeArray_[i](1) * point(1)) * (nodeArray_[i](0) * point(0) + nodeArray_[i](1) * point(1) - 1) / 4;
+          Ni = (1 + nodeCoord_[i](0) * point(0)) * (1 + nodeCoord_[i](1) * point(1)) * (nodeCoord_[i](0) * point(0) + nodeCoord_[i](1) * point(1) - 1) / 4;
         }
         if (i == 4 || i == 6) { // xi = 0 mid-side nodes
           // Ni = (1-xi^2)(1+eta_i*eta)/2
-          Ni = (1 - point(0) * point(0)) * (1 + nodeArray_[i](1) * point(1)) / 2;
+          Ni = (1 - point(0) * point(0)) * (1 + nodeCoord_[i](1) * point(1)) / 2;
         }
         if (i == 5 || i == 7) { // eta = 0 mid-side nodes
           // Ni = (1+xi_i*xi)(1-eta^2)/2
-          Ni = (1 + nodeArray_[i](0) * point(0)) * (1 - point(1) * point(1)) / 2;
+          Ni = (1 + nodeCoord_[i](0) * point(0)) * (1 - point(1) * point(1)) / 2;
         }
         result(0, 2 * i) = Ni;
         result(1, 2 * i + 1) = Ni;
@@ -108,21 +119,21 @@ MatrixXd ShapeQ8::functionDeriv(const Vector2d & point) const
     for (int i = 0; i < numNodes_; i++) {
       if (i < 4) { // 4 corner nodes
         // d(Ni)/d(xi)=xi_i*(1+eta_i*eta)*(2*xi_i*xi+eta_i*eta)/4
-        result(0, i) = nodeArray_[i](0) * (1 + nodeArray_[i](1) * point(1)) * (2 * nodeArray_[i](0) * point(0) + nodeArray_[i](1) * point(1))/ 4;
+        result(0, i) = nodeCoord_[i](0) * (1 + nodeCoord_[i](1) * point(1)) * (2 * nodeCoord_[i](0) * point(0) + nodeCoord_[i](1) * point(1))/ 4;
         // d(Ni)/d(eta)=eta_i*(1+xi_i*xi)*(2*eta_i*eta+xi_i*xi)/4
-        result(1, i) = nodeArray_[i](1) * (1 + nodeArray_[i](0) * point(0)) * (2 * nodeArray_[i](1) * point(1) + nodeArray_[i](0) * point(0))/ 4;
+        result(1, i) = nodeCoord_[i](1) * (1 + nodeCoord_[i](0) * point(0)) * (2 * nodeCoord_[i](1) * point(1) + nodeCoord_[i](0) * point(0))/ 4;
       }
       if (i == 4 || i == 6) { // xi = 0 mid-side nodes
         // d(Ni)/d(xi)= -xi*(1+eta_i*eta)
-        result(0, i) = - point(0) * (1 + nodeArray_[i](1) * point(1));
+        result(0, i) = - point(0) * (1 + nodeCoord_[i](1) * point(1));
         // d(Ni)/d(eta)= (1-xi^2)*eta_i/2
-        result(1, i) = (1 - point(0) * point(0)) * nodeArray_[i](1) / 2;
+        result(1, i) = (1 - point(0) * point(0)) * nodeCoord_[i](1) / 2;
       }
       if (i== 5 || i == 7) { // eta = 0 mid-side nodes
         // d(Ni)/d(xi)= (1-eta^2)*xi_i/2
-        result(0, i) = (1 - point(1) * point(1)) * nodeArray_[i](0) / 2;
+        result(0, i) = (1 - point(1) * point(1)) * nodeCoord_[i](0) / 2;
         // d(Ni)/d(eta)= -eta*(1+xi_i*xi)
-        result(1, i) = - point(1) * (1 + nodeArray_[i](0) * point(0));
+        result(1, i) = - point(1) * (1 + nodeCoord_[i](0) * point(0));
       }
     }
     return result;
@@ -130,7 +141,7 @@ MatrixXd ShapeQ8::functionDeriv(const Vector2d & point) const
 
 VectorXd ShapeQ8::edgeFunctionVec(const double & point) const
 { // 3x1 vector
-    VectorXd result(3);
+    VectorXd result(numEdgeNodes_);
     for (int i = 0; i < 3; i++) {
         double Ni = 0;
         if (i == 0) // left/bottom point
@@ -146,7 +157,7 @@ VectorXd ShapeQ8::edgeFunctionVec(const double & point) const
 
 MatrixXd ShapeQ8::edgeFunctionMat(const double & point) const
 { // 2x6 matrix, 3 gaussian point and 3 node at each edge
-    MatrixXd result = MatrixXd::Zero(2, 6);
+    MatrixXd result = MatrixXd::Zero(2, 2 * numEdgeNodes_);
     for (int i = 0; i < 3; i++) {
         double Ni = 0;
         if (i == 0) // left/bottom point
@@ -163,7 +174,7 @@ MatrixXd ShapeQ8::edgeFunctionMat(const double & point) const
 
 VectorXd ShapeQ8::edgeFunctionDeriv(const double & point) const
 {
-    VectorXd result(3);
+    VectorXd result(numEdgeNodes_);
     for (int i = 0; i < 3; i++) {
         double Ni = 0;
         if (i == 0) // left/bottom point
@@ -175,23 +186,4 @@ VectorXd ShapeQ8::edgeFunctionDeriv(const double & point) const
         result(i) = Ni;
     }
     return result;
-}
-
-VectorXd ShapeQ8::edgePoint() const
-{
-    double temp = std::sqrt(0.6);
-    Vector3d result(-temp, 0, temp);
-    return result;
-}
-
-
-
-const std::vector<Vector2d> & ShapeQ8::gaussianPoint() const
-{
-    return gaussianPoint_;
-}
-
-const std::vector<double> & ShapeQ8::gaussianWeight() const
-{
-    return gaussianWeight_;
 }

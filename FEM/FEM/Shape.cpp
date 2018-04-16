@@ -52,6 +52,26 @@ const VectorXd & Shape::edgeFunctionDeriv(int i) const
     return edgeShapeDeriv_[i];
 }
 
+const std::vector<double> & Shape::edgeGaussianPt() const
+{
+    return edgeGaussianPt_;
+}
+
+const std::vector<double> & Shape::edgeGaussianWt() const
+{
+    return edgeGaussianWt_;
+}
+
+const std::vector<Vector2d> & Shape::gaussianPt() const
+{
+    return gaussianPt_;
+}
+
+const std::vector<double> & Shape::gaussianWt() const
+{
+    return gaussianWt_;
+}
+
 void Shape::_cacheShape()
 {
     for (int g = 0; g < numGaussianPts_; g++) {

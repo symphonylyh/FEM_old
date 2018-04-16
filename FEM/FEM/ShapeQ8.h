@@ -44,27 +44,7 @@ class ShapeQ8 : public Shape
         VectorXd edgeFunctionVec(const double & point) const;
         MatrixXd edgeFunctionMat(const double & point) const;
         VectorXd edgeFunctionDeriv(const double & point) const;
-        
-        VectorXd edgePoint() const;
 
-        const std::vector<Vector2d> & gaussianPoint() const;
-        const std::vector<double> & gaussianWeight() const;
-
-    private:
-        /** The number of nodes of the element type */
-        int numNodes_;
-
-        /** The number of Gaussian integration points of the element type */
-        int numGaussianPoints_;
-
-        /** The local isoparametric coordinates (-1,1) of the element nodes */
-        std::vector<Vector2d> nodeArray_;
-
-        /** An array of the 2D Gaussian integration points */
-        std::vector<Vector2d> gaussianPoint_; // it's redundant to return an array pointer by gaussianPoint(), so we use vector. And you can't specify vector size here, do it in initializer list
-
-        /** An array of the weight of Gaussian integration points */
-        std::vector<double> gaussianWeight_;
 };
 
 #endif /* ShapeQ8_h */

@@ -26,7 +26,12 @@ using namespace Eigen;
  * shapes using C++ inheritance features. The instance of this class is stored
  * as a static member variable in the associated Element class. For all the
  * instances of the associated Element class, only one single instance of Shape
- * class is allocated and can be accessed by pointer.
+ * class is allocated and can be accessed by pointer. Additionally, the shape
+ * functions at Gaussian points are pre-cached and can be accessed in O(1)
+ * running time. The reason of pre-caching is that our element and shape are
+ * isoparametric, namely no matter how the global coordinates of nodes change,
+ * the Gaussian points are always the same in local coordinates. Pre-caching
+ * enables efficient queries of shape functions without repeatedly compute them.
  */
 class Shape
 {
@@ -146,7 +151,7 @@ class Shape
          * @return An array of 2D points. Since the whole Shape object is
          * dynamically allocated on heap, we can return-by-ref.
          */
-        virtual const std::vector<Vector2d> & gaussianPoint() const = 0;
+        const std::vector<Vector2d> & gaussianPt() const;
 
         /**
          * Get the gaussian integration weights to be used in load distribution and
@@ -155,12 +160,36 @@ class Shape
          * @return An array of weight values. Since the whole Shape object is
          * dynamically allocated on heap, we can return-by-ref.
          */
-        virtual const std::vector<double> & gaussianWeight() const = 0;
+        const std::vector<double> & gaussianWt() const;
+
+        /**
+         * Get the edge gaussian integration points to be used in load distribution and
+         * stress/strain computation.
+         *
+         * @return An array of 1D points. Since the whole Shape object is
+         * dynamically allocated on heap, we can return-by-ref.
+         */
+        const std::vector<double> & edgeGaussianPt() const;
+
+        /**
+         * Get the edge gaussian integration weights to be used in load distribution and
+         * stress/strain computation.
+         *
+         * @return An array of weight values. Since the whole Shape object is
+         * dynamically allocated on heap, we can return-by-ref.
+         */
+        const std::vector<double> & edgeGaussianWt() const
 
         /**
          * Get pre-cached shape function (vector form) at certin Gaussian point.
          * @param i The index of Gaussian points to be queried.
          * @return The shape function N as a column vector at Gaussian point i.
+         *
+         * @note Note that there are two sets of functions that have same name
+         * but different function signatures (i.e., have different types of
+         * parameters). The above one is used to compute shape function at any
+         * arbitrary point, this function is to get the pre-cached shape function
+         * at Gaussian points.
          */
         const VectorXd & functionVec(int i) const;
 
@@ -202,7 +231,7 @@ class Shape
     protected:
 
         /**
-         * Pre-cache the shape functions at Gaussian integration points.
+         * Private helper function for Pre-caching the shape functions at Gaussian integration points.
          */
         void _cacheShape();
 

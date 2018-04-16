@@ -30,29 +30,12 @@
 class ShapeQ4 : public Shape
 {
     public:
-        /* See the documentation of base class Shape.
-         */
-        ShapeQ4();
+        /* See the documentation of base class Shape. */
+        ShapeQ4(int nodes, int gaussians, int edges, int edgeNodes, int edgeGaussians);
         ~ShapeQ4();
-        MatrixXd function(const Vector2d & point) const;
-        MatrixXd localDeriv(const Vector2d & point) const;
-        const std::vector<Vector2d> & gaussianPoint() const;
-        const std::vector<double> & gaussianWeight() const;
-    private:
-        /** The local isoparametric coordinates (-1,1) of the element nodes */
-        Vector2d nodeArray_[4];
+        MatrixXd functionMat(const Vector2d & point) const;
+        MatrixXd functionDeriv(const Vector2d & point) const;
 
-        /** The number of nodes of the element type */
-        int numNodes_;
-
-        /** The number of Gaussian integration points of the element type */
-        int numGaussianPoints_;
-
-        /** An array of the 2D Gaussian integration points */
-        std::vector<Vector2d> gaussianPoint_;
-
-        /** An array of the weight of Gaussian integration points */
-        std::vector<double> gaussianWeight_;
 };
 
 #endif /* ShapeQ4_h */
