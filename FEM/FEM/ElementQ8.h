@@ -65,7 +65,7 @@ class ElementQ8 : public Element
                * Constructor for the strucuture.
                */
               staticMembers() {
-                  shape = new ShapeQ8;
+                  shape = new ShapeQ8(8, 9, 4, 3, 3);
               }
 
               /**

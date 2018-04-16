@@ -14,6 +14,7 @@
 		FBA7F8AD2027F50400BA5297 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBA7F8AC2027F50400BA5297 /* main.cpp */; };
 		FBA7F8B52027F55B00BA5297 /* Node.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBA7F8B42027F55B00BA5297 /* Node.cpp */; };
 		FBA7F8B82027F57300BA5297 /* Element.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBA7F8B62027F57300BA5297 /* Element.cpp */; };
+		FBBE5E2120841F8600ED6FE4 /* Shape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBBE5E2020841F8600ED6FE4 /* Shape.cpp */; };
 		FBDC60CE2028FE8800B402E2 /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBDC60CD2028FE8800B402E2 /* Mesh.cpp */; };
 		FBE4BE0D202FA6F600DC83C8 /* ShapeQ4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBE4BE0C202FA6F600DC83C8 /* ShapeQ4.cpp */; };
 		FBE4BE11202FFB8900DC83C8 /* ElementQ4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBE4BE10202FFB8900DC83C8 /* ElementQ4.cpp */; };
@@ -347,8 +348,7 @@
 		FBA7FB632027F78B00BA5297 /* SuperLUSupport */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SuperLUSupport; sourceTree = "<group>"; };
 		FBA7FB642027F78B00BA5297 /* SVD */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SVD; sourceTree = "<group>"; };
 		FBA7FB652027F78B00BA5297 /* UmfPackSupport */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = UmfPackSupport; sourceTree = "<group>"; };
-		FBD19CD12071F0D900EA4A8A /* edge.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = edge.txt; sourceTree = "<group>"; };
-		FBD19CD22071F0D900EA4A8A /* point.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = point.txt; sourceTree = "<group>"; };
+		FBBE5E2020841F8600ED6FE4 /* Shape.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Shape.cpp; sourceTree = "<group>"; };
 		FBDC60CD2028FE8800B402E2 /* Mesh.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh.cpp; sourceTree = "<group>"; };
 		FBDC60CF2028FEB400B402E2 /* Mesh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mesh.h; sourceTree = "<group>"; };
 		FBE4BE0C202FA6F600DC83C8 /* ShapeQ4.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ShapeQ4.cpp; sourceTree = "<group>"; };
@@ -389,8 +389,6 @@
 		FBA7F8AB2027F50400BA5297 /* FEM */ = {
 			isa = PBXGroup;
 			children = (
-				FBD19CD12071F0D900EA4A8A /* edge.txt */,
-				FBD19CD22071F0D900EA4A8A /* point.txt */,
 				FBA7FA102027F78B00BA5297 /* Eigen */,
 				FBA7F8AC2027F50400BA5297 /* main.cpp */,
 				FBA7F8B62027F57300BA5297 /* Element.cpp */,
@@ -412,6 +410,7 @@
 				FB2060E72044B45200331FEA /* Analysis.h */,
 				FB2060E82044B57100331FEA /* LinearElastic.cpp */,
 				FB2060EA2044B58000331FEA /* LinearElastic.h */,
+				FBBE5E2020841F8600ED6FE4 /* Shape.cpp */,
 			);
 			path = FEM;
 			sourceTree = "<group>";
@@ -1109,6 +1108,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FBA7F8B82027F57300BA5297 /* Element.cpp in Sources */,
+				FBBE5E2120841F8600ED6FE4 /* Shape.cpp in Sources */,
 				FBA7F8AD2027F50400BA5297 /* main.cpp in Sources */,
 				FBE4BE0D202FA6F600DC83C8 /* ShapeQ4.cpp in Sources */,
 				FBDC60CE2028FE8800B402E2 /* Mesh.cpp in Sources */,
