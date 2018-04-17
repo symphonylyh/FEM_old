@@ -12,106 +12,31 @@ Inheritance diagram for Element\+Q8\+:\begin{figure}[H]
 \mbox{\Hypertarget{class_element_q8_a62c1f93cb438055e8412b3f957e72a20}\label{class_element_q8_a62c1f93cb438055e8412b3f957e72a20}} 
 {\bfseries Element\+Q8} (const int \&index, const std\+::vector$<$ int $>$ \&node\+List, \mbox{\hyperlink{class_node}{Node}} $\ast$$\ast$const mesh\+Node)
 \item 
-const Matrix\+Xd \& \mbox{\hyperlink{class_element_q8_afc898e404f9abb5a5a4d74eee54476b7}{local\+Stiffness}} ()
-\begin{DoxyCompactList}\small\item\em Compute the local element stiffness matrix formulated by differentiation of element strain energy and numerical integration (Gaussian quadrature). \end{DoxyCompactList}\item 
-Matrix\+Xd \mbox{\hyperlink{class_element_q8_ae23bf98a466daa224224da495d5724ff}{jacobian}} (const Vector2d \&point) const
-\begin{DoxyCompactList}\small\item\em Compute the Jacobian coordinates transformation matrix at a given point. \end{DoxyCompactList}\item 
-Matrix\+Xd \mbox{\hyperlink{class_element_q8_afb41facf96d5bb4be5162724699e3e02}{B\+Matrix}} (const Vector2d \&point) const
-\begin{DoxyCompactList}\small\item\em Compute the strain-\/displacement constitutive matrix. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{class_shape}{Shape}} $\ast$const \mbox{\hyperlink{class_element_q8_a06118e8d0c0a0cb247c249f22e11eeaf}{get\+Shape}} () const
-\begin{DoxyCompactList}\small\item\em Get the shape object of this element. \end{DoxyCompactList}\end{DoxyCompactItemize}
-\subsection*{Static Public Attributes}
-\begin{DoxyCompactItemize}
-\item 
-\mbox{\Hypertarget{class_element_q8_a62510ae2d4322be38825928a1f0e2747}\label{class_element_q8_a62510ae2d4322be38825928a1f0e2747}} 
-static static\+Members \mbox{\hyperlink{class_element_q8_a62510ae2d4322be38825928a1f0e2747}{statics}}
-\begin{DoxyCompactList}\small\item\em A static structure that manages all the static members used in this class. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\mbox{\hyperlink{class_shape}{Shape}} $\ast$const \mbox{\hyperlink{class_element_q8_a1d2c3824da803df5eb9cdd36acf48874}{shape}} () const
+\begin{DoxyCompactList}\small\item\em Get the shape of this element. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Additional Inherited Members}
 
 
 \subsection{Member Function Documentation}
-\mbox{\Hypertarget{class_element_q8_afb41facf96d5bb4be5162724699e3e02}\label{class_element_q8_afb41facf96d5bb4be5162724699e3e02}} 
-\index{Element\+Q8@{Element\+Q8}!B\+Matrix@{B\+Matrix}}
-\index{B\+Matrix@{B\+Matrix}!Element\+Q8@{Element\+Q8}}
-\subsubsection{\texorpdfstring{B\+Matrix()}{BMatrix()}}
-{\footnotesize\ttfamily Matrix\+Xd Element\+Q8\+::\+B\+Matrix (\begin{DoxyParamCaption}\item[{const Vector2d \&}]{gaussian\+Point }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
+\mbox{\Hypertarget{class_element_q8_a1d2c3824da803df5eb9cdd36acf48874}\label{class_element_q8_a1d2c3824da803df5eb9cdd36acf48874}} 
+\index{Element\+Q8@{Element\+Q8}!shape@{shape}}
+\index{shape@{shape}!Element\+Q8@{Element\+Q8}}
+\subsubsection{\texorpdfstring{shape()}{shape()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_shape}{Shape}} $\ast$const Element\+Q8\+::shape (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
 
 
 
-Compute the strain-\/displacement constitutive matrix. 
-
-e = D$\ast$u = D$\ast$(N$\ast$u) = (D$\ast$N)u = Bu, so B is the differential matrix multiplying the shape function.
-
-
-\begin{DoxyParams}{Parameters}
-{\em gaussian\+Point} & The Gaussian point where the B matrix to be evaluated. \\
-\hline
-\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-The 4-\/by-\/2n B matrix where n is the number of nodes belong to this element. 
-\end{DoxyReturn}
-
-
-Implements \mbox{\hyperlink{class_element_ae3c88315d1a30addff6379a9089465ca}{Element}}.
-
-\mbox{\Hypertarget{class_element_q8_a06118e8d0c0a0cb247c249f22e11eeaf}\label{class_element_q8_a06118e8d0c0a0cb247c249f22e11eeaf}} 
-\index{Element\+Q8@{Element\+Q8}!get\+Shape@{get\+Shape}}
-\index{get\+Shape@{get\+Shape}!Element\+Q8@{Element\+Q8}}
-\subsubsection{\texorpdfstring{get\+Shape()}{getShape()}}
-{\footnotesize\ttfamily \mbox{\hyperlink{class_shape}{Shape}} $\ast$const Element\+Q8\+::get\+Shape (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
-
-
-
-Get the shape object of this element. 
+Get the shape of this element. 
 
 \begin{DoxyReturn}{Returns}
 A pointer to the shape object of this element.
 \end{DoxyReturn}
 \begin{DoxyNote}{Note}
-For different element, we would have different shape property, so we return a generic polymorphed \mbox{\hyperlink{class_shape}{Shape}} class pointer to achieve the standardized behavior of our program. It should also be noted that this is a virtual method, and the \mbox{\hyperlink{class_shape}{Shape}} property of each element type is stored as a static member of that class. This is really an elegant solution to pave our path towards the hybrid element case. And returning a const pointer secures the usage of shape object. 
+For different element, we would have different shape property, so we return a generic polymorphed \mbox{\hyperlink{class_shape}{Shape}} class pointer to achieve the standardized behavior of our program. It should also be noted that this is the only pure virtual method in \mbox{\hyperlink{class_element}{Element}} class, because the \mbox{\hyperlink{class_shape}{Shape}} property of each element type is stored as a static member of that derived class and cannot be generalized into a inheritable method. This is really an elegant solution to pave our path towards the hybrid element case. Note that we access using \mbox{\hyperlink{class_shape}{Shape}} pointer without storing a \mbox{\hyperlink{class_shape}{Shape}} instance or even a \mbox{\hyperlink{class_shape}{Shape}} pointer in the \mbox{\hyperlink{class_element}{Element}} class, which is also memory efficient for large-\/scale problems. And returning a const pointer secures the usage of \mbox{\hyperlink{class_shape}{Shape}} object. 
 \end{DoxyNote}
 
 
-Implements \mbox{\hyperlink{class_element_a54c5c297abff4ac3abacd815342a9645}{Element}}.
-
-\mbox{\Hypertarget{class_element_q8_ae23bf98a466daa224224da495d5724ff}\label{class_element_q8_ae23bf98a466daa224224da495d5724ff}} 
-\index{Element\+Q8@{Element\+Q8}!jacobian@{jacobian}}
-\index{jacobian@{jacobian}!Element\+Q8@{Element\+Q8}}
-\subsubsection{\texorpdfstring{jacobian()}{jacobian()}}
-{\footnotesize\ttfamily Matrix\+Xd Element\+Q8\+::jacobian (\begin{DoxyParamCaption}\item[{const Vector2d \&}]{point }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
-
-
-
-Compute the Jacobian coordinates transformation matrix at a given point. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em point} & The point where the Jacobian matrix to be evaluated. \\
-\hline
-\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-The 2-\/by-\/2 (2D) Jacobian matrix. 
-\end{DoxyReturn}
-
-
-Implements \mbox{\hyperlink{class_element_ad469c745f0bcb9d7a3431b1608c1ade6}{Element}}.
-
-\mbox{\Hypertarget{class_element_q8_afc898e404f9abb5a5a4d74eee54476b7}\label{class_element_q8_afc898e404f9abb5a5a4d74eee54476b7}} 
-\index{Element\+Q8@{Element\+Q8}!local\+Stiffness@{local\+Stiffness}}
-\index{local\+Stiffness@{local\+Stiffness}!Element\+Q8@{Element\+Q8}}
-\subsubsection{\texorpdfstring{local\+Stiffness()}{localStiffness()}}
-{\footnotesize\ttfamily const Matrix\+Xd \& Element\+Q8\+::local\+Stiffness (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
-
-
-
-Compute the local element stiffness matrix formulated by differentiation of element strain energy and numerical integration (Gaussian quadrature). 
-
-\begin{DoxyReturn}{Returns}
-The 2n-\/by-\/2n element stiffness matrix where n is number of nodes belong to this element. 
-\end{DoxyReturn}
-
-
-Implements \mbox{\hyperlink{class_element_a603fbe060b5d6979506f0d2130e6c171}{Element}}.
+Implements \mbox{\hyperlink{class_element_aadc36f89fa5f11da7e74d6528ecdcacc}{Element}}.
 
 
 

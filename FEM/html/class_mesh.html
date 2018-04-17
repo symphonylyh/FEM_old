@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>FEM: Mesh Class Reference</title>
+<title>ILLI-FLEX: Mesh Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,10 +21,10 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">FEM
+   <div id="projectname">ILLI-FLEX
    &#160;<span id="projectnumber">1.0</span>
    </div>
-   <div id="projectbrief">2D Axisymmetrix FEM</div>
+   <div id="projectbrief">2D Axisymmetric FEM Code for Flexible Pavements</div>
   </td>
  </tr>
  </tbody>
@@ -124,6 +124,22 @@ std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a c
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_mesh.html#a688adb457f52ffa939f53f22afae697e">loadValue</a></td></tr>
 <tr class="memdesc:a688adb457f52ffa939f53f22afae697e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The load values at the node. <br /></td></tr>
 <tr class="separator:a688adb457f52ffa939f53f22afae697e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a233cbdf434a8afb904b97ad803ae6daf"><td class="memItemLeft" align="right" valign="top"><a id="a233cbdf434a8afb904b97ad803ae6daf"></a>
+std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_mesh.html#a233cbdf434a8afb904b97ad803ae6daf">loadElementList</a></td></tr>
+<tr class="memdesc:a233cbdf434a8afb904b97ad803ae6daf"><td class="mdescLeft">&#160;</td><td class="mdescRight">A list of the elements with applied edge load. <br /></td></tr>
+<tr class="separator:a233cbdf434a8afb904b97ad803ae6daf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a918281e8de6ff4f38e017c99a55fd8bf"><td class="memItemLeft" align="right" valign="top"><a id="a918281e8de6ff4f38e017c99a55fd8bf"></a>
+std::vector&lt; std::vector&lt; int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_mesh.html#a918281e8de6ff4f38e017c99a55fd8bf">loadEdgeList</a></td></tr>
+<tr class="memdesc:a918281e8de6ff4f38e017c99a55fd8bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">A list of loaded edges in each element. <br /></td></tr>
+<tr class="separator:a918281e8de6ff4f38e017c99a55fd8bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa94755c6ec3631b14f93a1ca48c5d366"><td class="memItemLeft" align="right" valign="top"><a id="aa94755c6ec3631b14f93a1ca48c5d366"></a>
+std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_mesh.html#aa94755c6ec3631b14f93a1ca48c5d366">edgeLoadValue</a></td></tr>
+<tr class="memdesc:aa94755c6ec3631b14f93a1ca48c5d366"><td class="mdescLeft">&#160;</td><td class="mdescRight">A list of the edge load values for each element above. <br /></td></tr>
+<tr class="separator:aa94755c6ec3631b14f93a1ca48c5d366"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10891b16424fd1015868d2ef9a2c9311"><td class="memItemLeft" align="right" valign="top"><a id="a10891b16424fd1015868d2ef9a2c9311"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_mesh.html#a10891b16424fd1015868d2ef9a2c9311">bodyForce</a></td></tr>
+<tr class="memdesc:a10891b16424fd1015868d2ef9a2c9311"><td class="mdescLeft">&#160;</td><td class="mdescRight">The universal body force. <br /></td></tr>
+<tr class="separator:a10891b16424fd1015868d2ef9a2c9311"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="af9ff79e2003cfde74b16266cd8113acf"></a>

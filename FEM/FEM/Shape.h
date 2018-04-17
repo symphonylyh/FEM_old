@@ -5,7 +5,8 @@
  * @author Haohang Huang
  * @date Feburary 10, 2018
  * @note Efficiency optimized by pass/return-by-ref of Gaussian points on March 25,
- * 2018; Efficiency optimized by pre-cached the shape functions evaluated at all
+ * 2018
+ * @note Efficiency optimized by pre-cached the shape functions evaluated at all
  * Gaussian integraton points on Apr 22, 2018.
  * @todo T3, Q4, Q6 shape functions to be implemented.
  */

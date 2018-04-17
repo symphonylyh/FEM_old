@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>FEM: ShapeQ4.h File Reference</title>
+<title>ILLI-FLEX: ShapeQ4.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,10 +21,10 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">FEM
+   <div id="projectname">ILLI-FLEX
    &#160;<span id="projectnumber">1.0</span>
    </div>
-   <div id="projectbrief">2D Axisymmetrix FEM</div>
+   <div id="projectbrief">2D Axisymmetric FEM Code for Flexible Pavements</div>
   </td>
  </tr>
  </tbody>
@@ -82,7 +82,11 @@ Classes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Derived class from <a class="el" href="class_shape.html">Shape</a> for the shape information of isoparametric Q4 element. </p>
 <dl class="section author"><dt>Author</dt><dd>Haohang Huang </dd></dl>
-<dl class="section date"><dt>Date</dt><dd>Feburary 10, 2018  Gaussian points and functionVec not implemented yet. </dd></dl>
+<dl class="section date"><dt>Date</dt><dd>Feburary 10, 2018 </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Efficiency optimized by pass/return-by-ref of Gaussian points on March 25, 2018 </dd>
+<dd>
+Efficiency optimized by pre-cached the shape functions evaluated at all Gaussian integraton points on Apr 22, 2018. </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo:</a></b></dt><dd>Gaussian points and functionVec not implemented yet. </dd></dl>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

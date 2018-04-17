@@ -7,6 +7,8 @@
  * @note Efficiency optimized by pass/return-by-ref on March 26, 2018
  * @note Efficiency optimized by storing local stiffness matrix and return-by-ref
  * on March 27, 2018
+ * @note Efficiency optimized by the generalization of all element-wise operations
+ * into base class Element on Apr 22, 2018.
  */
 
 #ifndef Element_h

@@ -4,14 +4,17 @@
  *
  * @author Haohang Huang
  * @date Feburary 13, 2018
- * @note Efficiency optimized by polymorph shape on March 26, 2018
+ * @note Efficiency optimized by polymorph shape on March 26, 2018.
+ * @note Efficiency optimized by storing local stiffness matrix and return-by-ref
+ * on March 27, 2018
+ * @note Efficiency optimized by the generalization of all element-wise operations
+ * into base class Element on Apr 22, 2018.
  */
 
 #ifndef ElementQ8_h
 #define ElementQ8_h
 
 #include "Element.h"
-#include "ShapeQ8.h"
 
 /* Derived class for the isoparametric Q8 element.
  */
@@ -28,7 +31,7 @@ class ElementQ8 : public Element
     private:
         /** A static structure that manages all the static members used in this class */
         static staticMembers statics;
-        
+
 };
 
 #endif /* ElementQ8_h */

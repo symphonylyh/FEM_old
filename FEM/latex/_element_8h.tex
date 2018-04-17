@@ -7,10 +7,13 @@ Abstract base class for various isoparametric elements.
 
 {\ttfamily \#include \char`\"{}Node.\+h\char`\"{}}\newline
 {\ttfamily \#include \char`\"{}Shape.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Shape\+Q8.\+h\char`\"{}}\newline
 \subsection*{Classes}
 \begin{DoxyCompactItemize}
 \item 
 class \mbox{\hyperlink{class_element}{Element}}
+\item 
+struct \mbox{\hyperlink{struct_element_1_1static_members}{Element\+::static\+Members}}
 \end{DoxyCompactItemize}
 
 
@@ -24,5 +27,9 @@ Haohang Huang
 Feburary 4, 2018 
 \end{DoxyDate}
 \begin{DoxyNote}{Note}
-Efficiency optimized by return-\/by-\/ref on March 26, 2018. 
+Efficiency optimized by pass/return-\/by-\/ref on March 26, 2018 
+
+Efficiency optimized by storing local stiffness matrix and return-\/by-\/ref on March 27, 2018 
+
+Efficiency optimized by the generalization of all element-\/wise operations into base class \mbox{\hyperlink{class_element}{Element}} on Apr 22, 2018. 
 \end{DoxyNote}

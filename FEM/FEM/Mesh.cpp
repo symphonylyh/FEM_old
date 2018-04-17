@@ -5,14 +5,11 @@
  * @author Haohang Huang
  * @date Feburary 5, 2018
  * @todo line 95, 98, change to T3, Q6 element later.
- * @todo line 124, various load pattern.
  */
 
 #include "Mesh.h"
 #include "ElementQ4.h"
-#include "ShapeQ4.h"
 #include "ElementQ8.h"
-#include "ShapeQ8.h"
 #include <iostream>
 #include <fstream>
 #include <string>

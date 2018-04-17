@@ -9,7 +9,6 @@
 // for use of M_PI
 #define _USE_MATH_DEFINES
 #include <cmath>
-#include "Node.h"
 #include "Element.h"
 
 Element::Element()
@@ -75,7 +74,7 @@ void Element::setMaterial(const std::vector<double> & properties)
     thermalStrain_ << strain, strain, strain, 0;
 
     _computeStiffnessAndForce(); // bootstrap the computation of stiffness matrix and force vector. After callling this function, the member variables are all computed
-    
+
 }
 
 const MatrixXd & Element::localStiffness() const

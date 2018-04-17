@@ -9,22 +9,48 @@ Inheritance diagram for Shape\+Q4\+:\begin{figure}[H]
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-Matrix\+Xd \mbox{\hyperlink{class_shape_q4_a306cacfd4d87384b3d06c2788cafd4ba}{function}} (const Vector2d \&point) const
+\mbox{\Hypertarget{class_shape_q4_abc1b0382e7d9c3432764e739a31cfec0}\label{class_shape_q4_abc1b0382e7d9c3432764e739a31cfec0}} 
+{\bfseries Shape\+Q4} (const int \&nodes, const int \&gaussians, const int \&edges, const int \&edge\+Nodes, const int \&edge\+Gaussians)
+\item 
+Matrix\+Xd \mbox{\hyperlink{class_shape_q4_a9a74aff61bbcbfa73480cbe520a21563}{function\+Mat}} (const Vector2d \&point) const
 \begin{DoxyCompactList}\small\item\em Stack and interleave the shape Function N above into a matrix for the convenience of stiffness matrix computation. \end{DoxyCompactList}\item 
-Matrix\+Xd \mbox{\hyperlink{class_shape_q4_ad3e1f5e25aee96cd21b1c8770c35afd0}{local\+Deriv}} (const Vector2d \&point) const
-\begin{DoxyCompactList}\small\item\em Compute the local derivatives d\+N/d(xi) and d\+N/d(eta) of the shape function at a given point in isoparametric coordinates. \end{DoxyCompactList}\item 
-const std\+::vector$<$ Vector2d $>$ \& \mbox{\hyperlink{class_shape_q4_a5c185036352eabf489007b92f6d48ad2}{gaussian\+Point}} () const
-\begin{DoxyCompactList}\small\item\em Get the gaussian integration points to be used in load distribution and stress/strain computation. \end{DoxyCompactList}\item 
-const std\+::vector$<$ double $>$ \& \mbox{\hyperlink{class_shape_q4_a51233dd1caaabbe8404c06b5b0db5755}{gaussian\+Weight}} () const
-\begin{DoxyCompactList}\small\item\em Get the gaussian integration weights to be used in load distribution and stress/strain computation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+Matrix\+Xd \mbox{\hyperlink{class_shape_q4_a23e45399e8867f74c47eb41a30328e3e}{function\+Deriv}} (const Vector2d \&point) const
+\begin{DoxyCompactList}\small\item\em Compute the local derivatives d\+N/d(xi) and d\+N/d(eta) of the shape function at a given point in isoparametric coordinates. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
 
 
 \subsection{Member Function Documentation}
-\mbox{\Hypertarget{class_shape_q4_a306cacfd4d87384b3d06c2788cafd4ba}\label{class_shape_q4_a306cacfd4d87384b3d06c2788cafd4ba}} 
-\index{Shape\+Q4@{Shape\+Q4}!function@{function}}
-\index{function@{function}!Shape\+Q4@{Shape\+Q4}}
-\subsubsection{\texorpdfstring{function()}{function()}}
-{\footnotesize\ttfamily Matrix\+Xd Shape\+Q4\+::function (\begin{DoxyParamCaption}\item[{const Vector2d \&}]{point }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
+\mbox{\Hypertarget{class_shape_q4_a23e45399e8867f74c47eb41a30328e3e}\label{class_shape_q4_a23e45399e8867f74c47eb41a30328e3e}} 
+\index{Shape\+Q4@{Shape\+Q4}!function\+Deriv@{function\+Deriv}}
+\index{function\+Deriv@{function\+Deriv}!Shape\+Q4@{Shape\+Q4}}
+\subsubsection{\texorpdfstring{function\+Deriv()}{functionDeriv()}}
+{\footnotesize\ttfamily Matrix\+Xd Shape\+Q4\+::function\+Deriv (\begin{DoxyParamCaption}\item[{const Vector2d \&}]{point }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Compute the local derivatives d\+N/d(xi) and d\+N/d(eta) of the shape function at a given point in isoparametric coordinates. 
+
+If n is the number of nodes of this element type, then this function will returns a 2-\/by-\/n matrix\+:
+
+\mbox{[} d\+N1(x)/d(xi) d\+N2(x)/d(xi) ... d\+Nn(x)/d(xi) \mbox{]} \mbox{[} d\+N1(x)/d(eta) d\+N2(x)/d(eta) ... d\+Nn(x)/d(eta) \mbox{]}
+
+
+\begin{DoxyParams}{Parameters}
+{\em point} & A 2D point x(r,z) at which the shape function to be evaluated. Pass-\/by-\/ref. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The stacked and interleaved shape function derivatives dN as a matrix at given point. 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{class_shape_a29de5d31e0fa74a4d1067f6d14cd94ed}{Shape}}.
+
+\mbox{\Hypertarget{class_shape_q4_a9a74aff61bbcbfa73480cbe520a21563}\label{class_shape_q4_a9a74aff61bbcbfa73480cbe520a21563}} 
+\index{Shape\+Q4@{Shape\+Q4}!function\+Mat@{function\+Mat}}
+\index{function\+Mat@{function\+Mat}!Shape\+Q4@{Shape\+Q4}}
+\subsubsection{\texorpdfstring{function\+Mat()}{functionMat()}}
+{\footnotesize\ttfamily Matrix\+Xd Shape\+Q4\+::function\+Mat (\begin{DoxyParamCaption}\item[{const Vector2d \&}]{point }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
 
 
 
@@ -46,67 +72,7 @@ The stacked and interleaved shape function N as a matrix at given point.
 \end{DoxyReturn}
 
 
-Implements \mbox{\hyperlink{class_shape_ab6e0d64b40e09c176ce2ece24bc94a37}{Shape}}.
-
-\mbox{\Hypertarget{class_shape_q4_a5c185036352eabf489007b92f6d48ad2}\label{class_shape_q4_a5c185036352eabf489007b92f6d48ad2}} 
-\index{Shape\+Q4@{Shape\+Q4}!gaussian\+Point@{gaussian\+Point}}
-\index{gaussian\+Point@{gaussian\+Point}!Shape\+Q4@{Shape\+Q4}}
-\subsubsection{\texorpdfstring{gaussian\+Point()}{gaussianPoint()}}
-{\footnotesize\ttfamily const std\+::vector$<$ Vector2d $>$ \& Shape\+Q4\+::gaussian\+Point (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
-
-
-
-Get the gaussian integration points to be used in load distribution and stress/strain computation. 
-
-\begin{DoxyReturn}{Returns}
-An array of 2D points. Since the whole \mbox{\hyperlink{class_shape}{Shape}} object is dynamically allocated on heap, we can return-\/by-\/ref. 
-\end{DoxyReturn}
-
-
-Implements \mbox{\hyperlink{class_shape_afa8029d0991fc5d9054a667823224bd0}{Shape}}.
-
-\mbox{\Hypertarget{class_shape_q4_a51233dd1caaabbe8404c06b5b0db5755}\label{class_shape_q4_a51233dd1caaabbe8404c06b5b0db5755}} 
-\index{Shape\+Q4@{Shape\+Q4}!gaussian\+Weight@{gaussian\+Weight}}
-\index{gaussian\+Weight@{gaussian\+Weight}!Shape\+Q4@{Shape\+Q4}}
-\subsubsection{\texorpdfstring{gaussian\+Weight()}{gaussianWeight()}}
-{\footnotesize\ttfamily const std\+::vector$<$ double $>$ \& Shape\+Q4\+::gaussian\+Weight (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
-
-
-
-Get the gaussian integration weights to be used in load distribution and stress/strain computation. 
-
-\begin{DoxyReturn}{Returns}
-An array of weight values. Since the whole \mbox{\hyperlink{class_shape}{Shape}} object is dynamically allocated on heap, we can return-\/by-\/ref. 
-\end{DoxyReturn}
-
-
-Implements \mbox{\hyperlink{class_shape_a4257697bb443af2871a7cc7a82c8c823}{Shape}}.
-
-\mbox{\Hypertarget{class_shape_q4_ad3e1f5e25aee96cd21b1c8770c35afd0}\label{class_shape_q4_ad3e1f5e25aee96cd21b1c8770c35afd0}} 
-\index{Shape\+Q4@{Shape\+Q4}!local\+Deriv@{local\+Deriv}}
-\index{local\+Deriv@{local\+Deriv}!Shape\+Q4@{Shape\+Q4}}
-\subsubsection{\texorpdfstring{local\+Deriv()}{localDeriv()}}
-{\footnotesize\ttfamily Matrix\+Xd Shape\+Q4\+::local\+Deriv (\begin{DoxyParamCaption}\item[{const Vector2d \&}]{point }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
-
-
-
-Compute the local derivatives d\+N/d(xi) and d\+N/d(eta) of the shape function at a given point in isoparametric coordinates. 
-
-If n is the number of nodes of this element type, then this function will returns a 2-\/by-\/n matrix\+:
-
-\mbox{[} d\+N1(x)/d(xi) d\+N2(x)/d(xi) ... d\+Nn(x)/d(xi) \mbox{]} \mbox{[} d\+N1(x)/d(eta) d\+N2(x)/d(eta) ... d\+Nn(x)/d(eta) \mbox{]}
-
-
-\begin{DoxyParams}{Parameters}
-{\em point} & A 2D point x(r,z) at which the shape function to be evaluated. Pass-\/by-\/ref. \\
-\hline
-\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-The stacked and interleaved shape function N as a matrix at given point. 
-\end{DoxyReturn}
-
-
-Implements \mbox{\hyperlink{class_shape_a55575394f656e3ee4b5ac37ea04af8c9}{Shape}}.
+Implements \mbox{\hyperlink{class_shape_a7a2dc7c642bdea2a1359e3795fd9414d}{Shape}}.
 
 
 

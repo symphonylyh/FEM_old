@@ -4,7 +4,9 @@
  *
  * @author Haohang Huang
  * @date Feburary 26, 2018
- * @note Efficiency optimized by local stiffness matrix return-by-ref  on March 27, 2018
+ * @note Efficiency optimized by local stiffness matrix return-by-ref on March 27, 2018.
+ * @note Efficiency optimized by the abstraction of all element- and shape-related operations
+ * into generic forms on Apr 22, 2018.
  * @todo Query point method.
  */
 
