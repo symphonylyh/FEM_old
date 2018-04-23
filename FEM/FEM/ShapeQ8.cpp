@@ -90,8 +90,8 @@ ShapeQ8::~ShapeQ8()
 VectorXd ShapeQ8::functionVec(const Vector2d & point) const
 { // 8x1 Vector
     VectorXd result(numNodes_);
+    double Ni = 0;
     for (int i = 0; i < numNodes_; i++) {
-        double Ni = 0;
         if (i < 4) { // 4 corner nodes
           // Ni = (1+xi_i*xi)(1+eta_i*eta)(xi_i*xi+eta_i*eta-1)/4
           Ni = (1 + nodeCoord_[i](0) * point(0)) * (1 + nodeCoord_[i](1) * point(1)) * (nodeCoord_[i](0) * point(0) + nodeCoord_[i](1) * point(1) - 1) / 4;
@@ -113,8 +113,8 @@ VectorXd ShapeQ8::functionVec(const Vector2d & point) const
 MatrixXd ShapeQ8::functionMat(const Vector2d & point) const
 { // 2x16 matrix
     MatrixXd result = MatrixXd::Zero(2, 2 * numNodes_); // 2-D, 8-Node
+    double Ni = 0;
     for (int i = 0; i < numNodes_; i++) {
-        double Ni = 0;
         if (i < 4) { // 4 corner nodes
           // Ni = (1+xi_i*xi)(1+eta_i*eta)(xi_i*xi+eta_i*eta-1)/4
           Ni = (1 + nodeCoord_[i](0) * point(0)) * (1 + nodeCoord_[i](1) * point(1)) * (nodeCoord_[i](0) * point(0) + nodeCoord_[i](1) * point(1) - 1) / 4;
@@ -162,8 +162,8 @@ MatrixXd ShapeQ8::functionDeriv(const Vector2d & point) const
 VectorXd ShapeQ8::edgeFunctionVec(const double & point) const
 { // 3x1 vector
     VectorXd result(numEdgeNodes_);
+    double Ni = 0;
     for (int i = 0; i < 3; i++) {
-        double Ni = 0;
         if (i == 0) // left/bottom point
           Ni = - point * (1 - point) / 2; // Ni = -x(1-x)/2
         if (i == 2) // right/top point
@@ -178,8 +178,8 @@ VectorXd ShapeQ8::edgeFunctionVec(const double & point) const
 MatrixXd ShapeQ8::edgeFunctionMat(const double & point) const
 { // 2x6 matrix, 3 gaussian point and 3 node at each edge
     MatrixXd result = MatrixXd::Zero(2, 2 * numEdgeNodes_);
+    double Ni = 0;
     for (int i = 0; i < 3; i++) {
-        double Ni = 0;
         if (i == 0) // left/bottom point
           Ni = - point * (1 - point) / 2; // Ni = -x(1-x)/2
         if (i == 2) // right/top point
@@ -195,8 +195,8 @@ MatrixXd ShapeQ8::edgeFunctionMat(const double & point) const
 VectorXd ShapeQ8::edgeFunctionDeriv(const double & point) const
 { // 3x1 vector
     VectorXd result(numEdgeNodes_);
+    double Ni = 0;
     for (int i = 0; i < 3; i++) {
-        double Ni = 0;
         if (i == 0) // left/bottom point
           Ni = (2 * point - 1) / 2; // dNi/dx = (2x-1)/2
         if (i == 2) // right/top point

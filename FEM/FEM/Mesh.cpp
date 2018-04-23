@@ -88,6 +88,10 @@ void Mesh::readFromFile(std::string const & fileName)
     elementNodeList.reserve(8); // at most Q8 element
     for (int i = 0; i < elementCount_; i++) {
         std::getline(file, readLine);
+        // New: denote element node number at the beginning of the line
+        // std::string::size_type j = readLine.find(' ', 0); // find the first space
+        // int size = std::stoi(readLine.substr(0, j));
+        // readLine.erase(0, j + 1);
         parseLine(readLine, elementNodeList);
         // Create instances of different types of element
         switch (elementNodeList.size()) {

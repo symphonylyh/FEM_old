@@ -392,3 +392,74 @@ void Analysis::writeToFile(std::string const & fileName) const
 
     file.close();
 }
+
+void Analysis::writeToVTK(std::string const & fileName) const
+{
+    std::ofstream file(fileName);
+
+    file << "# vtk DataFile Version 2.0\n";
+    file << "./vtk\n";
+    file << "ASCII\n";
+    file << "\n";
+    file << "DATASET UNSTRUCTURED_GRID\n";
+    file << "POINTS " << mesh.nodeCount() << " double\n";
+    for (int i = 0; i < mesh.nodeCount(); i++){
+        file << (double)(mesh.nodeArray()[i]->getGlobalCoord())(0) << " " << (double)(mesh.nodeArray()[i]->getGlobalCoord())(1) << " " << "0.0" << "\n";
+    }
+
+    file << "\n";
+
+    file << "CELLS " << mesh.elementCount() << " " << (8 + 1) * mesh.elementCount() << "\n";
+    for (int i = 0; i < mesh.elementCount(); i++){
+        file << 8 << " " << mesh.elementArray()[i]->getNodeList().transpose() << "\n";
+    }
+
+    file << "\n";
+
+    file << "CELL_TYPES " << mesh.elementCount() << "\n";
+    for (int i = 0; i < mesh.elementCount(); i++){
+        file << 23 << "\n"; // quadrilateral
+    }
+
+    file << "\n";
+
+    file << "POINT_DATA " << mesh.nodeCount() << "\n";
+    // file << "VECTORS " << " Displacement" << " double" << "\n";
+    // for (int i = 0; i < nodalDisp.size() / 2; i++){
+    //     file << (double)nodalDisp(2 * i) << " " << (double)nodalDisp(2 * i + 1) << " " << 0 << "\n";
+    // }
+
+    file << "SCALARS " << "Displacement_R " << "double " << "1" << "\n";
+    file << "LOOKUP_TABLE " << "default" << "\n";
+    for (int i = 0; i < mesh.nodeCount(); i++){
+        file << nodalDisp(2 * i) << "\n";
+    }
+
+    file << "SCALARS " << "Displacement_Z " << "double " << "1" << "\n";
+    file << "LOOKUP_TABLE " << "default" << "\n";
+    for (int i = 0; i < mesh.nodeCount(); i++){
+        file << nodalDisp(2 * i + 1) << "\n";
+    }
+
+    file << "SCALARS " << "Stress_R " << "double " << "1" << "\n";
+    file << "LOOKUP_TABLE " << "default" << "\n";
+    for (int i = 0; i < mesh.nodeCount(); i++)
+        file << nodalStress(i, 0) << "\n";
+
+    file << "SCALARS " << "Stress_Z " << "double " << "1" << "\n";
+    file << "LOOKUP_TABLE " << "default" << "\n";
+    for (int i = 0; i < mesh.nodeCount(); i++)
+        file << nodalStress(i, 1) << "\n";
+
+    file << "SCALARS " << "Stress_Theta " << "double " << "1" << "\n";
+    file << "LOOKUP_TABLE " << "default" << "\n";
+    for (int i = 0; i < mesh.nodeCount(); i++)
+        file << nodalStress(i, 2) << "\n";
+
+    file << "SCALARS " << "Stress_Shear " << "double " << "1" << "\n";
+    file << "LOOKUP_TABLE " << "default" << "\n";
+    for (int i = 0; i < mesh.nodeCount(); i++)
+        file << nodalStress(i, 3) << "\n";
+             
+    file.close();
+}

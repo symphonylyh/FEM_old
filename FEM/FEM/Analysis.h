@@ -114,6 +114,11 @@ class Analysis
          */
         void writeToFile(std::string const & fileName) const;
 
+        /**
+         * Write the outputs into a .vtk file for post-processing.
+         */
+        void writeToVTK(std::string const & fileName) const;
+
     protected: // "protected" is a good choice. Only visible to the derived class
 
         /** The mesh information of the problem */
