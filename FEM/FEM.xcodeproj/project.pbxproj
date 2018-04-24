@@ -1246,6 +1246,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				HEADER_SEARCH_PATHS = "";
 				LIBRARY_SEARCH_PATHS = "";
+				"OTHER_CPLUSPLUSFLAGS[arch=*]" = "-O3";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;

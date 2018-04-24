@@ -95,11 +95,6 @@ class Analysis
         void printDisp() const;
 
         /**
-         * Print the nodal force.
-         */
-        void printForce() const;
-
-        /**
          * Print the nodal strain.
          */
         void printStrain() const;

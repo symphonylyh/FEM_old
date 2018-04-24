@@ -122,12 +122,12 @@ int main() {
     // std::cout << "Enter the input file name: ";
     // std::getline(std::cin, inFileName);
     std::string outFileName = "../Output/output_edge.txt";
-    std::string outVTKName = "../Output/output_edge.vtk";
+    std::string outVTKName = "../Output/output_dense.vtk";
     // std::cout << "Enter the output file name: ";
     // std::getline(std::cin, outFileName);
 
-auto start = std::chrono::high_resolution_clock::now();
 
+auto start = std::chrono::high_resolution_clock::now();
     Analysis* case1 = new LinearElastic(inFileName);
     case1->solveDisp();
     case1->printDisp();
@@ -135,15 +135,15 @@ auto start = std::chrono::high_resolution_clock::now();
     case1->computeStrainAndStress();
     case1->printStrain();
     case1->printStress();
-    // case1->writeToFile(outFileName);
-    case1->writeToVTK(outVTKName);
+    //case1->writeToFile(outFileName);
+    //case1->writeToVTK(outVTKName);
 
     delete case1; case1 = NULL;
-
+    
 auto finish = std::chrono::high_resolution_clock::now();
-// std::chrono::duration<double> elapsed = finish - start;
 auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
-std::cout << "Elapsed time: " << elapsed.count() << " ms" << std::endl;
+// std::chrono::duration<double> elapsed = finish - start; // in second
+std::cout << "Elapsed time total: " << elapsed.count() << " ms" << std::endl;
 
 std::cout << "-----------------------------------------------------";
 std::cout << std::endl;

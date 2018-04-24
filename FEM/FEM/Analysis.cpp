@@ -12,12 +12,17 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <unordered_map>
 
 Analysis::Analysis()
 {
 }
 
-Analysis::Analysis(std::string const & fileName) : mesh(fileName)
+Analysis::Analysis(std::string const & fileName)
+  :
+  mesh(fileName), globalStiffness(2 * mesh.nodeCount(), 2 * mesh.nodeCount()),
+  nodalDisp(VectorXd::Zero(2 * mesh.nodeCount())), nodalForce(VectorXd::Zero(2 * mesh.nodeCount())),
+  nodalStrain(MatrixXd::Zero(mesh.nodeCount(), 4)), nodalStress(MatrixXd::Zero(mesh.nodeCount(), 4))
 {
 }
 
@@ -27,46 +32,39 @@ Analysis::~Analysis()
 
 void Analysis::assembleStiffnessAndForce()
 {
-    // Initialize global stiffness  matrix
-    globalStiffness.resize(2 * mesh.nodeCount(),2 * mesh.nodeCount());
     // Reserve the space by estimating the maximum number of non-zero elements
     // in the sparse matrix. This should actually be No. of elements * 2n * 2n
     // where n is the size of the element type with the most nodes. Here n = 8.
-    int maxNum = mesh.elementCount() * 16 * 16;
-    globalStiffness.reserve(maxNum);
-    globalStiffness.setZero();
-
-    // Initialize global force vector
-    nodalForce.resize(globalStiffness.cols());
-    nodalForce.setZero();
-
-    // Assemble global matrix from local matrix of each element
-    Element* curr;
-    for (int i = 0; i < mesh.elementCount(); i++) {
-        curr = mesh.elementArray()[i];
-        int size = curr->getSize();// element type, for Q4 element, size=4; for Q8, size=8, etc
-        const VectorXi & nodeList = curr->getNodeList();// the index of nodes belong to this element, e.g., for element8, it will give you a vector contain (10,11,15,14), use this to locate row & column in globalStiffness matrix
-        const MatrixXd & localStiffness = curr->localStiffness();
-
-        // Traverse each node and assemble the values to global stiffness matrix and global force vector
-        for (int j = 0; j < size; j++){
-
-            for (int k = 0; k < size; k++){
-                globalStiffness.coeffRef(2 * nodeList(j), 2 * nodeList(k)) += localStiffness(2 * j , 2 * k);
-                globalStiffness.coeffRef(2 * nodeList(j), 2 * nodeList(k) + 1) += localStiffness(2 * j , 2 * k + 1);
-                globalStiffness.coeffRef(2 * nodeList(j) + 1, 2 * nodeList(k)) += localStiffness(2 * j + 1, 2 * k);
-                globalStiffness.coeffRef(2 * nodeList(j) + 1, 2 * nodeList(k) + 1) += localStiffness(2 * j + 1, 2 * k + 1);
-            }
-
-            // Also assemble the body force and temperature load vector
-            const VectorXd & forceVec = curr->nodalForce();
-            nodalForce(2 * nodeList(j)) += forceVec(2 * j);
-            nodalForce(2 * nodeList(j) + 1) += forceVec(2 * j + 1);
-
-        }
-
-    }
-    globalStiffness.makeCompressed();
+    // unsigned long int maxNum = mesh.elementCount() * 16 * 16;
+    // globalStiffness.reserve(maxNum);
+    //
+    // // Assemble global matrix from local matrix of each element
+    // Element* curr;
+    // for (int i = 0; i < mesh.elementCount(); i++) {
+    //     curr = mesh.elementArray()[i];
+    //     int size = curr->getSize();// element type, for Q4 element, size=4; for Q8, size=8, etc
+    //     const VectorXi & nodeList = curr->getNodeList();// the index of nodes belong to this element, e.g., for element8, it will give you a vector contain (10,11,15,14), use this to locate row & column in globalStiffness matrix
+    //     const MatrixXd & localStiffness = curr->localStiffness();
+    //
+    //     // Traverse each node and assemble the values to global stiffness matrix and global force vector
+    //     for (int j = 0; j < size; j++){
+    //
+    //         for (int k = 0; k < size; k++){
+    //             globalStiffness.coeffRef(2 * nodeList(j), 2 * nodeList(k)) += localStiffness(2 * j , 2 * k);
+    //             globalStiffness.coeffRef(2 * nodeList(j), 2 * nodeList(k) + 1) += localStiffness(2 * j , 2 * k + 1);
+    //             globalStiffness.coeffRef(2 * nodeList(j) + 1, 2 * nodeList(k)) += localStiffness(2 * j + 1, 2 * k);
+    //             globalStiffness.coeffRef(2 * nodeList(j) + 1, 2 * nodeList(k) + 1) += localStiffness(2 * j + 1, 2 * k + 1);
+    //         }
+    //
+    //         // Also assemble the body force and temperature load vector
+    //         const VectorXd & forceVec = curr->nodalForce();
+    //         nodalForce(2 * nodeList(j)) += forceVec(2 * j);
+    //         nodalForce(2 * nodeList(j) + 1) += forceVec(2 * j + 1);
+    //
+    //     }
+    //
+    // }
+    // globalStiffness.makeCompressed();
 
     // Sparse matrix operation notes:
     //     m.setZero() to remove all non-zero coefficients
@@ -83,6 +81,106 @@ void Analysis::assembleStiffnessAndForce()
     //     tripletList.push_back(T(i,j,value)); // or emplace_back()
     //     globalStiffness.setFromTriplets(tripletList.begin(), tripletList.end());
     // *Limitation: once initialized, the value cannot be modified
+
+    // Apply point load and edge load. The body force and temperature load should be applied
+    // element-wise as in following steps
+    applyForce();
+
+    typedef Eigen::Triplet<double> T;
+    std::vector<T> tripletList;
+    unsigned long int maxNum = mesh.elementCount() * 16 * 16;
+    tripletList.reserve(maxNum);
+
+    const std::vector<int> & DOFList = mesh.boundaryNodeList;
+    const std::vector<double> & boundaryValue = mesh.boundaryValue;
+    std::unordered_map<unsigned long int, double> boundaryHash;
+    boundaryHash.reserve(DOFList.size());
+    for (unsigned i = 0; i < DOFList.size(); i++)
+        boundaryHash[DOFList[i]] = boundaryValue[i];
+
+    // Assemble global matrix from local matrix of each element, meanwhile modify
+    // the stiffness matrix based on boundary condition and adjust the force vector
+    // accordingly
+    Element* curr;
+    for (int i = 0; i < mesh.elementCount(); i++) {
+        curr = mesh.elementArray()[i];
+        int size = curr->getSize();// element type, for Q4 element, size=4; for Q8, size=8, etc
+        const VectorXi & nodeList = curr->getNodeList();// the index of nodes belong to this element, e.g., for element8, it will give you a vector contain (10,11,15,14), use this to locate row & column in globalStiffness matrix
+        const MatrixXd & localStiffness = curr->localStiffness();
+
+        // Traverse each node and assemble the values to global stiffness matrix and global force vector
+        for (int j = 0; j < size; j++){
+            for (int k = 0; k < size; k++) {
+                // Since the j,k are the node index, actually for every (j,k) we
+                // are accessing a 2x2 block in the local stiffness matrix:
+                // (2j,2k), (2j+1,2k), (2j+1,2k+1), (2j,2k+1)
+                // For applying the boundary condition, we subtract the column
+                // multiplied by the boundar value, and then cross out the column
+                // and row at the fixed DOF. So rows are useless and we don't
+                // assign into sparse matrix. Columns are subtracted incrementally
+                // from the force vector. A hash table is used to check the DOF
+                // location in constant time.
+                // Think from a column-wise perspective
+                // First column
+                if (boundaryHash.find(2 * nodeList(k)) != boundaryHash.end()) { // if on the crossed-out column, subtract it from force vector
+                    if (j != k) // if at the crossing (j = k), assign as 1 at the end. Only (2j,2k) can possibly be on the diagonal
+                        nodalForce(2 * nodeList(j)) -= localStiffness(2 * j , 2 * k) * boundaryHash[2 * nodeList(k)];
+                    nodalForce(2 * nodeList(j) + 1) -= localStiffness(2 * j + 1, 2 * k) * boundaryHash[2 * nodeList(k)];
+                }
+                else {
+                    if (boundaryHash.find(2 * nodeList(j)) == boundaryHash.end()) // if on the crossed-out row, do nothing; otherwise add it to the sparse K
+                        tripletList.push_back(T(2 * nodeList(j), 2 * nodeList(k), localStiffness(2 * j , 2 * k)));
+                    if (boundaryHash.find(2 * nodeList(j) + 1) == boundaryHash.end())
+                        tripletList.push_back(T(2 * nodeList(j) + 1, 2 * nodeList(k), localStiffness(2 * j + 1 , 2 * k)));
+                }
+
+                // Second column
+                if (boundaryHash.find(2 * nodeList(k) + 1) != boundaryHash.end()) {
+                    if (j != k) // if at the crossing (j = k), assign as 1 at the end. Only (2j+1,2k+1) can possibly be on the diagonal
+                        nodalForce(2 * nodeList(j) + 1) -= localStiffness(2 * j + 1, 2 * k + 1) * boundaryHash[2 * nodeList(k) + 1];
+                    nodalForce(2 * nodeList(j)) -= localStiffness(2 * j , 2 * k + 1) * boundaryHash[2 * nodeList(k) + 1];
+                }
+                else {
+                    if (boundaryHash.find(2 * nodeList(j)) == boundaryHash.end()) // if on the crossed-out row, do nothing; otherwise add it to the sparse K
+                        tripletList.push_back(T(2 * nodeList(j), 2 * nodeList(k) + 1, localStiffness(2 * j , 2 * k + 1)));
+                    if (boundaryHash.find(2 * nodeList(j) + 1) == boundaryHash.end())
+                        tripletList.push_back(T(2 * nodeList(j) + 1, 2 * nodeList(k) + 1, localStiffness(2 * j + 1 , 2 * k + 1)));
+                }
+
+            }
+
+            // Also assemble the body force and temperature load vector element-wise
+            // meanwhile fix the force value at boundary locations
+            const VectorXd & forceVec = curr->nodalForce();
+            if (boundaryHash.find(2 * nodeList(j)) == boundaryHash.end())
+                nodalForce(2 * nodeList(j)) += forceVec(2 * j);
+            else
+                nodalForce(2 * nodeList(j)) = boundaryHash[2 * nodeList(j)];
+            if (boundaryHash.find(2 * nodeList(j) + 1) == boundaryHash.end())
+                nodalForce(2 * nodeList(j) + 1) += forceVec(2 * j + 1);
+            else
+                nodalForce(2 * nodeList(j) + 1) = boundaryHash[2 * nodeList(j) + 1];
+
+        }
+
+    }
+
+    // Assign the crossing of boundary locations to 1
+    for (unsigned i = 0; i < DOFList.size(); i++)
+        tripletList.push_back(T(DOFList[i], DOFList[i], 1));
+
+    // Write into sparse matrix
+    globalStiffness.setFromTriplets(tripletList.begin(), tripletList.end());
+
+    // Assign the crossing of boundary locations to 1
+    // You can also skip every crossing in the following steps, and here set a 1 to the triplet
+    // for (unsigned i = 0; i < DOFList.size(); i++)
+    //     globalStiffness.coeffRef(DOFList[i], DOFList[i]) = 1;
+
+    globalStiffness.makeCompressed();
+
+    // Free the memory
+    std::vector<T>().swap(tripletList);
 }
 
 void Analysis::applyForce()
@@ -189,9 +287,6 @@ void Analysis::computeStrainAndStress()
     // a 8-by-4 matrix. Since N is not square, pesudo inverse is used to solve
     // the least square system.
 
-    nodalStrain.resize(mesh.nodeCount(), 4);
-    nodalStress.resize(mesh.nodeCount(), 4);
-
     // Traverse each element
     Element* curr;
     int numNodes; // number of nodes belong to the element
@@ -249,14 +344,6 @@ void Analysis::printDisp() const
     std::cout << std::endl;
     for (int i = 0; i < mesh.nodeCount(); i++) {
       std::cout << "Node " << mesh.nodeArray()[i]->getIndex() << " : " << mesh.nodeArray()[i]->getDisp().transpose() << std::endl;
-    }
-    std::cout << std::endl;
-}
-
-void Analysis::printForce() const
-{
-    for (int i = 0; i < mesh.nodeCount(); i++) {
-      std::cout << "Node " << mesh.nodeArray()[i]->getIndex() << " force: " << mesh.nodeArray()[i]->getForce().transpose() << std::endl;
     }
     std::cout << std::endl;
 }
@@ -460,6 +547,6 @@ void Analysis::writeToVTK(std::string const & fileName) const
     file << "LOOKUP_TABLE " << "default" << "\n";
     for (int i = 0; i < mesh.nodeCount(); i++)
         file << nodalStress(i, 3) << "\n";
-             
+
     file.close();
 }
