@@ -15,19 +15,18 @@ Element::Element()
 {
 }
 
-Element::Element(const int & index, const std::vector<int> & nodeList, Node** const meshNode) // @TODO previously here I pass in vector<Node> which is very expensive, now I pass in vector<int> & and a pointer the pool of nodes create in mesh
+Element::Element(const int & index, const std::vector<int> & nodeList, Node** const meshNode, Material* const material) // @TODO previously here I pass in vector<Node> which is very expensive, now I pass in vector<int> & and a pointer the pool of nodes create in mesh
   : index_(index), size_(static_cast<int>(nodeList.size())),
     nodeList_(size_), nodeCoord_(size_, 2),
-    E_(MatrixXd::Zero(4,4)),
     localStiffness_(MatrixXd::Zero(2 * size_, 2 * size_)),
-    nodalForce_(VectorXd::Zero(2 * size_))
-{ // use initializer list
+    nodalForce_(VectorXd::Zero(2 * size_)),
+    material_(material) // assign material
+{
     for (int i = 0; i < size_; i++) {
       nodeList_(i) = nodeList[i];
       nodeCoord_.row(i) = meshNode[nodeList[i]]->getGlobalCoord();
     }
-    // All the material, force, boundary information are later assigned by
-    // setMaterial(), so here we only initialize the sizes
+
 }
 
 Element::Element(Element const & other)
@@ -49,34 +48,6 @@ Element::~Element()
     clear_();
 }
 
-void Element::setMaterial(const std::vector<double> & properties)
-{
-    double M = properties[0];
-    double v = properties[1];
-    modulus_ = M;
-    poissonRatio_ = v;
-
-    // Compute the stress-strain constitutive matrix
-    E_ << 1 - v, v, v, 0,
-          v,   1-v, v, 0,
-          v,   v,  1-v, 0,
-          0,  0,    0,  (1-2*v)/2;
-    E_ = E_ * M / (1+v) /(1-2*v);
-
-    // Assign body force (unit weight)
-    bodyForce_ << properties[2], properties[3];
-
-    // Assign thermal parameters
-    thermalCoeff_ = properties[4];
-    deltaT_ = properties[5];
-    thermalStrain_.resize(4);
-    double strain = thermalCoeff_ * deltaT_;
-    thermalStrain_ << strain, strain, strain, 0;
-
-    _computeStiffnessAndForce(); // bootstrap the computation of stiffness matrix and force vector. After callling this function, the member variables are all computed
-
-}
-
 const MatrixXd & Element::localStiffness() const
 {
     return localStiffness_;
@@ -89,12 +60,17 @@ const VectorXd & Element::nodalForce() const
 
 const MatrixXd & Element::EMatrix() const
 {
-    return E_;
+    return material_->EMatrix();
+}
+
+const Vector2d & Element::bodyForce() const
+{
+    return material_->bodyForce();
 }
 
 const VectorXd & Element::thermalStrain() const
 {
-    return thermalStrain_;
+    return material_->thermalStrain();
 }
 
 MatrixXd Element::jacobian(const Vector2d & point) const
@@ -144,7 +120,6 @@ const MatrixXd & Element::getNodeCoord() const
     return nodeCoord_;
 }
 
-
 void Element::_computeStiffnessAndForce()
 {
     for (int i = 0; i < shape()->gaussianPt().size(); i++) {
@@ -154,11 +129,11 @@ void Element::_computeStiffnessAndForce()
 
         // Body force
         // sum 2PI * N^T * F * |J| * r * W(i) at all Gaussian points
-        nodalForce_ += 2 * M_PI * shape()->functionMat(i).transpose() * bodyForce_ * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
+        nodalForce_ += 2 * M_PI * shape()->functionMat(i).transpose() * bodyForce() * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
 
         // Temperature load
         // sum 2PI * B^T * E * e0 * |J| * r * W(i) at all Gaussian points
-        nodalForce_ += 2 * M_PI * _BMatrix(i).transpose() * EMatrix() * thermalStrain_ * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
+        nodalForce_ += 2 * M_PI * _BMatrix(i).transpose() * EMatrix() * thermalStrain() * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
     }
 }
 
@@ -205,19 +180,12 @@ void Element::clear_()
 
 void Element::copy_(Element const & other)
 {
-    // meshNode = other.meshNode;
     index_ = other.index_;
     size_ = other.size_;
     nodeList_ = other.nodeList_;
     nodeCoord_ = other.nodeCoord_;
-    E_ = other.E_;
+    material_ = other.material_;
     localStiffness_ = other.localStiffness_;
     nodalForce_ = other.nodalForce_;
-    modulus_ = other.modulus_;
-    poissonRatio_ = other.poissonRatio_;
-    bodyForce_ = other.bodyForce_;
-    thermalCoeff_ = other.thermalCoeff_;
-    deltaT_ = other.deltaT_;
-    thermalStrain_ = other.thermalStrain_;
 
 }

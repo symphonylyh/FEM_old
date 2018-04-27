@@ -17,9 +17,10 @@ ElementQ8::ElementQ8()
 {
 }
 
-ElementQ8::ElementQ8(const int & index, const std::vector<int> & nodeList, Node** const meshNode)
-    : Element(index, nodeList, meshNode) // call the constructor of base class in the initializer list!
+ElementQ8::ElementQ8(const int & index, const std::vector<int> & nodeList, Node** const meshNode, Material* const material)
+    : Element(index, nodeList, meshNode, material) // call the constructor of base class in the initializer list!
 {
+    _computeStiffnessAndForce(); // bootstrap the computation of local stiffness matrix and force vector. After calling this function, the member variables are all computed
 }
 
 ElementQ8::~ElementQ8()

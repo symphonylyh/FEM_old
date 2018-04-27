@@ -20,11 +20,12 @@ LinearElastic::~LinearElastic()
 
 void LinearElastic::solveDisp()
 {
-    auto start = std::chrono::high_resolution_clock::now();
-        assembleStiffnessAndForce();
-    auto finish = std::chrono::high_resolution_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
-    std::cout << "Elapsed time assemble: " << elapsed.count() << " ms" << std::endl;
+    assembleStiffnessAndForce();
+    // auto start = std::chrono::high_resolution_clock::now();
+    //     assembleStiffnessAndForce();
+    // auto finish = std::chrono::high_resolution_clock::now();
+    // auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
+    // std::cout << "Elapsed time assemble: " << elapsed.count() << " ms" << std::endl;
 
     // // All integrated into assembleStiffnessAndForce()
     // start = std::chrono::high_resolution_clock::now();
@@ -47,18 +48,23 @@ void LinearElastic::solveDisp()
     // SimplicialLDLT <SparseMatrix<double> > solver;
     // ConjugateGradient <SparseMatrix<double> > solver;
 
-    start = std::chrono::high_resolution_clock::now();
-        SparseLU <SparseMatrix<double> > solver;
-        solver.compute(globalStiffness);
-    finish = std::chrono::high_resolution_clock::now();
-    elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
-    std::cout << "Elapsed time set sparse: " << elapsed.count() << " ms" << std::endl;
-
-    start = std::chrono::high_resolution_clock::now();
-        nodalDisp = solver.solve(nodalForce);
-    finish = std::chrono::high_resolution_clock::now();
-    elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
-    std::cout << "Elapsed solve sparse: " << elapsed.count() << " ms" << std::endl;
+    SimplicialLDLT <SparseMatrix<double> > solver;
+    solver.compute(globalStiffness);
+    nodalDisp = solver.solve(nodalForce);
+    //
+    // start = std::chrono::high_resolution_clock::now();
+    //     // SparseLU <SparseMatrix<double> > solver;
+    //     SimplicialLDLT <SparseMatrix<double> > solver;
+    //     solver.compute(globalStiffness);
+    // finish = std::chrono::high_resolution_clock::now();
+    // elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
+    // std::cout << "Elapsed time set sparse: " << elapsed.count() << " ms" << std::endl;
+    //
+    // start = std::chrono::high_resolution_clock::now();
+    //     nodalDisp = solver.solve(nodalForce);
+    // finish = std::chrono::high_resolution_clock::now();
+    // elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
+    // std::cout << "Elapsed solve sparse: " << elapsed.count() << " ms" << std::endl;
 
     // Write into node information
     for (int i = 0; i < mesh.nodeCount(); i++) {

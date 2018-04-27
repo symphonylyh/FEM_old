@@ -139,7 +139,7 @@ auto start = std::chrono::high_resolution_clock::now();
     //case1->writeToVTK(outVTKName);
 
     delete case1; case1 = NULL;
-    
+
 auto finish = std::chrono::high_resolution_clock::now();
 auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
 // std::chrono::duration<double> elapsed = finish - start; // in second

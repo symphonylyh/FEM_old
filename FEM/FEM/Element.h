@@ -17,6 +17,7 @@
 #include "Node.h"
 #include "Shape.h"
 #include "ShapeQ8.h"
+#include "Material.h"
 
 /* Abstract base Element class with shared public methods and pure virtual methods.
  *
@@ -39,11 +40,12 @@ class Element
          * @param index The index number of current element.
          * @param nodeList The list of node indices this element is consist of.
          * @param meshNode A const pointer to the node pool of the mesh.
+         * @param material A const pointer to the material class.
          *
          * @note Old version of this function pass in all the nodes, which is expensive.
          * This optimized version only pass in a pointer to access the node pool of the mesh.
          */
-        Element(const int & index, const std::vector<int> & nodeList, Node** const meshNode);
+        Element(const int & index, const std::vector<int> & nodeList, Node** const meshNode, Material* const material);
 
         /**
          * Copy constructor.
@@ -61,13 +63,6 @@ class Element
          * @note As an abstract class, the destructor must be virtual.
          */
         virtual ~Element();
-
-        /**
-         * Assign the material properties of the element.
-         *
-         * @param properties A list of the property parameters.
-         */
-        void setMaterial(const std::vector<double> & properties);
 
         /**
          * Get the shape of this element.
@@ -112,6 +107,13 @@ class Element
          * @return The 4-by-4 E matrix.
          */
         const MatrixXd & EMatrix() const;
+
+        /**
+         * Get the body force (unit weight) of the element.
+         *
+         * @return The 2-by-1 body force vector.
+         */
+        const Vector2d & bodyForce() const;
 
         /**
          * Get the thermal strain to be used in the stress computation.
@@ -280,32 +282,19 @@ class Element
          */
         MatrixXd nodeCoord_;
 
-        /** The 4-by-4 stress-strain constitutive matrix sigma = E * e */
-        MatrixXd E_;
+        /**
+         * A pointer to the material class. Material should not be stored as static
+         * member as Shape does, because Shape is a generic property of a Element
+         * while the Material can vary among the same element type. In addition,
+         * the list of all material is maintained at the Mesh level, so the
+         * memory allocation and deallocation is not handled inside Element. */
+        Material* material_;
 
         /** The 2n-by-2n local stiffness matrix where n is the number of nodes */
         MatrixXd localStiffness_; // member variable cannot have the same name as member function
 
         /** The 2n-by-1 nodal force vector where n is the number of nodes */
         VectorXd nodalForce_;
-
-        /** The modulus */
-        double modulus_;
-
-        /** The Poisson's ratio */
-        double poissonRatio_;
-
-        /** The body force (unit weight) */
-        Vector2d bodyForce_;
-
-        /** The coefficient of thermal effect */
-        double thermalCoeff_;
-
-        /** The temperature change (assume same across the entire element) */
-        double deltaT_;
-
-        /** The thermal strain */
-        VectorXd thermalStrain_;
 
         /**
          * Private helper function for the computation of element stiffness matrix

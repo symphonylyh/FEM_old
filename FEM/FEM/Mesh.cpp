@@ -14,6 +14,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <map>
 
 Mesh::Mesh()
 {
@@ -37,6 +38,12 @@ Mesh::~Mesh()
         delete meshElement_[i]; meshElement_[i] = NULL;
     }
     delete[] meshElement_; meshElement_ = NULL;
+
+    // Delete all materials
+    for (auto & m : materialList) {
+        delete m; m = NULL;
+    }
+
 }
 
 void Mesh::readFromFile(std::string const & fileName)
@@ -83,45 +90,48 @@ void Mesh::readFromFile(std::string const & fileName)
     }
     std::vector<double>().swap(nodeCoord);
 
+    // Read element properties (modulus, Poisson's ratio, thermal parameters, etc)
+    std::map<int, int> layerMap; // use an ordered map to decide layer No. by range finding, e.g., N layers, store N start indices of the element as [0 N1) [N1 N2) [N2 N3)
+    std::vector<double> elementProperty;
+    materialList.reserve(elementProperties);
+    for (int i = 0; i < elementProperties; i++) {
+        std::getline(file, readLine);
+        std::vector<int> range;
+        parseLine(readLine, range);
+        layerMap[range[0]] = i; // record the lower bound of the range
+        std::getline(file, readLine);
+        parseLine(readLine, elementProperty);
+        materialList.push_back(new Material(elementProperty)); // dynamically allocated, should be deleted in destructor
+    }
+    std::vector<double>().swap(elementProperty);
+
     // Read element's node list and create the corresponding element type
     std::vector<int> elementNodeList;
     elementNodeList.reserve(8); // at most Q8 element
     for (int i = 0; i < elementCount_; i++) {
         std::getline(file, readLine);
-        // New: denote element node number at the beginning of the line
+        // Option 2: denote element node number at the beginning of the line
         // std::string::size_type j = readLine.find(' ', 0); // find the first space
         // int size = std::stoi(readLine.substr(0, j));
         // readLine.erase(0, j + 1);
         parseLine(readLine, elementNodeList);
+        // Find the material type of the current element
+        std::map<int, int>::iterator it = layerMap.lower_bound(i); // lower_bound will give the included index, upper_bound is non-included
+        Material* material = materialList[it->second];
         // Create instances of different types of element
         switch (elementNodeList.size()) {
             case 3 :
-                meshElement_[i] = new ElementQ8(i, elementNodeList, meshNode_); // @TODO change to Q3 later
+                meshElement_[i] = new ElementQ8(i, elementNodeList, meshNode_, material); // @TODO change to Q3 later
                 break;
             case 6 :
-                meshElement_[i] = new ElementQ8(i, elementNodeList, meshNode_); // @TODO change to Q6 later
+                meshElement_[i] = new ElementQ8(i, elementNodeList, meshNode_, material); // @TODO change to Q6 later
                 break;
             case 8 :
-                meshElement_[i] = new ElementQ8(i, elementNodeList, meshNode_);
+                meshElement_[i] = new ElementQ8(i, elementNodeList, meshNode_, material);
                 break;
         }
     }
     std::vector<int>().swap(elementNodeList);
-
-    // Read element properties (modulus, Poisson's ratio, thermal parameters, etc)
-    std::vector<int> elementList;
-    std::vector<double> elementProperty;
-    elementList.reserve(elementCount_); // at most all elements
-    for (int i = 0; i < elementProperties; i++) {
-        std::getline(file, readLine);
-        parseLine(readLine, elementList);
-        std::getline(file, readLine);
-        parseLine(readLine, elementProperty);
-        for (int j = 0; j < elementList.size(); j++)
-            meshElement_[elementList[j]]->setMaterial(elementProperty);
-    }
-    std::vector<int>().swap(elementList);
-    std::vector<double>().swap(elementProperty);
 
     loadNodeList.clear();
     loadValue.clear(); // these two are the public member variables of Mesh class, to be used in Analysis->applyForce()

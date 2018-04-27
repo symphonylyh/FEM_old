@@ -91,6 +91,9 @@ class Mesh
          */
         Element** const elementArray() const;
 
+        /** A list of layered materials */
+        std::vector<Material*> materialList;
+
         /** A list of the degree of freedom that are at boundary
          *
          * @note Actually this is not NODE list, but degree of freedom list,

@@ -23,7 +23,7 @@ class ElementQ4 : public Element
     public:
         /* See the documentation of base class Shape. */
         ElementQ4();
-        ElementQ4(const int & index, const std::vector<int> & nodeList, Node** const meshNode);
+        ElementQ4(const int & index, const std::vector<int> & nodeList, Node** const meshNode, Material* const material);
         ~ElementQ4();
 
         // Shape* const shape() const;
