@@ -82,6 +82,15 @@
 -30 -30 -30
 // -------------------------------------------------------
 // Element index to assign edge load and edge numbers (e.g., assign to edge 2 and 3 (note the zero-based index!)of element No.6)
+36 2
+0 -15
+37 2
+0 -15
+38 2
+0 -15
+39 2
+0 -15
+
 6 1 2
 // Magnitude of edge load in X and Y direction (according to number of edges in the line above, 2 edges then 4 load components, 3 edges then 6 load components)
 0 0 0 -15

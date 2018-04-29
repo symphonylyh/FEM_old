@@ -118,11 +118,11 @@ int main() {
     //--------------------------------Main program------------------------------
     //--------------------------------------------------------------------------
     // Get file name
-    std::string inFileName = "../Input/input_edge.txt";
+    std::string inFileName = "../Input/input_153.txt";
     // std::cout << "Enter the input file name: ";
     // std::getline(std::cin, inFileName);
     std::string outFileName = "../Output/output_edge.txt";
-    std::string outVTKName = "../Output/output_dense.vtk";
+    std::string outVTKName = "../Output/output_153.vtk";
     // std::cout << "Enter the output file name: ";
     // std::getline(std::cin, outFileName);
 
@@ -136,7 +136,7 @@ auto start = std::chrono::high_resolution_clock::now();
     case1->printStrain();
     case1->printStress();
     //case1->writeToFile(outFileName);
-    //case1->writeToVTK(outVTKName);
+    case1->writeToVTK(outVTKName);
 
     delete case1; case1 = NULL;
 

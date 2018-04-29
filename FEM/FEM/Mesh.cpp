@@ -111,9 +111,9 @@ void Mesh::readFromFile(std::string const & fileName)
     for (int i = 0; i < elementCount_; i++) {
         std::getline(file, readLine);
         // Option 2: denote element node number at the beginning of the line
-        // std::string::size_type j = readLine.find(' ', 0); // find the first space
-        // int size = std::stoi(readLine.substr(0, j));
-        // readLine.erase(0, j + 1);
+        std::string::size_type j = readLine.find(' ', 0); // find the first space
+        int size = std::stoi(readLine.substr(0, j));
+        readLine.erase(0, j + 1);
         parseLine(readLine, elementNodeList);
         // Find the material type of the current element
         std::map<int, int>::iterator it = layerMap.lower_bound(i); // lower_bound will give the included index, upper_bound is non-included
