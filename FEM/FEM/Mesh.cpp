@@ -116,8 +116,12 @@ void Mesh::readFromFile(std::string const & fileName)
         readLine.erase(0, j + 1);
         parseLine(readLine, elementNodeList);
         // Find the material type of the current element
-        std::map<int, int>::iterator it = layerMap.lower_bound(i); // lower_bound will give the included index, upper_bound is non-included
-        Material* material = materialList[it->second];
+        // std::map<int, int>::iterator it = layerMap.lower_bound(i);
+        // Material* material = materialList[it->second];
+        // (Solved) @BUG // lower_bound will give the included index, upper_bound is non-included...WRONG! lower_bound will give the first no-less-than element! Not the real "lower bound" as we assumed. Should use upper_bound() - 1
+        // Fix:
+        std::map<int, int>::iterator it = layerMap.upper_bound(i); // upper_bound gives the first key that will go AFTER i
+        Material* material = materialList[(--it)->second];
         // Create instances of different types of element
         switch (elementNodeList.size()) {
             case 3 :
