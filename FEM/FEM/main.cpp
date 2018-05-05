@@ -118,11 +118,11 @@ int main() {
     //--------------------------------Main program------------------------------
     //--------------------------------------------------------------------------
     // Get file name
-    std::string inFileName = "../Input/input_153.txt";
+    std::string inFileName = "../Input/input_889_3layer_fixed2.txt";
     // std::cout << "Enter the input file name: ";
     // std::getline(std::cin, inFileName);
     std::string outFileName = "../Output/output_edge.txt";
-    std::string outVTKName = "../Output/output_153.vtk";
+    std::string outVTKName = "../Output/output_889_3layer_fixed2.vtk";
     // std::cout << "Enter the output file name: ";
     // std::getline(std::cin, outFileName);
 

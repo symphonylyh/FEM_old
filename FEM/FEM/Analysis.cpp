@@ -533,12 +533,12 @@ void Analysis::writeToVTK(std::string const & fileName) const
     for (int i = 0; i < mesh.nodeCount(); i++)
         file << nodalStress(i, 0) << "\n";
 
-    file << "SCALARS " << "Stress_Z " << "double " << "1" << "\n";
+    file << "SCALARS " << "Stress_Theta " << "double " << "1" << "\n";
     file << "LOOKUP_TABLE " << "default" << "\n";
     for (int i = 0; i < mesh.nodeCount(); i++)
         file << nodalStress(i, 1) << "\n";
 
-    file << "SCALARS " << "Stress_Theta " << "double " << "1" << "\n";
+    file << "SCALARS " << "Stress_Z " << "double " << "1" << "\n";
     file << "LOOKUP_TABLE " << "default" << "\n";
     for (int i = 0; i < mesh.nodeCount(); i++)
         file << nodalStress(i, 2) << "\n";
@@ -547,6 +547,16 @@ void Analysis::writeToVTK(std::string const & fileName) const
     file << "LOOKUP_TABLE " << "default" << "\n";
     for (int i = 0; i < mesh.nodeCount(); i++)
         file << nodalStress(i, 3) << "\n";
+
+    file << "SCALARS " << "Radial_Distance " << "double " << "1" << "\n";
+    file << "LOOKUP_TABLE " << "default" << "\n";
+    for (int i = 0; i < mesh.nodeCount(); i++)
+        file << (mesh.nodeArray()[i]->getGlobalCoord())(0)<< "\n";
+
+    file << "SCALARS " << "Depth " << "double " << "1" << "\n";
+    file << "LOOKUP_TABLE " << "default" << "\n";
+    for (int i = 0; i < mesh.nodeCount(); i++)
+        file << (mesh.nodeArray()[i]->getGlobalCoord())(1)<< "\n";
 
     file.close();
 }
