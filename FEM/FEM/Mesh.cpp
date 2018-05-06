@@ -123,7 +123,7 @@ void Mesh::readFromFile(std::string const & fileName)
         std::map<int, int>::iterator it = layerMap.upper_bound(i); // upper_bound gives the first key that will go AFTER i
         Material* material = materialList[(--it)->second];
         // Create instances of different types of element
-        switch (elementNodeList.size()) {
+        switch (size) {
             case 3 :
                 meshElement_[i] = new ElementQ8(i, elementNodeList, meshNode_, material); // @TODO change to Q3 later
                 break;

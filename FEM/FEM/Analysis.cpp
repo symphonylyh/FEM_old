@@ -317,8 +317,21 @@ void Analysis::computeStrainAndStress()
         }
 
         // Solve/extrapolate for nodal strain value via a least square linear system using pesudo inverse
-        MatrixXd pesudo = shapeAtGaussPt.completeOrthogonalDecomposition().pseudoInverse(); // pesudo inverse in "Eigen/QR"
-        MatrixXd strainAtNodes = pesudo * strainAtGaussPt; // 8x4 matrix
+        // Previous attempt: solving the system by pesudo inverse, this might have numerical error
+        // MatrixXd pesudo = shapeAtGaussPt.completeOrthogonalDecomposition().pseudoInverse(); // pesudo inverse in "Eigen/QR"
+        // MatrixXd strainAtNodes = pesudo * strainAtGaussPt; // 8x4 matrix
+        // Current solution: use SVD decomposition
+        MatrixXd strainAtNodes = shapeAtGaussPt.bdcSvd(ComputeThinU | ComputeThinV).solve(strainAtGaussPt);
+
+        // Notes on LLS system:
+        // Several options for solving a linear least squares system:
+        // 1. SVD decomposition
+        // VectorXd x = A.bdcSvd(ComputeThinU | ComputeThinV).solve(b);
+        // 2. QR decomposition
+        // VectorXd x = A.colPivHouseholderQr().solve(b);
+        // from fast to slow, unstable to stable: householderQr()-->colPivHouseholderQr()-->fullPivHouseholderQr()
+        // 3. Normal equations (A^T*A)*x = A^T*b
+        // VectorXd x = (A.transpose() * A).ldlt().solve(A.transpose() * b)
 
         // Set calculated strain value to 8 nodes
         const MatrixXd & E = curr->EMatrix();
@@ -525,28 +538,28 @@ void Analysis::writeToVTK(std::string const & fileName) const
     file << "SCALARS " << "Displacement_Z " << "double " << "1" << "\n";
     file << "LOOKUP_TABLE " << "default" << "\n";
     for (int i = 0; i < mesh.nodeCount(); i++){
-        file << nodalDisp(2 * i + 1) << "\n";
+        file << - nodalDisp(2 * i + 1) << "\n";
     }
 
     file << "SCALARS " << "Stress_R " << "double " << "1" << "\n";
     file << "LOOKUP_TABLE " << "default" << "\n";
     for (int i = 0; i < mesh.nodeCount(); i++)
-        file << nodalStress(i, 0) << "\n";
+        file << - nodalStress(i, 0) << "\n";
 
     file << "SCALARS " << "Stress_Theta " << "double " << "1" << "\n";
     file << "LOOKUP_TABLE " << "default" << "\n";
     for (int i = 0; i < mesh.nodeCount(); i++)
-        file << nodalStress(i, 1) << "\n";
+        file << - nodalStress(i, 1) << "\n";
 
     file << "SCALARS " << "Stress_Z " << "double " << "1" << "\n";
     file << "LOOKUP_TABLE " << "default" << "\n";
     for (int i = 0; i < mesh.nodeCount(); i++)
-        file << nodalStress(i, 2) << "\n";
+        file << - nodalStress(i, 2) << "\n";
 
     file << "SCALARS " << "Stress_Shear " << "double " << "1" << "\n";
     file << "LOOKUP_TABLE " << "default" << "\n";
     for (int i = 0; i < mesh.nodeCount(); i++)
-        file << nodalStress(i, 3) << "\n";
+        file << - nodalStress(i, 3) << "\n";
 
     file << "SCALARS " << "Radial_Distance " << "double " << "1" << "\n";
     file << "LOOKUP_TABLE " << "default" << "\n";

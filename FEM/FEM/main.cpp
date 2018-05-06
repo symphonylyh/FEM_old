@@ -118,11 +118,11 @@ int main() {
     //--------------------------------Main program------------------------------
     //--------------------------------------------------------------------------
     // Get file name
-    std::string inFileName = "../Input/input_889_3layer_fixed2.txt";
+    std::string inFileName = "../Input/input_889_3layer.txt";
     // std::cout << "Enter the input file name: ";
     // std::getline(std::cin, inFileName);
-    std::string outFileName = "../Output/output_edge.txt";
-    std::string outVTKName = "../Output/output_889_3layer_fixed2.vtk";
+    std::string outFileName = "../Output/output_889_3layer.txt";
+    std::string outVTKName = "../Output/output_889_3layer.vtk";
     // std::cout << "Enter the output file name: ";
     // std::getline(std::cin, outFileName);
 
@@ -135,7 +135,7 @@ auto start = std::chrono::high_resolution_clock::now();
     case1->computeStrainAndStress();
     case1->printStrain();
     case1->printStress();
-    //case1->writeToFile(outFileName);
+    case1->writeToFile(outFileName);
     case1->writeToVTK(outVTKName);
 
     delete case1; case1 = NULL;
