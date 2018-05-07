@@ -118,23 +118,29 @@ int main() {
     //--------------------------------Main program------------------------------
     //--------------------------------------------------------------------------
     // Get file name
-    std::string inFileName = "../Input/input_889_3layer.txt";
-    // std::cout << "Enter the input file name: ";
-    // std::getline(std::cin, inFileName);
-    std::string outFileName = "../Output/output_889_3layer.txt";
-    std::string outVTKName = "../Output/output_889_3layer.vtk";
-    // std::cout << "Enter the output file name: ";
-    // std::getline(std::cin, outFileName);
-
+    // std::string inFileName = "../Input/input_dense.txt";
+    // std::string outFileName = "../Output/output_dense.txt";
+    // std::string outVTKName = "../Output/output_dense.vtk";
+    
+    std::cout << "Enter the input file name: ";
+    std::string inFileName;
+    std::getline(std::cin, inFileName);
+    inFileName += ".txt";
+    
+    std::cout << "Enter the output file name: ";
+    std::string outFileName;
+    std::getline(std::cin, outFileName);
+    std::string outVTKName = outFileName + ".vtk";
+    outFileName += ".txt";
 
 auto start = std::chrono::high_resolution_clock::now();
     Analysis* case1 = new LinearElastic(inFileName);
     case1->solveDisp();
-    case1->printDisp();
+    // case1->printDisp();
 
     case1->computeStrainAndStress();
-    case1->printStrain();
-    case1->printStress();
+    // case1->printStrain();
+    // case1->printStress();
     case1->writeToFile(outFileName);
     case1->writeToVTK(outVTKName);
 

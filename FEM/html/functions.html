@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ILLI-FLEX: Class Members</title>
+<title>ERDC-FLEX: Class Members</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,11 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="Logo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">ILLI-FLEX
+   <div id="projectname">ERDC-FLEX
    &#160;<span id="projectnumber">1.0</span>
    </div>
-   <div id="projectbrief">2D Axisymmetric FEM Code for Flexible Pavements</div>
+   <div id="projectbrief">2D Axisymmetric Finite Element Methods Program for Flexible Pavements</div>
   </td>
  </tr>
  </tbody>
@@ -107,11 +108,13 @@ $(function() {
 <li>BMatrix()
 : <a class="el" href="class_element.html#a19f8ba5c4c7569c3bcccf1b422a7dd89">Element</a>
 </li>
-<li>bodyForce
-: <a class="el" href="class_mesh.html#a10891b16424fd1015868d2ef9a2c9311">Mesh</a>
+<li>bodyForce()
+: <a class="el" href="class_element.html#a990462393dee5227b711ca96a69c5516">Element</a>
+, <a class="el" href="class_material.html#a5995e3b7d8063f670e33f2fcd7315928">Material</a>
+, <a class="el" href="class_mesh.html#a10891b16424fd1015868d2ef9a2c9311">Mesh</a>
 </li>
 <li>bodyForce_
-: <a class="el" href="class_element.html#a95aee59c87f4d17911332c0309eae425">Element</a>
+: <a class="el" href="class_material.html#af29cbdb8e4fa9fbc0e04cf89b72a2c18">Material</a>
 </li>
 <li>boundaryCondition()
 : <a class="el" href="class_analysis.html#aec157316b08568c84d8d8344a724ff89">Analysis</a>
@@ -140,14 +143,14 @@ $(function() {
 
 <h3><a id="index_d"></a>- d -</h3><ul>
 <li>deltaT_
-: <a class="el" href="class_element.html#a03e46bd18f0f4d621f1c6d6dfa41d9ae">Element</a>
+: <a class="el" href="class_material.html#a4c80934742a60ab5414e92c4b97d08ca">Material</a>
 </li>
 </ul>
 
 
 <h3><a id="index_e"></a>- e -</h3><ul>
 <li>E_
-: <a class="el" href="class_element.html#a8d60170ba5c9254692a54cfad717ffa9">Element</a>
+: <a class="el" href="class_material.html#ad8eb23b2b0c134635888be8e3b6a824c">Material</a>
 </li>
 <li>edge()
 : <a class="el" href="class_shape.html#a3d0c3331bae4cad90eb8b5de8f095140">Shape</a>
@@ -192,7 +195,7 @@ $(function() {
 : <a class="el" href="class_shape.html#ac668fd1eff17dac98616158e1cab17fa">Shape</a>
 </li>
 <li>Element()
-: <a class="el" href="class_element.html#a68700ab3d0e5551cb456e91c3a8fc61b">Element</a>
+: <a class="el" href="class_element.html#ab0d0e20be9a36ae676202db753faeec9">Element</a>
 </li>
 <li>elementArray()
 : <a class="el" href="class_mesh.html#a042cc2ef19b7090f830b915721818181">Mesh</a>
@@ -202,6 +205,7 @@ $(function() {
 </li>
 <li>EMatrix()
 : <a class="el" href="class_element.html#abd9d11d211f4f5e6f9e213a1013f36ed">Element</a>
+, <a class="el" href="class_material.html#abaae85c04f84374421337e2bf140ec0a">Material</a>
 </li>
 </ul>
 
@@ -308,6 +312,15 @@ $(function() {
 
 
 <h3><a id="index_m"></a>- m -</h3><ul>
+<li>Material()
+: <a class="el" href="class_material.html#aa37938070139aa60f67d245d3b0ce352">Material</a>
+</li>
+<li>material_
+: <a class="el" href="class_element.html#a049b5df45df8a2caec4f51195e7ae7b4">Element</a>
+</li>
+<li>materialList
+: <a class="el" href="class_mesh.html#acc363bc0df381350540ed9d56ba3b35b">Mesh</a>
+</li>
 <li>mesh
 : <a class="el" href="class_analysis.html#a34604f343af1a7d0ee2d19f2a905773b">Analysis</a>
 </li>
@@ -315,7 +328,7 @@ $(function() {
 : <a class="el" href="class_mesh.html#a2af137f1571af89172b9c102302c416b">Mesh</a>
 </li>
 <li>modulus_
-: <a class="el" href="class_element.html#a48f40fd0d2c4f4aeba3f2a58ccbe5b2d">Element</a>
+: <a class="el" href="class_material.html#a505d8c136dd80cdfb78e2b9f6468be46">Material</a>
 </li>
 </ul>
 
@@ -381,13 +394,10 @@ $(function() {
 
 <h3><a id="index_p"></a>- p -</h3><ul>
 <li>poissonRatio_
-: <a class="el" href="class_element.html#abb1803330550aea8123fa12dc1317f4e">Element</a>
+: <a class="el" href="class_material.html#ac49581c3474d4106011a211f063c5b1d">Material</a>
 </li>
 <li>printDisp()
 : <a class="el" href="class_analysis.html#a6def63bf2890a4d9fa76c1af350703b8">Analysis</a>
-</li>
-<li>printForce()
-: <a class="el" href="class_analysis.html#add0ccc185311df2140b66590b036b9fb">Analysis</a>
 </li>
 <li>printStrain()
 : <a class="el" href="class_analysis.html#ab3087cac038045cc9cc4b8b8e200d16b">Analysis</a>
@@ -417,9 +427,6 @@ $(function() {
 </li>
 <li>setGlobalCoord()
 : <a class="el" href="class_node.html#acea5ca0209b0c5cffa48d564320e4d56">Node</a>
-</li>
-<li>setMaterial()
-: <a class="el" href="class_element.html#a8e923aa55ff84470e93b788cf3b1f30d">Element</a>
 </li>
 <li>setStrainAndStress()
 : <a class="el" href="class_node.html#a31e8635344b96ab5df9e6df5e5466533">Node</a>
@@ -456,13 +463,14 @@ $(function() {
 
 <h3><a id="index_t"></a>- t -</h3><ul>
 <li>thermalCoeff_
-: <a class="el" href="class_element.html#a9fb09056b331918d55c52ef99c0bd664">Element</a>
+: <a class="el" href="class_material.html#a51b256107e8ddc53c6b12b90b481034d">Material</a>
 </li>
 <li>thermalStrain()
 : <a class="el" href="class_element.html#ae7d89bab030841799347a94856496f79">Element</a>
+, <a class="el" href="class_material.html#ae84dc6468819487050db131b589ffb95">Material</a>
 </li>
 <li>thermalStrain_
-: <a class="el" href="class_element.html#a6d8900826714f772a204cf8b2ccca39e">Element</a>
+: <a class="el" href="class_material.html#a26c58d90ad30a49acb8342196166ab41">Material</a>
 </li>
 </ul>
 
@@ -470,6 +478,9 @@ $(function() {
 <h3><a id="index_w"></a>- w -</h3><ul>
 <li>writeToFile()
 : <a class="el" href="class_analysis.html#a0c17471cdbed978e4c4d62718e7b1578">Analysis</a>
+</li>
+<li>writeToVTK()
+: <a class="el" href="class_analysis.html#a7d3b4ec9e261d56df1c70217bacdd404">Analysis</a>
 </li>
 </ul>
 

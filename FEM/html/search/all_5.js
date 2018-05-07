@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['e_5f',['E_',['../class_element.html#a8d60170ba5c9254692a54cfad717ffa9',1,'Element']]],
+  ['e_5f',['E_',['../class_material.html#ad8eb23b2b0c134635888be8e3b6a824c',1,'Material']]],
   ['edge',['edge',['../class_shape.html#a3d0c3331bae4cad90eb8b5de8f095140',1,'Shape']]],
   ['edgefunctionderiv',['edgeFunctionDeriv',['../class_shape.html#a652164292592de3157eb4021f43c9305',1,'Shape::edgeFunctionDeriv(const double &amp;point) const =0'],['../class_shape.html#adb82ef67f86561caa0cebdb4abb7342a',1,'Shape::edgeFunctionDeriv(const int &amp;i) const'],['../class_shape_q8.html#a81582d03b2fc79a8a5705111ad85163f',1,'ShapeQ8::edgeFunctionDeriv()']]],
   ['edgefunctionmat',['edgeFunctionMat',['../class_shape.html#ac9854f15377ea07c97be16049e3058d5',1,'Shape::edgeFunctionMat(const double &amp;point) const =0'],['../class_shape.html#a5d6e400458f3381b3adeeac34839e401',1,'Shape::edgeFunctionMat(const int &amp;i) const'],['../class_shape_q8.html#a0c52ac2dbeb9297c11e03c664d4750b7',1,'ShapeQ8::edgeFunctionMat()']]],
@@ -14,7 +14,7 @@ var searchData=
   ['edgeshapederiv_5f',['edgeShapeDeriv_',['../class_shape.html#a5cc69ac9662365109eabd0a193e48781',1,'Shape']]],
   ['edgeshapemat_5f',['edgeShapeMat_',['../class_shape.html#af81a39560f87d14ba1a50c9eda7fff12',1,'Shape']]],
   ['edgeshapevec_5f',['edgeShapeVec_',['../class_shape.html#ac668fd1eff17dac98616158e1cab17fa',1,'Shape']]],
-  ['element',['Element',['../class_element.html',1,'Element'],['../class_element.html#ab0d0e20be9a36ae676202db753faeec9',1,'Element::Element()'],['../class_element.html#a05c744ed2de597b38da74c7765f5ed1b',1,'Element::Element(const int &amp;index, const std::vector&lt; int &gt; &amp;nodeList, Node **const meshNode)'],['../class_element.html#a68700ab3d0e5551cb456e91c3a8fc61b',1,'Element::Element(Element const &amp;other)']]],
+  ['element',['Element',['../class_element.html',1,'Element'],['../class_element.html#ab0d0e20be9a36ae676202db753faeec9',1,'Element::Element()'],['../class_element.html#aed93d541257fa2ddd3cd2202fec48bb4',1,'Element::Element(const int &amp;index, const std::vector&lt; int &gt; &amp;nodeList, Node **const meshNode, Material *const material)'],['../class_element.html#a68700ab3d0e5551cb456e91c3a8fc61b',1,'Element::Element(Element const &amp;other)']]],
   ['element_2ecpp',['Element.cpp',['../_element_8cpp.html',1,'']]],
   ['element_2eh',['Element.h',['../_element_8h.html',1,'']]],
   ['elementarray',['elementArray',['../class_mesh.html#a042cc2ef19b7090f830b915721818181',1,'Mesh']]],
@@ -25,5 +25,7 @@ var searchData=
   ['elementq8',['ElementQ8',['../class_element_q8.html',1,'']]],
   ['elementq8_2ecpp',['ElementQ8.cpp',['../_element_q8_8cpp.html',1,'']]],
   ['elementq8_2eh',['ElementQ8.h',['../_element_q8_8h.html',1,'']]],
-  ['ematrix',['EMatrix',['../class_element.html#abd9d11d211f4f5e6f9e213a1013f36ed',1,'Element']]]
+  ['elementt6_2ecpp',['ElementT6.cpp',['../_element_t6_8cpp.html',1,'']]],
+  ['elementt6_2eh',['ElementT6.h',['../_element_t6_8h.html',1,'']]],
+  ['ematrix',['EMatrix',['../class_element.html#abd9d11d211f4f5e6f9e213a1013f36ed',1,'Element::EMatrix()'],['../class_material.html#abaae85c04f84374421337e2bf140ec0a',1,'Material::EMatrix()']]]
 ];

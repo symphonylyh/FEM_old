@@ -17,7 +17,7 @@ struct \mbox{\hyperlink{struct_element_1_1static_members}{static\+Members}}
 \mbox{\Hypertarget{class_element_ab0d0e20be9a36ae676202db753faeec9}\label{class_element_ab0d0e20be9a36ae676202db753faeec9}} 
 \mbox{\hyperlink{class_element_ab0d0e20be9a36ae676202db753faeec9}{Element}} ()
 \begin{DoxyCompactList}\small\item\em Default constructor for \mbox{\hyperlink{class_element}{Element}}. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{class_element_a05c744ed2de597b38da74c7765f5ed1b}{Element}} (const int \&index, const std\+::vector$<$ int $>$ \&node\+List, \mbox{\hyperlink{class_node}{Node}} $\ast$$\ast$const mesh\+Node)
+\mbox{\hyperlink{class_element_aed93d541257fa2ddd3cd2202fec48bb4}{Element}} (const int \&index, const std\+::vector$<$ int $>$ \&node\+List, \mbox{\hyperlink{class_node}{Node}} $\ast$$\ast$const mesh\+Node, \mbox{\hyperlink{class_material}{Material}} $\ast$const material)
 \begin{DoxyCompactList}\small\item\em Custom constructor to create an element with given node indices. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{class_element_a68700ab3d0e5551cb456e91c3a8fc61b}\label{class_element_a68700ab3d0e5551cb456e91c3a8fc61b}} 
 \mbox{\hyperlink{class_element_a68700ab3d0e5551cb456e91c3a8fc61b}{Element}} (\mbox{\hyperlink{class_element}{Element}} const \&other)
@@ -27,8 +27,6 @@ struct \mbox{\hyperlink{struct_element_1_1static_members}{static\+Members}}
 \begin{DoxyCompactList}\small\item\em Assignment operator. \end{DoxyCompactList}\item 
 virtual \mbox{\hyperlink{class_element_a13d54ba9c08b6bec651402f1c2bb002c}{$\sim$\+Element}} ()
 \begin{DoxyCompactList}\small\item\em Destructor. \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{class_element_a8e923aa55ff84470e93b788cf3b1f30d}{set\+Material}} (const std\+::vector$<$ double $>$ \&properties)
-\begin{DoxyCompactList}\small\item\em Assign the material properties of the element. \end{DoxyCompactList}\item 
 virtual \mbox{\hyperlink{class_shape}{Shape}} $\ast$const \mbox{\hyperlink{class_element_aadc36f89fa5f11da7e74d6528ecdcacc}{shape}} () const =0
 \begin{DoxyCompactList}\small\item\em Get the shape of this element. \end{DoxyCompactList}\item 
 const Matrix\+Xd \& \mbox{\hyperlink{class_element_a24c9d2dd309a28a8891d6b710a8aa0c9}{local\+Stiffness}} () const
@@ -37,6 +35,8 @@ const Vector\+Xd \& \mbox{\hyperlink{class_element_ac9d07ee9676f15296a097ab97fd5
 \begin{DoxyCompactList}\small\item\em Get the distributed nodal force from body force and temperature loads. \end{DoxyCompactList}\item 
 const Matrix\+Xd \& \mbox{\hyperlink{class_element_abd9d11d211f4f5e6f9e213a1013f36ed}{E\+Matrix}} () const
 \begin{DoxyCompactList}\small\item\em Get the stress-\/strain constitutive matrix of the element. \end{DoxyCompactList}\item 
+const Vector2d \& \mbox{\hyperlink{class_element_a990462393dee5227b711ca96a69c5516}{body\+Force}} () const
+\begin{DoxyCompactList}\small\item\em Get the body force (unit weight) of the element. \end{DoxyCompactList}\item 
 const Vector\+Xd \& \mbox{\hyperlink{class_element_ae7d89bab030841799347a94856496f79}{thermal\+Strain}} () const
 \begin{DoxyCompactList}\small\item\em Get the thermal strain to be used in the stress computation. \end{DoxyCompactList}\item 
 Matrix\+Xd \mbox{\hyperlink{class_element_ae0c7de742f6835b6ede7d28fa73c7594}{jacobian}} (const Vector2d \&point) const
@@ -86,41 +86,22 @@ Vector\+Xi \mbox{\hyperlink{class_element_ab23e30c8ebb0d3f88812583c2a3b475f}{nod
 \mbox{\Hypertarget{class_element_a073425885b45c2c9ad906523afe48674}\label{class_element_a073425885b45c2c9ad906523afe48674}} 
 Matrix\+Xd \mbox{\hyperlink{class_element_a073425885b45c2c9ad906523afe48674}{node\+Coord\+\_\+}}
 \begin{DoxyCompactList}\small\item\em The global coordinates of the nodes belong to this element as a n-\/by-\/2 matrix. \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{class_element_a8d60170ba5c9254692a54cfad717ffa9}\label{class_element_a8d60170ba5c9254692a54cfad717ffa9}} 
-Matrix\+Xd \mbox{\hyperlink{class_element_a8d60170ba5c9254692a54cfad717ffa9}{E\+\_\+}}
-\begin{DoxyCompactList}\small\item\em The 4-\/by-\/4 stress-\/strain constitutive matrix sigma = E $\ast$ e. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_material}{Material}} $\ast$ \mbox{\hyperlink{class_element_a049b5df45df8a2caec4f51195e7ae7b4}{material\+\_\+}}
+\begin{DoxyCompactList}\small\item\em A pointer to the material class. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{class_element_aa784e074cb93a9731f279c91f68e6beb}\label{class_element_aa784e074cb93a9731f279c91f68e6beb}} 
 Matrix\+Xd \mbox{\hyperlink{class_element_aa784e074cb93a9731f279c91f68e6beb}{local\+Stiffness\+\_\+}}
 \begin{DoxyCompactList}\small\item\em The 2n-\/by-\/2n local stiffness matrix where n is the number of nodes. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{class_element_a98da964a6e07b9deb00b170b6d9d954d}\label{class_element_a98da964a6e07b9deb00b170b6d9d954d}} 
 Vector\+Xd \mbox{\hyperlink{class_element_a98da964a6e07b9deb00b170b6d9d954d}{nodal\+Force\+\_\+}}
-\begin{DoxyCompactList}\small\item\em The 2n-\/by-\/1 nodal force vector where n is the number of nodes. \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{class_element_a48f40fd0d2c4f4aeba3f2a58ccbe5b2d}\label{class_element_a48f40fd0d2c4f4aeba3f2a58ccbe5b2d}} 
-double \mbox{\hyperlink{class_element_a48f40fd0d2c4f4aeba3f2a58ccbe5b2d}{modulus\+\_\+}}
-\begin{DoxyCompactList}\small\item\em The modulus. \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{class_element_abb1803330550aea8123fa12dc1317f4e}\label{class_element_abb1803330550aea8123fa12dc1317f4e}} 
-double \mbox{\hyperlink{class_element_abb1803330550aea8123fa12dc1317f4e}{poisson\+Ratio\+\_\+}}
-\begin{DoxyCompactList}\small\item\em The Poisson\textquotesingle{}s ratio. \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{class_element_a95aee59c87f4d17911332c0309eae425}\label{class_element_a95aee59c87f4d17911332c0309eae425}} 
-Vector2d \mbox{\hyperlink{class_element_a95aee59c87f4d17911332c0309eae425}{body\+Force\+\_\+}}
-\begin{DoxyCompactList}\small\item\em The body force (unit weight) \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{class_element_a9fb09056b331918d55c52ef99c0bd664}\label{class_element_a9fb09056b331918d55c52ef99c0bd664}} 
-double \mbox{\hyperlink{class_element_a9fb09056b331918d55c52ef99c0bd664}{thermal\+Coeff\+\_\+}}
-\begin{DoxyCompactList}\small\item\em The coefficient of thermal effect. \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{class_element_a03e46bd18f0f4d621f1c6d6dfa41d9ae}\label{class_element_a03e46bd18f0f4d621f1c6d6dfa41d9ae}} 
-double \mbox{\hyperlink{class_element_a03e46bd18f0f4d621f1c6d6dfa41d9ae}{delta\+T\+\_\+}}
-\begin{DoxyCompactList}\small\item\em The temperature change (assume same across the entire element) \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{class_element_a6d8900826714f772a204cf8b2ccca39e}\label{class_element_a6d8900826714f772a204cf8b2ccca39e}} 
-Vector\+Xd \mbox{\hyperlink{class_element_a6d8900826714f772a204cf8b2ccca39e}{thermal\+Strain\+\_\+}}
-\begin{DoxyCompactList}\small\item\em The thermal strain. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em The 2n-\/by-\/1 nodal force vector where n is the number of nodes. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{class_element_a05c744ed2de597b38da74c7765f5ed1b}\label{class_element_a05c744ed2de597b38da74c7765f5ed1b}} 
+\mbox{\Hypertarget{class_element_aed93d541257fa2ddd3cd2202fec48bb4}\label{class_element_aed93d541257fa2ddd3cd2202fec48bb4}} 
 \index{Element@{Element}!Element@{Element}}
 \index{Element@{Element}!Element@{Element}}
 \subsubsection{\texorpdfstring{Element()}{Element()}}
-{\footnotesize\ttfamily Element\+::\+Element (\begin{DoxyParamCaption}\item[{const int \&}]{index,  }\item[{const std\+::vector$<$ int $>$ \&}]{node\+List,  }\item[{\mbox{\hyperlink{class_node}{Node}} $\ast$$\ast$const}]{mesh\+Node }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily Element\+::\+Element (\begin{DoxyParamCaption}\item[{const int \&}]{index,  }\item[{const std\+::vector$<$ int $>$ \&}]{node\+List,  }\item[{\mbox{\hyperlink{class_node}{Node}} $\ast$$\ast$const}]{mesh\+Node,  }\item[{\mbox{\hyperlink{class_material}{Material}} $\ast$const}]{material }\end{DoxyParamCaption})}
 
 
 
@@ -132,7 +113,9 @@ Custom constructor to create an element with given node indices.
 \hline
 {\em node\+List} & The list of node indices this element is consist of. \\
 \hline
-{\em mesh\+Node} & A const pointer to the node pool of the mesh.\\
+{\em mesh\+Node} & A const pointer to the node pool of the mesh. \\
+\hline
+{\em material} & A const pointer to the material class.\\
 \hline
 \end{DoxyParams}
 \begin{DoxyNote}{Note}
@@ -227,6 +210,19 @@ e = D$\ast$u = D$\ast$(N$\ast$u) = (D$\ast$N)u = Bu, so B is the differential ma
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 The 4-\/by-\/2n B matrix where n is the number of nodes belong to this element. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_element_a990462393dee5227b711ca96a69c5516}\label{class_element_a990462393dee5227b711ca96a69c5516}} 
+\index{Element@{Element}!body\+Force@{body\+Force}}
+\index{body\+Force@{body\+Force}!Element@{Element}}
+\subsubsection{\texorpdfstring{body\+Force()}{bodyForce()}}
+{\footnotesize\ttfamily const Vector2d \& Element\+::body\+Force (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the body force (unit weight) of the element. 
+
+\begin{DoxyReturn}{Returns}
+The 2-\/by-\/1 body force vector. 
 \end{DoxyReturn}
 \mbox{\Hypertarget{class_element_abd9d11d211f4f5e6f9e213a1013f36ed}\label{class_element_abd9d11d211f4f5e6f9e213a1013f36ed}} 
 \index{Element@{Element}!E\+Matrix@{E\+Matrix}}
@@ -358,21 +354,6 @@ Compute the averaged radius R at an arbitrary point.
 \begin{DoxyReturn}{Returns}
 The averaged radius value. 
 \end{DoxyReturn}
-\mbox{\Hypertarget{class_element_a8e923aa55ff84470e93b788cf3b1f30d}\label{class_element_a8e923aa55ff84470e93b788cf3b1f30d}} 
-\index{Element@{Element}!set\+Material@{set\+Material}}
-\index{set\+Material@{set\+Material}!Element@{Element}}
-\subsubsection{\texorpdfstring{set\+Material()}{setMaterial()}}
-{\footnotesize\ttfamily void Element\+::set\+Material (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ double $>$ \&}]{properties }\end{DoxyParamCaption})}
-
-
-
-Assign the material properties of the element. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em properties} & A list of the property parameters. \\
-\hline
-\end{DoxyParams}
 \mbox{\Hypertarget{class_element_aadc36f89fa5f11da7e74d6528ecdcacc}\label{class_element_aadc36f89fa5f11da7e74d6528ecdcacc}} 
 \index{Element@{Element}!shape@{shape}}
 \index{shape@{shape}!Element@{Element}}
@@ -407,6 +388,19 @@ Get the thermal strain to be used in the stress computation.
 The thermal strain as a 4-\/by-\/1 vector for 2D axisymmetric problem. 
 \end{DoxyReturn}
 
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_element_a049b5df45df8a2caec4f51195e7ae7b4}\label{class_element_a049b5df45df8a2caec4f51195e7ae7b4}} 
+\index{Element@{Element}!material\+\_\+@{material\+\_\+}}
+\index{material\+\_\+@{material\+\_\+}!Element@{Element}}
+\subsubsection{\texorpdfstring{material\+\_\+}{material\_}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_material}{Material}}$\ast$ Element\+::material\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+A pointer to the material class. 
+
+\mbox{\hyperlink{class_material}{Material}} should not be stored as static member as \mbox{\hyperlink{class_shape}{Shape}} does, because \mbox{\hyperlink{class_shape}{Shape}} is a generic property of a \mbox{\hyperlink{class_element}{Element}} while the \mbox{\hyperlink{class_material}{Material}} can vary among the same element type. In addition, the list of all material is maintained at the \mbox{\hyperlink{class_mesh}{Mesh}} level, so the memory allocation and deallocation is not handled inside \mbox{\hyperlink{class_element}{Element}}. 
 
 The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
 \item 

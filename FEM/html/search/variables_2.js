@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['e_5f',['E_',['../class_element.html#a8d60170ba5c9254692a54cfad717ffa9',1,'Element']]],
+  ['e_5f',['E_',['../class_material.html#ad8eb23b2b0c134635888be8e3b6a824c',1,'Material']]],
   ['edgegaussianpt_5f',['edgeGaussianPt_',['../class_shape.html#a607f731349b6bc16fe81a08289c7e452',1,'Shape']]],
   ['edgegaussianwt_5f',['edgeGaussianWt_',['../class_shape.html#ac44104e1110f94f376419f62c76d4428',1,'Shape']]],
   ['edgelist_5f',['edgeList_',['../class_shape.html#a5834a3c81b025002ff7325c7e030f2cf',1,'Shape']]],
