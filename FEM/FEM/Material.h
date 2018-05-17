@@ -4,6 +4,7 @@
  *
  * @author Haohang Huang
  * @date Apr 27, 2018
+ * @note Material cross-anisotropy added on May 16, 2018.
  */
 
 #ifndef Material_h
@@ -48,23 +49,12 @@ class Material
     const VectorXd & thermalStrain() const;
 
   protected:
-    /** The modulus */
-    double modulus_;
-
-    /** The Poisson's ratio */
-    double poissonRatio_;
 
     /** The 4-by-4 stress-strain constitutive matrix sigma = E * e */
     MatrixXd E_;
 
     /** The body force (unit weight) */
     Vector2d bodyForce_;
-
-    /** The coefficient of thermal effect */
-    double thermalCoeff_;
-
-    /** The temperature change (assume same across the entire element) */
-    double deltaT_;
 
     /** The thermal strain */
     VectorXd thermalStrain_;
