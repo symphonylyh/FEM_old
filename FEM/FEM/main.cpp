@@ -11,7 +11,8 @@
 #include <string>
 #include <chrono>
 
-#include "LinearElastic.h"
+#include "Linear.h"
+#include "Nonlinear.h"
 #include "IO.h" //#include "Matrix/src/Core/IO.h" // to change the folder name, you can just change in Node.h and Shape.h into "include Matrix/Eigen"
 
 int main() {
@@ -134,7 +135,7 @@ int main() {
     // outFileName += ".txt";
 
 auto start = std::chrono::high_resolution_clock::now();
-    Analysis* case1 = new LinearElastic(inFileName);
+    Analysis* case1 = new Linear(inFileName);
     case1->solveDisp();
     // case1->printDisp();
 

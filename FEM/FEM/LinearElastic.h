@@ -1,28 +1,22 @@
 /**
  * @file LinearElastic.h
- * Derived class from Analysis for linear elastic problems.
+ * Derived class from Material for linear elastic materials.
  *
  * @author Haohang Huang
- * @date Feburary 26, 2018
- * @note No efficiency optimization required on March 26, 2018
+ * @date May 19, 2018
  */
 
 #ifndef LinearElastic_h
 #define LinearElastic_h
 
-#include "Analysis.h"
+#include "Material.h"
 
-/* Derived class for solving linear elastic problems.
- */
-class LinearElastic : public Analysis
+class LinearElastic : public Material
 {
   public:
-    /* See the documentation of base class Analysis.
-     */
-    LinearElastic(std::string const & fileName); // ctor cannot be inherited, should explicitly call base class's ctor in derived class's ctor
+    /** See the documentation of base class Material. */
+    LinearElastic(const bool & isotropy, const bool & linearity, const std::vector<double> & properties);
     ~LinearElastic();
-    void solveDisp();
-
 };
 
 #endif /* LinearElastic_h */

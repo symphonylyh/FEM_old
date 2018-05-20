@@ -17,7 +17,8 @@
 #include "Node.h"
 #include "Shape.h"
 #include "ShapeQ8.h"
-#include "Material.h"
+#include "LinearElastic.h"
+#include "NonlinearElastic.h"
 
 /* Abstract base Element class with shared public methods and pure virtual methods.
  *

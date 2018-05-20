@@ -3,72 +3,60 @@
  * Implementation of LinearElastic class.
  *
  * @author Haohang Huang
- * @date Feburary 26, 2018
+ * @date May 19, 2018
  */
 
 #include "LinearElastic.h"
-#include <chrono>
-#include <iostream>
 
-LinearElastic::LinearElastic(std::string const & fileName) : Analysis(fileName)
+LinearElastic::LinearElastic(const bool & anisotropy, const bool & nonlinearity, const std::vector<double> & properties)
+  : Material(anisotropy, nonlinearity)
 {
+    // For linear elastic problem, just store a constant E matrix is sufficient, so initialize it in constructor
+    int i = 0;
+    if (!anisotropy) {
+        // Isotropic: Modulus, Poisson's ratio, body force (r,z), thermal coefficient, temperature change
+        double M = properties[i++];
+        double v = properties[i++];
+
+        // Compute the stress-strain constitutive matrix
+        E_ << 1 - v, v, v, 0,
+              v,   1-v, v, 0,
+              v,   v,  1-v, 0,
+              0,  0,    0,  (1-2*v)/2;
+        E_ = E_ * M / (1+v) /(1-2*v);
+    }
+    else {
+        // Cross-anisotropic: Modulus R, Modulus Z, Poisson's ratio R, Poisson's ratio Z, Shear Modulus G, body force (r,z), thermal coefficient, temperature change
+        double Mr = properties[i++];
+        double Mz = properties[i++];
+        double vr = properties[i++];
+        double vz = properties[i++];
+        double G = properties[i++];
+
+        // Helper coefficients
+        double n = Mr / Mz;
+        double m = G / Mz;
+        double A = Mz / (1 + vr) / (1 - vr - 2 * n * vz * vz);
+
+        // Compute the stress-strain constitutive matrix
+        E_ << n * (1 - n * vz * vz), n * (vr + n * vz * vz), n * vz * (1 + vr), 0,
+              n * (vr + n * vz * vz), n * (1 - n * vz * vz), n * vz * (1 + vr), 0,
+              n * vz * (1 + vr), n * vz * (1 + vr), 1 - vr * vr, 0,
+              0, 0, 0, m * (1 + vr) * (1 - vr - 2 * n * vz * vz);
+        E_ = E_ * A;
+    }
+
+    // Assign body force (unit weight)
+    bodyForce_ << properties[i], properties[i+1];
+    i += 2;
+
+    // Assign thermal parameters
+    double alpha  = properties[i++];
+    double deltaT = properties[i++]; /** The temperature change (assume same across the entire element) */
+    double strain = alpha * deltaT;
+    thermalStrain_ << strain, strain, strain, 0;
 }
 
 LinearElastic::~LinearElastic()
 {
-}
-
-void LinearElastic::solveDisp()
-{
-    assembleStiffnessAndForce();
-    // auto start = std::chrono::high_resolution_clock::now();
-    //     assembleStiffnessAndForce();
-    // auto finish = std::chrono::high_resolution_clock::now();
-    // auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
-    // std::cout << "Elapsed time assemble: " << elapsed.count() << " ms" << std::endl;
-
-    // // All integrated into assembleStiffnessAndForce()
-    // start = std::chrono::high_resolution_clock::now();
-    //     applyForce();
-    // finish = std::chrono::high_resolution_clock::now();
-    // elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
-    // std::cout << "Elapsed time apply force: " << elapsed.count() << " ms" << std::endl;
-    //
-    // start = std::chrono::high_resolution_clock::now();
-    //     boundaryCondition();
-    // finish = std::chrono::high_resolution_clock::now();
-    // elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
-    // std::cout << "Elapsed time apply boundary: " << elapsed.count() << " ms" << std::endl;
-
-    // Option1: SimplicialLDLT <SparseMatrix<double> > solver;
-    // Option2: ConjugateGradient <SparseMatrix<double> > solver;
-    // SimplicialLDLT is direct solver: Recommended for very sparse and not too large problems (e.g., 2D Poisson eq.)
-    // ConjugateGradient is iterative solver: Recommended for large symmetric problems (e.g., 3D Poisson eq.)
-    // Ref: https://eigen.tuxfamily.org/dox/group__TutorialLinearAlgebra.html
-    // SimplicialLDLT <SparseMatrix<double> > solver;
-    // ConjugateGradient <SparseMatrix<double> > solver;
-
-    SimplicialLDLT <SparseMatrix<double> > solver;
-    solver.compute(globalStiffness);
-    nodalDisp = solver.solve(nodalForce);
-    //
-    // start = std::chrono::high_resolution_clock::now();
-    //     // SparseLU <SparseMatrix<double> > solver;
-    //     SimplicialLDLT <SparseMatrix<double> > solver;
-    //     solver.compute(globalStiffness);
-    // finish = std::chrono::high_resolution_clock::now();
-    // elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
-    // std::cout << "Elapsed time set sparse: " << elapsed.count() << " ms" << std::endl;
-    //
-    // start = std::chrono::high_resolution_clock::now();
-    //     nodalDisp = solver.solve(nodalForce);
-    // finish = std::chrono::high_resolution_clock::now();
-    // elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
-    // std::cout << "Elapsed solve sparse: " << elapsed.count() << " ms" << std::endl;
-
-    // Write into node information
-    for (int i = 0; i < mesh.nodeCount(); i++) {
-        mesh.nodeArray()[i]->setDisp(nodalDisp(2 * i), nodalDisp(2 * i + 1));
-    }
-
 }

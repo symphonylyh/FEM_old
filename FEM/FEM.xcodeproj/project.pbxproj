@@ -8,13 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		FB2060E62044B43B00331FEA /* Analysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB2060E52044B43B00331FEA /* Analysis.cpp */; };
-		FB2060E92044B57100331FEA /* LinearElastic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB2060E82044B57100331FEA /* LinearElastic.cpp */; };
+		FB2060E92044B57100331FEA /* Linear.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB2060E82044B57100331FEA /* Linear.cpp */; };
 		FB773107209372A900A8273A /* Material.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB773106209372A900A8273A /* Material.cpp */; };
 		FB9F99F7203351990076254E /* ElementQ8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB9F99F6203351990076254E /* ElementQ8.cpp */; };
 		FB9F99FA203351B90076254E /* ShapeQ8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB9F99F9203351B90076254E /* ShapeQ8.cpp */; };
 		FBA7F8AD2027F50400BA5297 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBA7F8AC2027F50400BA5297 /* main.cpp */; };
 		FBA7F8B52027F55B00BA5297 /* Node.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBA7F8B42027F55B00BA5297 /* Node.cpp */; };
 		FBA7F8B82027F57300BA5297 /* Element.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBA7F8B62027F57300BA5297 /* Element.cpp */; };
+		FBB55DC320B0E88E006AC306 /* Nonlinear.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBB55DC220B0E88E006AC306 /* Nonlinear.cpp */; };
+		FBB55DC520B11B01006AC306 /* LinearElastic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBB55DC420B11B01006AC306 /* LinearElastic.cpp */; };
+		FBB55DC820B11B2A006AC306 /* NonlinearElastic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBB55DC720B11B2A006AC306 /* NonlinearElastic.cpp */; };
 		FBBE5E2120841F8600ED6FE4 /* Shape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBBE5E2020841F8600ED6FE4 /* Shape.cpp */; };
 		FBDB9D49208CF0F60010BE98 /* ShapeT6.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBDB9D48208CF0F60010BE98 /* ShapeT6.cpp */; };
 		FBDB9D4C208CF1660010BE98 /* ElementT6.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FBDB9D4B208CF1660010BE98 /* ElementT6.cpp */; };
@@ -38,8 +41,8 @@
 /* Begin PBXFileReference section */
 		FB2060E52044B43B00331FEA /* Analysis.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Analysis.cpp; sourceTree = "<group>"; };
 		FB2060E72044B45200331FEA /* Analysis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Analysis.h; sourceTree = "<group>"; };
-		FB2060E82044B57100331FEA /* LinearElastic.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LinearElastic.cpp; sourceTree = "<group>"; };
-		FB2060EA2044B58000331FEA /* LinearElastic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LinearElastic.h; sourceTree = "<group>"; };
+		FB2060E82044B57100331FEA /* Linear.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Linear.cpp; sourceTree = "<group>"; };
+		FB2060EA2044B58000331FEA /* Linear.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Linear.h; sourceTree = "<group>"; };
 		FB773106209372A900A8273A /* Material.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Material.cpp; sourceTree = "<group>"; };
 		FB773108209372B600A8273A /* Material.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Material.h; sourceTree = "<group>"; };
 		FB9F99F6203351990076254E /* ElementQ8.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ElementQ8.cpp; sourceTree = "<group>"; };
@@ -353,6 +356,12 @@
 		FBA7FB632027F78B00BA5297 /* SuperLUSupport */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SuperLUSupport; sourceTree = "<group>"; };
 		FBA7FB642027F78B00BA5297 /* SVD */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SVD; sourceTree = "<group>"; };
 		FBA7FB652027F78B00BA5297 /* UmfPackSupport */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = UmfPackSupport; sourceTree = "<group>"; };
+		FBB55DC120B0E879006AC306 /* Nonlinear.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Nonlinear.h; sourceTree = "<group>"; };
+		FBB55DC220B0E88E006AC306 /* Nonlinear.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Nonlinear.cpp; sourceTree = "<group>"; };
+		FBB55DC420B11B01006AC306 /* LinearElastic.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LinearElastic.cpp; sourceTree = "<group>"; };
+		FBB55DC620B11B0D006AC306 /* LinearElastic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LinearElastic.h; sourceTree = "<group>"; };
+		FBB55DC720B11B2A006AC306 /* NonlinearElastic.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = NonlinearElastic.cpp; sourceTree = "<group>"; };
+		FBB55DC920B11B39006AC306 /* NonlinearElastic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NonlinearElastic.h; sourceTree = "<group>"; };
 		FBBE5E2020841F8600ED6FE4 /* Shape.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Shape.cpp; sourceTree = "<group>"; };
 		FBDB9D48208CF0F60010BE98 /* ShapeT6.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ShapeT6.cpp; sourceTree = "<group>"; };
 		FBDB9D4A208CF1040010BE98 /* ShapeT6.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShapeT6.h; sourceTree = "<group>"; };
@@ -417,8 +426,8 @@
 				FB9F99FB203351C50076254E /* ShapeQ8.h */,
 				FB2060E52044B43B00331FEA /* Analysis.cpp */,
 				FB2060E72044B45200331FEA /* Analysis.h */,
-				FB2060E82044B57100331FEA /* LinearElastic.cpp */,
-				FB2060EA2044B58000331FEA /* LinearElastic.h */,
+				FB2060E82044B57100331FEA /* Linear.cpp */,
+				FB2060EA2044B58000331FEA /* Linear.h */,
 				FBBE5E2020841F8600ED6FE4 /* Shape.cpp */,
 				FBDB9D48208CF0F60010BE98 /* ShapeT6.cpp */,
 				FBDB9D4A208CF1040010BE98 /* ShapeT6.h */,
@@ -426,6 +435,12 @@
 				FBDB9D4D208CF1720010BE98 /* ElementT6.h */,
 				FB773106209372A900A8273A /* Material.cpp */,
 				FB773108209372B600A8273A /* Material.h */,
+				FBB55DC120B0E879006AC306 /* Nonlinear.h */,
+				FBB55DC220B0E88E006AC306 /* Nonlinear.cpp */,
+				FBB55DC420B11B01006AC306 /* LinearElastic.cpp */,
+				FBB55DC620B11B0D006AC306 /* LinearElastic.h */,
+				FBB55DC720B11B2A006AC306 /* NonlinearElastic.cpp */,
+				FBB55DC920B11B39006AC306 /* NonlinearElastic.h */,
 			);
 			path = FEM;
 			sourceTree = "<group>";
@@ -1122,16 +1137,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FBB55DC820B11B2A006AC306 /* NonlinearElastic.cpp in Sources */,
 				FBA7F8B82027F57300BA5297 /* Element.cpp in Sources */,
 				FBBE5E2120841F8600ED6FE4 /* Shape.cpp in Sources */,
+				FBB55DC520B11B01006AC306 /* LinearElastic.cpp in Sources */,
 				FBA7F8AD2027F50400BA5297 /* main.cpp in Sources */,
 				FBE4BE0D202FA6F600DC83C8 /* ShapeQ4.cpp in Sources */,
 				FBDB9D4C208CF1660010BE98 /* ElementT6.cpp in Sources */,
 				FBDB9D49208CF0F60010BE98 /* ShapeT6.cpp in Sources */,
 				FBDC60CE2028FE8800B402E2 /* Mesh.cpp in Sources */,
 				FBA7F8B52027F55B00BA5297 /* Node.cpp in Sources */,
+				FBB55DC320B0E88E006AC306 /* Nonlinear.cpp in Sources */,
 				FB773107209372A900A8273A /* Material.cpp in Sources */,
-				FB2060E92044B57100331FEA /* LinearElastic.cpp in Sources */,
+				FB2060E92044B57100331FEA /* Linear.cpp in Sources */,
 				FB2060E62044B43B00331FEA /* Analysis.cpp in Sources */,
 				FBE4BE11202FFB8900DC83C8 /* ElementQ4.cpp in Sources */,
 				FB9F99FA203351B90076254E /* ShapeQ8.cpp in Sources */,

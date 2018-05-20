@@ -23,9 +23,25 @@ class Material
     /**
      * Custom constructor to create an element material.
      *
-     * @param properties A list of the property parameters.
+     * @param isotropy A sign for material isotropy. 0 if isotropic, 1 if cross-anisotropic.
+     * @param linearity A sign for material linearity. 0 if linear elastic, 1 if nonlinear elastic.
+     * @param properties A list of the material property parameters.
      */
-    Material(const std::vector<double> & properties);
+    Material(const bool & anisotropy, const bool & nonlinearity);
+
+    /**
+     * Destructor.
+     *
+     * @note As an abstract class, the destructor must be virtual.
+     */
+    virtual ~Material();
+
+    /**
+     * Get the stress-strain constitutive matrix of the element.
+     *
+     * @return The 4-by-4 E matrix.
+     */
+    const double & modulus() const;
 
     /**
      * Get the stress-strain constitutive matrix of the element.
@@ -33,6 +49,11 @@ class Material
      * @return The 4-by-4 E matrix.
      */
     const MatrixXd & EMatrix() const;
+
+    /**
+     * Update the stress-dependent resilient modulus and E matrix of the element. Pure virtual method to be used in nonlinear scheme.
+     */
+    virtual void stressDependent(const double & bulk, const double & deviator) const;
 
     /**
      * Get the body force to be used in the load condition.
@@ -48,7 +69,16 @@ class Material
      */
     const VectorXd & thermalStrain() const;
 
+    /** A sign for material isotropy. 0 if isotropic, 1 if cross-anisotropic. */
+    bool anisotropy;
+
+    /** A sign for material linearity. 0 if linear elastic, 1 if nonlinear elastic. */
+    bool nonlinearity;
+
   protected:
+
+    /** The Young's/Resilient modulus. */
+    double modulus_;
 
     /** The 4-by-4 stress-strain constitutive matrix sigma = E * e */
     MatrixXd E_;
