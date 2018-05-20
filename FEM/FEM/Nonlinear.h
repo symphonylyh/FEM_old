@@ -24,7 +24,6 @@ class Nonlinear : public Analysis
     void computeStressAtGaussPt();
     void solveDisp();
 
-
 };
 
 #endif /* Nonlinear_h */

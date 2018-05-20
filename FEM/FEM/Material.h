@@ -37,9 +37,9 @@ class Material
     virtual ~Material();
 
     /**
-     * Get the stress-strain constitutive matrix of the element.
+     * Get the modulus of the element.
      *
-     * @return The 4-by-4 E matrix.
+     * @return The modulus value.
      */
     const double & modulus() const;
 

@@ -15,7 +15,6 @@ Material::Material(const bool & Anisotropy, const bool & Nonlinearity)
 
 Material::~Material()
 {
-
 }
 
 const double & Material::modulus() const

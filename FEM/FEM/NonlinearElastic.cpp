@@ -7,6 +7,7 @@
  */
 
 #include "NonlinearElastic.h"
+#include <cmath>
 
 NonlinearElastic::NonlinearElastic(const bool & anisotropy, const bool & nonlinearity, const std::vector<double> & properties)
   : Material(anisotropy, nonlinearity)
@@ -19,8 +20,16 @@ NonlinearElastic::NonlinearElastic(const bool & anisotropy, const bool & nonline
     double k3 = properties[i++];
     double M0 = properties[i++]; // initial guess of resilient modulus
 
-    v = properties[i++];
+    modulus_ = M0;
     coeffUzan << k1, k2, k3; // the model parameters should be cached to be used in modulus update during nonlinear scheme
+    v = properties[i++];
+
+    // Initialize modulus and E matrix
+    E_ << 1 - v, v, v, 0,
+          v,   1-v, v, 0,
+          v,   v,  1-v, 0,
+          0,  0,    0,  (1-2*v)/2;
+    E_ = E_ * M0 / (1+v) /(1-2*v);
 
     // Assign body force (unit weight)
     bodyForce_ << properties[i], properties[i+1];
@@ -39,5 +48,15 @@ NonlinearElastic::~NonlinearElastic()
 
 void NonlinearElastic::stressDependent(const double & bulk, const double & deviator) const
 {
+    // Calculated new stress-dependent resilient modulus from Uzan model
+    double M = coeffUzan(0) * std::pow(bulk, coeffUzan(1)) * std::pow(deviator, coeffUzan(2));
+
+    // Update the modulus and stress-strain constitutive matrix
+    modulus_ = M;
+    E_ << 1 - v, v, v, 0,
+          v,   1-v, v, 0,
+          v,   v,  1-v, 0,
+          0,  0,    0,  (1-2*v)/2;
+    E_ = E_ * M / (1+v) /(1-2*v);
 
 }
