@@ -9,7 +9,10 @@
 
 #include "Mesh.h"
 #include "ElementQ4.h"
+#include "ElementT6.h"
 #include "ElementQ8.h"
+#include "LinearElastic.h"
+#include "NonlinearElastic.h"
 #include <iostream>
 #include <fstream>
 #include <string>

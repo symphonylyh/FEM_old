@@ -21,7 +21,7 @@ class Linear : public Analysis
      */
     Linear(std::string const & fileName); // ctor cannot be inherited, should explicitly call base class's ctor in derived class's ctor
     ~Linear();
-    void solveDisp();
+    void solve();
 
 };
 

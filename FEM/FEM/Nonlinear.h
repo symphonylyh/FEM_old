@@ -21,8 +21,11 @@ class Nonlinear : public Analysis
     Nonlinear(std::string const & fileName); // ctor cannot be inherited, should explicitly call base class's ctor in derived class's ctor
     ~Nonlinear();
 
+    /**
+     * Compute principal stresses at Gaussian points, and update the modulus and E matrix for next iterations.
+     */
     void computeStressAtGaussPt();
-    void solveDisp();
+    void solve();
 
 };
 

@@ -77,9 +77,9 @@ class Analysis
         void boundaryCondition();
 
         /**
-         * Solve for nodal displacement using different approaches.
+         * Solve the problem using different approaches.
          */
-        virtual void solveDisp() = 0;
+        virtual void solve() = 0;
 
         /**
          * Compute nodal strain and stress from the extrapolation of results at

@@ -46,7 +46,7 @@ NonlinearElastic::~NonlinearElastic()
 {
 }
 
-void NonlinearElastic::stressDependent(const double & bulk, const double & deviator) const
+void NonlinearElastic::stressDependent(const double & bulk, const double & deviator)
 {
     // Calculated new stress-dependent resilient modulus from Uzan model
     double M = coeffUzan(0) * std::pow(bulk, coeffUzan(1)) * std::pow(deviator, coeffUzan(2));

@@ -15,10 +15,10 @@ class NonlinearElastic : public Material
 {
   public:
     /** See the documentation of base class Material. */
-    NonlinearElastic(const bool & isotropy, const bool & linearity, const std::vector<double> & properties);
+    NonlinearElastic(const bool & anisotropy, const bool & nonlinearity, const std::vector<double> & properties);
     ~NonlinearElastic();
-    
-    void stressDependent(const double & bulk, const double & deviator) const;
+
+    void stressDependent(const double & bulk, const double & deviator);
 
   protected:
     /** Three regression coefficients used in Uzan (1985) resilient model */

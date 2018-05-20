@@ -18,7 +18,7 @@ Linear::~Linear()
 {
 }
 
-void Linear::solveDisp()
+void Linear::solve()
 {
     assembleStiffnessAndForce();
     // auto start = std::chrono::high_resolution_clock::now();
@@ -71,4 +71,6 @@ void Linear::solveDisp()
         mesh.nodeArray()[i]->setDisp(nodalDisp(2 * i), nodalDisp(2 * i + 1));
     }
 
+    // Compute strain and stress and average at nodes
+    computeStrainAndStress();
 }

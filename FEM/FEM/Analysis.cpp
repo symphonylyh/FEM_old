@@ -251,24 +251,25 @@ void Analysis::applyForce()
 
 }
 
-void Analysis::boundaryCondition()
-{
-    const std::vector<int> & DOFList = mesh.boundaryNodeList;
-    const std::vector<double> & boundaryValue = mesh.boundaryValue;
-    for (unsigned i = 0; i < DOFList.size(); i++) {
-        // Modify stiffness matrix
-        double temp = globalStiffness.coeffRef(DOFList[i], DOFList[i]);
-        for (int j = 0; j < globalStiffness.cols(); j++) {
-            globalStiffness.coeffRef(DOFList[i], j) = 0;
-            globalStiffness.coeffRef(j, DOFList[i]) = 0;
-        } // the sparse matrix .row() or .col() is read-only, we can only do element-wise assignment
-        globalStiffness.coeffRef(DOFList[i], DOFList[i]) = temp;
-
-        // Modify force vector
-        nodalForce -= globalStiffness.col(DOFList[i]) * boundaryValue[i]; // if consider temperature effect : *6.5*-0.000001*30
-        nodalForce(DOFList[i]) = temp * boundaryValue[i];
-    }
-}
+// Old version of applying boundary conditon (very slow because we are modifying the whole sparse matrix)
+// void Analysis::boundaryCondition()
+// {
+//     const std::vector<int> & DOFList = mesh.boundaryNodeList;
+//     const std::vector<double> & boundaryValue = mesh.boundaryValue;
+//     for (unsigned i = 0; i < DOFList.size(); i++) {
+//         // Modify stiffness matrix
+//         double temp = globalStiffness.coeffRef(DOFList[i], DOFList[i]);
+//         for (int j = 0; j < globalStiffness.cols(); j++) {
+//             globalStiffness.coeffRef(DOFList[i], j) = 0;
+//             globalStiffness.coeffRef(j, DOFList[i]) = 0;
+//         } // the sparse matrix .row() or .col() is read-only, we can only do element-wise assignment
+//         globalStiffness.coeffRef(DOFList[i], DOFList[i]) = temp;
+//
+//         // Modify force vector
+//         nodalForce -= globalStiffness.col(DOFList[i]) * boundaryValue[i]; // if consider temperature effect : *6.5*-0.000001*30
+//         nodalForce(DOFList[i]) = temp * boundaryValue[i];
+//     }
+// }
 
 void Analysis::computeStrainAndStress()
 {

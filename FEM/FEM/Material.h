@@ -53,7 +53,7 @@ class Material
     /**
      * Update the stress-dependent resilient modulus and E matrix of the element. Pure virtual method to be used in nonlinear scheme.
      */
-    virtual void stressDependent(const double & bulk, const double & deviator) const;
+    virtual void stressDependent(const double & bulk, const double & deviator);
 
     /**
      * Get the body force to be used in the load condition.

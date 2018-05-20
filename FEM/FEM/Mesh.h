@@ -12,6 +12,7 @@
 
 #include "Node.h"
 #include "Element.h"
+#include "Material.h"
 #include <vector>
 
 /* Mesh class for storing the node, element, material, boundary, load

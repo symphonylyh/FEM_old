@@ -9,6 +9,8 @@
  * on March 27, 2018
  * @note Efficiency optimized by the generalization of all element-wise operations
  * into base class Element on Apr 22, 2018.
+ * @note Pre-cached Gaussian points stress information and revised _computeStiffnessAndForce
+ * function for nonlinear analysis on May 20, 2018.
  */
 
 #ifndef Element_h
@@ -16,9 +18,10 @@
 
 #include "Node.h"
 #include "Shape.h"
+#include "Material.h"
+#include "ShapeQ4.h"
+#include "ShapeT6.h"
 #include "ShapeQ8.h"
-#include "LinearElastic.h"
-#include "NonlinearElastic.h"
 
 /* Abstract base Element class with shared public methods and pure virtual methods.
  *
@@ -297,6 +300,7 @@ class Element
         /** The 2n-by-1 nodal force vector where n is the number of nodes */
         VectorXd nodalForce_;
 
+        
         /**
          * Private helper function for the computation of element stiffness matrix
          * and nodal force vector (body force and temperature load).

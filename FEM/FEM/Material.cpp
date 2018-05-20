@@ -27,7 +27,7 @@ const MatrixXd & Material::EMatrix() const
     return E_;
 }
 
-void Material::stressDependent(const double & bulk, const double & deviator) const
+void Material::stressDependent(const double & bulk, const double & deviator)
 {
 }
 

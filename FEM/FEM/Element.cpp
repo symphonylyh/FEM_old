@@ -135,6 +135,7 @@ void Element::_computeStiffnessAndForce()
         // sum 2PI * B^T * E * e0 * |J| * r * W(i) at all Gaussian points
         nodalForce_ += 2 * M_PI * _BMatrix(i).transpose() * EMatrix() * thermalStrain() * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
     }
+    
 }
 
 MatrixXd Element::_BMatrix(const int & i) const
