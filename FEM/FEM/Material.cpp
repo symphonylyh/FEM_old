@@ -27,8 +27,14 @@ const MatrixXd & Material::EMatrix() const
     return E_;
 }
 
-void Material::stressDependent(const double & bulk, const double & deviator)
+double Material::stressDependentModulus(const VectorXd & stress) const
 {
+    return 0; // to silent warning
+}
+
+MatrixXd Material::EMatrix(const double & modulus) const
+{
+    return MatrixXd::Zero(2,2); // to silent warning
 }
 
 const Vector2d & Material::bodyForce() const

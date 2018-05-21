@@ -7,8 +7,9 @@
  */
 
 #include "Nonlinear.h"
+#include <cmath>
 
-Nonlinear::Nonlinear(std::string const & fileName) : Analysis(fileName)
+Nonlinear::Nonlinear(std::string const & fileName) : Analysis(fileName), damping(0.3)
 {
 }
 
@@ -16,65 +17,70 @@ Nonlinear::~Nonlinear()
 {
 }
 
-void Nonlinear::computeStressAtGaussPt()
+bool Nonlinear::computeStressAtGaussPt()
 {
+    bool convergence = true;
+    double sumError = 0;
+    double sumModulus = 0;
+
     Element* curr;
     int numNodes; // number of nodes belong to the element
     int numGaussianPt; // number of Gaussian points of the element
     for (int i = 0; i < mesh.elementCount(); i++) {
         curr = mesh.elementArray()[i];
-        const VectorXi & nodeList = curr->getNodeList();
-        numNodes = curr->getSize();
-        numGaussianPt = (int)curr->shape()->gaussianPt().size();
+        Material* material = curr->material();
+        if (material->nonlinearity) { // compute stress for nonlinear elastic element only, skip all linear elastic ones
+            const VectorXi & nodeList = curr->getNodeList();
+            numNodes = curr->getSize();
+            numGaussianPt = (int)curr->shape()->gaussianPt().size();
 
-        // Assemble the nodal displacement vector for this element
-        VectorXd nodeDisp(2 * numNodes);
-        for (int j = 0; j < numNodes; j++) {
-            Vector2d disp = mesh.nodeArray()[nodeList(j)]->getDisp();
-            nodeDisp(2 * j) = disp(0);
-            nodeDisp(2 * j + 1) = disp(1);
-        }
+            // Assemble the nodal displacement vector for this element
+            VectorXd nodeDisp(2 * numNodes);
+            for (int j = 0; j < numNodes; j++) {
+                nodeDisp(2 * j) = nodalDisp(2 * nodeList(j));
+                nodeDisp(2 * j + 1) = nodalDisp(2 * nodeList(j) + 1);
+            }
 
-        VectorXd strainAtGaussPt(4); // 4 for axisymmetric problem
-        VectorXd stressAtGaussPt(4);
-        MatrixXd E = material_->EMatrix
-        MatrixXd strainAtGaussPt(numGaussianPt, 4);
-        MatrixXd shapeAtGaussPt(numGaussianPt, numNodes); // 9x8 matrix for element Q8
+            // Step 1: Compute stress at gaussian points based on cached M & E from last iteration
+            // Step 2: Update new modulus based on the stress from step 1 and mix with old modulus via damping ratio
+            // Step 3: Cache the modulus to be used in the next iteration
+            for (int g = 0; g < numGaussianPt; g++) {
+                MatrixXd B = curr->BMatrix(curr->shape()->gaussianPt(g));
+                VectorXd strain = B * nodeDisp; // e = B * u
+                double modulus_old = (curr->modulusAtGaussPt)(g); // M_(i-1)
+                VectorXd stress = material->EMatrix(modulus_old) * (strain - curr->thermalStrain()); // sigma = E_(i-1) * (e - e0), note that the M and E are both from previous iteration
 
-        // Compute strain at gaussian points from e = Bu
-        for (int g = 0; g < numGaussianPt; g++) {
-            MatrixXd B = curr->BMatrix(curr->shape()->gaussianPt(g));
-            VectorXd e = B * nodeDisp; // e = B * u
-            strainAtGaussPt.row(g) = e.transpose();
-            shapeAtGaussPt.row(g) = curr->shape()->functionVec(g).transpose();
-        }
+                double modulus_new = material->stressDependentModulus(principalStress(stress)); // M_i
+                double modulus = (1 - damping) * modulus_old + damping * modulus_new; // true M_i after applying damping ratio
 
-        // Solve/extrapolate for nodal strain value via a least square linear system using pesudo inverse
-        // Previous attempt: solving the system by pesudo inverse, this might have numerical error
-        // MatrixXd pesudo = shapeAtGaussPt.completeOrthogonalDecomposition().pseudoInverse(); // pesudo inverse in "Eigen/QR"
-        // MatrixXd strainAtNodes = pesudo * strainAtGaussPt; // 8x4 matrix
-        // Current solution: use SVD decomposition
-        MatrixXd strainAtNodes = shapeAtGaussPt.bdcSvd(ComputeThinU | ComputeThinV).solve(strainAtGaussPt);
+                (curr->modulusAtGaussPt)(g) = modulus;
 
-        // Notes on LLS system:
-        // Several options for solving a linear least squares system:
-        // 1. SVD decomposition
-        // VectorXd x = A.bdcSvd(ComputeThinU | ComputeThinV).solve(b);
-        // 2. QR decomposition
-        // VectorXd x = A.colPivHouseholderQr().solve(b);
-        // from fast to slow, unstable to stable: householderQr()-->colPivHouseholderQr()-->fullPivHouseholderQr()
-        // 3. Normal equations (A^T*A)*x = A^T*b
-        // VectorXd x = (A.transpose() * A).ldlt().solve(A.transpose() * b)
+                // Convergence criteria
+                // Criteria 1: modulus stabilize within 5% at all Gaussian points
+                double error = std::abs(modulus - modulus_old);
+                if (error / modulus > 0.05)
+                    convergence = false;
+                // Criteraia 2: Accumulative modulus error within 0.2%
+                sumError += error;
+                sumModulus += modulus;
+            }
+            curr->setStressAtGaussPt(stressAtGaussPt);
 
-        // Set calculated strain value to 8 nodes
-        const MatrixXd & E = curr->EMatrix();
-        for (int n = 0; n < numNodes; n++) {
-            VectorXd strain = strainAtNodes.row(n);
-            VectorXd stress = E * (strain - curr->thermalStrain()); // subtract thermal strain, stress = E * (strain - thermal strain)
-            mesh.nodeArray()[nodeList(n)]->setStrainAndStress(strain, stress);
         }
 
     }
+    return (sumError / sumModulus < 0.002 && convergence) ? true : false;
+
+}
+
+VectorXd Nonlinear::principalStress(const VectorXd & stress) const
+{
+    MatrixXd tensor(3,3);
+    tensor << stress(0), 0, stress(3),
+              0, stress(1), 0,
+              stress(3), 0, stress(2);
+    SelfAdjointEigenSolver<MatrixXd> es(tensor, EigenvaluesOnly);
+    return es.eigenvalues();
 }
 
 void Nonlinear::solve()
@@ -87,19 +93,21 @@ void Nonlinear::solve()
     solver.compute(globalStiffness);
     nodalDisp = solver.solve(nodalForce);
 
-    // Write into node information
-    for (int i = 0; i < mesh.nodeCount(); i++) {
-        mesh.nodeArray()[i]->setDisp(nodalDisp(2 * i), nodalDisp(2 * i + 1));
-    }
-
-    //------------------------- Iteration j ------------------------------------
-    // double error = 1;
-    // while (error > 0.05) { // convergence criteria
-    //
-    // }
-
     // Traverse each element, compute stress at Gaussian points, and update the M & E for the next iteration
     computeStressAtGaussPt();
 
+    //------------------------- Iteration j ------------------------------------
+    bool convergence = false;
+    while (!convergence) { // convergence criteria
+        assembleStiffnessAndForce();
+        SimplicialLDLT <SparseMatrix<double> > solver;
+        solver.compute(globalStiffness);
+        nodalDisp = solver.solve(nodalForce);
+        convergence = computeStressAtGaussPt();
+    }
+
+    // After convergence, compute the final results
+    computeStrainAndStress();
+    averageStrainAndStress();
 
 }

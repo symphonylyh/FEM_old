@@ -298,12 +298,12 @@ void Analysis::computeStrainAndStress()
         numNodes = curr->getSize();
         numGaussianPt = (int)curr->shape()->gaussianPt().size();
 
-        // Assemble the nodal displacement vector for an element
+
+        // Assemble the nodal displacement vector for an element (directly from the solved displacement vector)
         VectorXd nodeDisp(2 * numNodes);
         for (int j = 0; j < numNodes; j++) {
-            Vector2d disp = mesh.nodeArray()[nodeList(j)]->getDisp();
-            nodeDisp(2 * j) = disp(0);
-            nodeDisp(2 * j + 1) = disp(1);
+            nodeDisp(2 * j) = nodalDisp(2 * nodeList(j));
+            nodeDisp(2 * j + 1) = nodalDisp(2 * nodeList(j) + 1);
         }
 
         MatrixXd strainAtGaussPt(numGaussianPt, 4); // 4 for axisymmetric problem
@@ -334,8 +334,8 @@ void Analysis::computeStrainAndStress()
         // 3. Normal equations (A^T*A)*x = A^T*b
         // VectorXd x = (A.transpose() * A).ldlt().solve(A.transpose() * b)
 
-        // Set calculated strain value to 8 nodes
-        const MatrixXd & E = curr->EMatrix();
+        // Set calculated strain and stress value to every node (to be accumulated at each node and averaged later)
+        MatrixXd E = curr->EMatrix(curr->material()->modulus());
         for (int n = 0; n < numNodes; n++) {
             VectorXd strain = strainAtNodes.row(n);
             VectorXd stress = E * (strain - curr->thermalStrain()); // subtract thermal strain, stress = E * (strain - thermal strain)
@@ -344,12 +344,16 @@ void Analysis::computeStrainAndStress()
 
     }
 
-    // Average nodal strain and stress
+}
+
+void Analysis::averageStrainAndStress()
+{
+    // Average nodal strain and stress, and write the displacement information at the same time!
     for (int i = 0; i < mesh.nodeCount(); i++) {
+        mesh.nodeArray()[i]->setDisp(nodalDisp(2 * i), nodalDisp(2 * i + 1));
         nodalStrain.row(i) = mesh.nodeArray()[i]->averageStrain().transpose();
         nodalStress.row(i) = mesh.nodeArray()[i]->averageStress().transpose();
     }
-
 }
 
 void Analysis::printDisp() const

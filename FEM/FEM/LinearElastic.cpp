@@ -18,6 +18,7 @@ LinearElastic::LinearElastic(const bool & anisotropy, const bool & nonlinearity,
         double M = properties[i++];
         double v = properties[i++];
 
+        modulus_ = M;
         // Compute the stress-strain constitutive matrix
         E_ << 1 - v, v, v, 0,
               v,   1-v, v, 0,

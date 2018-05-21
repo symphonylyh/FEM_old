@@ -66,11 +66,9 @@ void Linear::solve()
     // elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
     // std::cout << "Elapsed solve sparse: " << elapsed.count() << " ms" << std::endl;
 
-    // Write into node information
-    for (int i = 0; i < mesh.nodeCount(); i++) {
-        mesh.nodeArray()[i]->setDisp(nodalDisp(2 * i), nodalDisp(2 * i + 1));
-    }
-
-    // Compute strain and stress and average at nodes
+    // Compute strain and stress and accumulate at each node
     computeStrainAndStress();
+
+    // Average strain and stress at each node
+    averageStrainAndStress();
 }

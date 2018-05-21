@@ -23,9 +23,22 @@ class Nonlinear : public Analysis
 
     /**
      * Compute principal stresses at Gaussian points, and update the modulus and E matrix for next iterations.
+     *
+     * @return A boolean value incidating the convergence at this iteration.
      */
-    void computeStressAtGaussPt();
+    bool computeStressAtGaussPt();
+
+    /**
+     * Compute principal stresses from cylindrical coordinates.
+     *
+     * @param stress Stresses in cylindrical coordinates, sigma_r, sigma_theta, sigma_z, tau_rz
+     * @return The principal stresses in sigma3, sigma2, sigma1 order.
+     */
+    VectorXd principalStress(const VectorXd & stress) const;
+
     void solve();
+
+    double damping;
 
 };
 

@@ -87,6 +87,11 @@ class Analysis
          */
         void computeStrainAndStress();
 
+        /**
+         * Average nodal strain and stress at each node.
+         */
+        void averageStrainAndStress();
+
         // @TODO Query queryPoint(const double & x, const double & y) const; // create a Query object of disp, strain, stress and return it. Query needs interpolation based on shape function, and need to find the nearest neighbor or locate the element it's in. Should also check if post-processing software does this for us
 
         /**

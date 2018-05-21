@@ -9,8 +9,7 @@
  * on March 27, 2018
  * @note Efficiency optimized by the generalization of all element-wise operations
  * into base class Element on Apr 22, 2018.
- * @note Pre-cached Gaussian points stress information and revised _computeStiffnessAndForce
- * function for nonlinear analysis on May 20, 2018.
+ * @note Pre-cached Gaussian points stress information for nonlinear analysis on May 20, 2018.
  */
 
 #ifndef Element_h
@@ -89,6 +88,13 @@ class Element
         virtual Shape* const shape() const = 0; // return Shape * & is insecure
 
         /**
+         * Get the material information of the element.
+         *
+         * @return A pointer to the material.
+         */
+        Material* const material() const;
+
+        /**
          * Compute the local element stiffness matrix formulated by
          * differentiation of element strain energy and numerical integration
          * (Gaussian quadrature).
@@ -108,9 +114,12 @@ class Element
         /**
          * Get the stress-strain constitutive matrix of the element.
          *
+         * @param modulus The modulus value in E matrix. For linear elastic problem,
+         * it will just use the constant E; for nonlinear elastic, it will compute
+         * E matrix based on specific modulus.
          * @return The 4-by-4 E matrix.
          */
-        const MatrixXd & EMatrix() const;
+        MatrixXd EMatrix(const double & modulus) const;
 
         /**
          * Get the body force (unit weight) of the element.
@@ -160,6 +169,12 @@ class Element
          * this element.
          */
         MatrixXd BMatrix(const Vector2d & point) const;
+
+        /** A 4-by-g matrix where g is the number of Gaussian points of this element */
+        MatrixXd stressAtGaussPt; // for nonlinear analysis, made public for easier access
+
+        /** A g-by-1 vector where g is the number of Gaussian points of this element */
+        VectorXd modulusAtGaussPt; // for nonlinear analysis, made public for easier access
 
         /**
          * Get the index of this element.
@@ -300,7 +315,6 @@ class Element
         /** The 2n-by-1 nodal force vector where n is the number of nodes */
         VectorXd nodalForce_;
 
-        
         /**
          * Private helper function for the computation of element stiffness matrix
          * and nodal force vector (body force and temperature load).

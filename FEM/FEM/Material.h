@@ -51,9 +51,20 @@ class Material
     const MatrixXd & EMatrix() const;
 
     /**
-     * Update the stress-dependent resilient modulus and E matrix of the element. Pure virtual method to be used in nonlinear scheme.
+     * Compute the stress-dependent E matrix from resilient modulus. Used in nonlinear scheme.
+     *
+     * @param modulus The stress-dependent resilient modulus.
+     * @return The constitutive matrix.
      */
-    virtual void stressDependent(const double & bulk, const double & deviator);
+    virtual MatrixXd EMatrix(const double & modulus) const;
+
+    /**
+     * Compute the stress-dependent resilient modulus of the element. Used in nonlinear scheme.
+     *
+     * @param stress The principal stresses in sigma3, sigma2, sigma1 order.
+     * @return The stress-dependent resilient modulus computed from models.
+     */
+    virtual double stressDependentModulus(const VectorXd & stress) const;
 
     /**
      * Get the body force to be used in the load condition.

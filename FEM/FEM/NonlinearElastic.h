@@ -18,8 +18,9 @@ class NonlinearElastic : public Material
     NonlinearElastic(const bool & anisotropy, const bool & nonlinearity, const std::vector<double> & properties);
     ~NonlinearElastic();
 
-    void stressDependent(const double & bulk, const double & deviator);
-
+    double stressDependentModulus(const VectorXd & stress) const;
+    MatrixXd EMatrix(const double & modulus) const;
+    
   protected:
     /** Three regression coefficients used in Uzan (1985) resilient model */
     Vector3d coeffUzan;

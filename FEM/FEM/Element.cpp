@@ -48,6 +48,11 @@ Element::~Element()
     clear_();
 }
 
+Material* const Element::material() const
+{
+    return material_;
+}
+
 const MatrixXd & Element::localStiffness() const
 {
     return localStiffness_;
@@ -58,9 +63,12 @@ const VectorXd & Element::nodalForce() const
     return nodalForce_;
 }
 
-const MatrixXd & Element::EMatrix() const
+MatrixXd Element::EMatrix(const double & modulus) const
 {
-    return material_->EMatrix();
+    if (!material_->nonlinearity)
+        return material_->EMatrix();
+    else
+        return material_->EMatrix(modulus);
 }
 
 const Vector2d & Element::bodyForce() const
@@ -100,6 +108,11 @@ MatrixXd Element::BMatrix(const Vector2d & point) const
     return B;
 }
 
+void Element::setStressAtGaussPt(const MatrixXd & stressAtGaussPt)
+{
+    stressAtGaussPt_ = stressAtGaussPt;
+}
+
 const int & Element::getIndex() const
 {
     return index_;
@@ -125,7 +138,7 @@ void Element::_computeStiffnessAndForce()
     for (int i = 0; i < shape()->gaussianPt().size(); i++) {
         // Local stiffness matrix
         // sum 2PI * B^T * E * B * |J| * r * W(i) at all Gaussian points
-        localStiffness_ += 2 * M_PI * _BMatrix(i).transpose() * EMatrix() * _BMatrix(i) * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
+        localStiffness_ += 2 * M_PI * _BMatrix(i).transpose() * EMatrix(modulusAtGaussPt(i)) * _BMatrix(i) * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
 
         // Body force
         // sum 2PI * N^T * F * |J| * r * W(i) at all Gaussian points
@@ -133,9 +146,9 @@ void Element::_computeStiffnessAndForce()
 
         // Temperature load
         // sum 2PI * B^T * E * e0 * |J| * r * W(i) at all Gaussian points
-        nodalForce_ += 2 * M_PI * _BMatrix(i).transpose() * EMatrix() * thermalStrain() * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
+        nodalForce_ += 2 * M_PI * _BMatrix(i).transpose() * EMatrix(modulusAtGaussPt(i)) * thermalStrain() * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
     }
-    
+
 }
 
 MatrixXd Element::_BMatrix(const int & i) const

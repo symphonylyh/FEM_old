@@ -46,17 +46,24 @@ NonlinearElastic::~NonlinearElastic()
 {
 }
 
-void NonlinearElastic::stressDependent(const double & bulk, const double & deviator)
+double NonlinearElastic::stressDependentModulus(const VectorXd & stress) const
 {
-    // Calculated new stress-dependent resilient modulus from Uzan model
-    double M = coeffUzan(0) * std::pow(bulk, coeffUzan(1)) * std::pow(deviator, coeffUzan(2));
+    double bulk = stress(0) + stress(1) + stress(2);
+    double deviator = stress(2) - stress(0); // sigma1 - sigma3
 
-    // Update the modulus and stress-strain constitutive matrix
-    modulus_ = M;
-    E_ << 1 - v, v, v, 0,
+    // Calculated new stress-dependent resilient modulus from Uzan model
+    double M = coeffUzan(0) * std::pow(std::abs(bulk), coeffUzan(1)) * std::pow(std::abs(deviator), coeffUzan(2));
+
+    return M;
+}
+
+MatrixXd NonlinearElastic::EMatrix(const double & modulus) const
+{
+    MatrixXd E(4,4);
+    E << 1 - v, v, v, 0,
           v,   1-v, v, 0,
           v,   v,  1-v, 0,
           0,  0,    0,  (1-2*v)/2;
-    E_ = E_ * M / (1+v) /(1-2*v);
-
+    E = E * modulus / (1+v) /(1-2*v);
+    return E;
 }
