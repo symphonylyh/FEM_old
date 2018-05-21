@@ -26,11 +26,11 @@ class ElementQ4 : public Element
         ElementQ4(const int & index, const std::vector<int> & nodeList, Node** const meshNode, Material* const material);
         ~ElementQ4();
 
-        // Shape* const shape() const;
+        Shape* const shape() const;
 
     private:
         /** A static structure that manages all the static members used in this class */
-        // static staticMembers statics;
+        static staticMembers statics;
 
 };
 

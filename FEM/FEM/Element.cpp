@@ -108,11 +108,6 @@ MatrixXd Element::BMatrix(const Vector2d & point) const
     return B;
 }
 
-void Element::setStressAtGaussPt(const MatrixXd & stressAtGaussPt)
-{
-    stressAtGaussPt_ = stressAtGaussPt;
-}
-
 const int & Element::getIndex() const
 {
     return index_;

@@ -138,11 +138,11 @@ auto start = std::chrono::high_resolution_clock::now();
     Analysis* case1 = new Nonlinear(inFileName);
     case1->solve();
     
-    case1->printDisp();
+    // case1->printDisp();
     // case1->printStrain();
     // case1->printStress();
     // case1->writeToFile(outFileName);
-    // case1->writeToVTK(outVTKName);
+    case1->writeToVTK(outVTKName);
 
     delete case1; case1 = NULL;
 

@@ -170,9 +170,6 @@ class Element
          */
         MatrixXd BMatrix(const Vector2d & point) const;
 
-        /** A 4-by-g matrix where g is the number of Gaussian points of this element */
-        MatrixXd stressAtGaussPt; // for nonlinear analysis, made public for easier access
-
         /** A g-by-1 vector where g is the number of Gaussian points of this element */
         VectorXd modulusAtGaussPt; // for nonlinear analysis, made public for easier access
 

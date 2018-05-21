@@ -20,8 +20,7 @@ ElementQ8::ElementQ8()
 ElementQ8::ElementQ8(const int & index, const std::vector<int> & nodeList, Node** const meshNode, Material* const material)
     : Element(index, nodeList, meshNode, material) // call the constructor of base class in the initializer list!
 {
-    stressAtGaussPt.resize(4, shape()->gaussianPt().size()); // 4 x 9 matrix
-    modulusAtGaussPt = VectorXd::Constant(shape()->gaussianPt().size(), material_->modulus()) // 9 x 1 vector
+    modulusAtGaussPt = VectorXd::Constant(statics.shape->gaussianPt().size(), material_->modulus()); // 9 x 1 vector
     _computeStiffnessAndForce(); // bootstrap the computation of local stiffness matrix and force vector. After calling this function, the member variables are all computed
 }
 
