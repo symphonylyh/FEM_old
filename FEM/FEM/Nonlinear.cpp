@@ -53,30 +53,33 @@ bool Nonlinear::computeStressAtGaussPt()
 
                 double modulus_new = material->stressDependentModulus(principalStress(stress)); // M_i
                 double modulus = (1 - damping) * modulus_old + damping * modulus_new; // true M_i after applying damping ratio
-                //Debug
-                if (i == 37 && g == 1) {
-                    std::cout << "Old modulus: " << modulus_old << std::endl;
-                    std::cout << "New modulus: " << modulus_new << std::endl;
-                    std::cout << "True modulus: " << modulus << std::endl;
-                }
+
                 (curr->modulusAtGaussPt)(g) = modulus;
 
                 // Convergence criteria
                 // Criteria 1: modulus stabilize within 5% at all Gaussian points
                 double error = std::abs(modulus - modulus_old);
-                if (error / modulus > 0.1)
+                if (error / modulus > 0.05)
                     convergence = false;
                 // Criteraia 2: Accumulative modulus error within 0.2%
                 sumError += error * error;
                 sumModulus += modulus * modulus;
+                //Debug
+                // if (i == 37 && g == 1) {
+                //     std::cout << "cylindrical stress: " << stress.transpose() << std::endl;
+                //     std::cout << "principal stress: " << principalStress(stress).transpose() << std::endl;
+                //     std::cout << "Old modulus: " << modulus_old << std::endl;
+                //     std::cout << "New modulus: " << modulus_new << std::endl;
+                //     std::cout << "True modulus: " << modulus << std::endl;
+                // }
             }
 
         }
 
     }
-    std::cout << "Error: " << sumError / sumModulus << std::endl;
-    std::cout << "Modulus Element No.37: " << mesh.elementArray()[37]->modulusAtGaussPt(1) << std::endl;
-    return (sumError / sumModulus < 0.2 && convergence) ? true : false;
+    // std::cout << "Sum Error: " << sumError / sumModulus << std::endl;
+    // std::cout << "Modulus Element No.37: " << mesh.elementArray()[37]->modulusAtGaussPt(1) << std::endl;
+    return (sumError / sumModulus < 0.002 && convergence) ? true : false;
 
 }
 
@@ -107,8 +110,8 @@ void Nonlinear::solve()
     bool convergence = false;
     int i = 0;
     while (!convergence) { // convergence criteria
-    // for (int i = 0; i < 10; i++) {
-        std::cout << "Iteration No." << i++ << std::endl;
+    //for (int i = 0; i < 10; i++) {
+        //std::cout << "Iteration No." << i++ << std::endl;
         assembleStiffnessAndForce();
         SimplicialLDLT <SparseMatrix<double> > solver;
         solver.compute(globalStiffness);

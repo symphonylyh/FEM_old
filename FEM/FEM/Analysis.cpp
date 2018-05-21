@@ -185,6 +185,10 @@ void Analysis::assembleStiffnessAndForce()
 
 void Analysis::applyForce()
 {
+    // @BUG (solved) previous miss this initialization step, therefore in the nonlinear analysis the force will accumulate in every iteration and blow up!!!
+    // Other variable such as nodelDisp, globalStiffness, nodalStrain, nodalStress will be rewritten every time, so doesn't matter
+    nodalForce = VectorXd::Zero(2 * mesh.nodeCount());
+
     // Apply point load
     for (unsigned i = 0; i < mesh.loadNodeList.size(); i++)
         nodalForce(mesh.loadNodeList[i]) += 2 * M_PI * mesh.loadValue[i]; // *2 M_PI due to the axisymmetric property
@@ -307,13 +311,16 @@ void Analysis::computeStrainAndStress()
         }
 
         MatrixXd strainAtGaussPt(numGaussianPt, 4); // 4 for axisymmetric problem
+        MatrixXd stressAtGaussPt(numGaussianPt, 4);
         MatrixXd shapeAtGaussPt(numGaussianPt, numNodes); // 9x8 matrix for element Q8
 
-        // Compute strain at gaussian points from e = Bu
+        // Compute strain and stress at gaussian points from e = Bu, sigma = Ee
         for (int g = 0; g < numGaussianPt; g++) {
             MatrixXd B = curr->BMatrix(curr->shape()->gaussianPt(g));
             VectorXd e = B * nodeDisp; // e = B * u
             strainAtGaussPt.row(g) = e.transpose();
+            double modulus = (curr->modulusAtGaussPt)(g); // for nonlinear, this is the stabilized modulus at the Gaussian point; for linear elastic, it's just the constant modulus M
+            stressAtGaussPt.row(g) = (curr->EMatrix(modulus) * (e - curr->thermalStrain())).transpose(); // subtract thermal strain, stress = E * (strain - thermal strain)
             shapeAtGaussPt.row(g) = curr->shape()->functionVec(g).transpose();
         }
 
@@ -323,6 +330,7 @@ void Analysis::computeStrainAndStress()
         // MatrixXd strainAtNodes = pesudo * strainAtGaussPt; // 8x4 matrix
         // Current solution: use SVD decomposition
         MatrixXd strainAtNodes = shapeAtGaussPt.bdcSvd(ComputeThinU | ComputeThinV).solve(strainAtGaussPt);
+        MatrixXd stressAtNodes = shapeAtGaussPt.bdcSvd(ComputeThinU | ComputeThinV).solve(stressAtGaussPt);
 
         // Notes on LLS system:
         // Several options for solving a linear least squares system:
@@ -335,10 +343,9 @@ void Analysis::computeStrainAndStress()
         // VectorXd x = (A.transpose() * A).ldlt().solve(A.transpose() * b)
 
         // Set calculated strain and stress value to every node (to be accumulated at each node and averaged later)
-        MatrixXd E = curr->EMatrix(curr->material()->modulus());
         for (int n = 0; n < numNodes; n++) {
             VectorXd strain = strainAtNodes.row(n);
-            VectorXd stress = E * (strain - curr->thermalStrain()); // subtract thermal strain, stress = E * (strain - thermal strain)
+            VectorXd stress = stressAtNodes.row(n);
             mesh.nodeArray()[nodeList(n)]->setStrainAndStress(strain, stress);
         }
 
