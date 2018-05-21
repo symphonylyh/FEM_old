@@ -10,7 +10,7 @@
 #include <cmath>
 #include <iostream>
 
-Nonlinear::Nonlinear(std::string const & fileName) : Analysis(fileName), damping(0.3)
+Nonlinear::Nonlinear(std::string const & fileName) : Analysis(fileName), damping(0.4)
 {
 }
 
@@ -77,8 +77,8 @@ bool Nonlinear::computeStressAtGaussPt()
         }
 
     }
-    // std::cout << "Sum Error: " << sumError / sumModulus << std::endl;
-    // std::cout << "Modulus Element No.37: " << mesh.elementArray()[37]->modulusAtGaussPt(1) << std::endl;
+    std::cout << "Sum Error: " << sumError / sumModulus << std::endl;
+    std::cout << "Modulus Element No.37: " << mesh.elementArray()[37]->modulusAtGaussPt(1) << std::endl;
     return (sumError / sumModulus < 0.002 && convergence) ? true : false;
 
 }
@@ -110,7 +110,7 @@ void Nonlinear::solve()
     bool convergence = false;
     //int i = 0;
     //while (!convergence) { // convergence criteria
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 5; i++) {
         std::cout << "Iteration No." << i << std::endl;
         assembleStiffnessAndForce();
         SimplicialLDLT <SparseMatrix<double> > solver;
