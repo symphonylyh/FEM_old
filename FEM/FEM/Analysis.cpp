@@ -110,7 +110,8 @@ void Analysis::assembleStiffnessAndForce()
         // Bootstrap the computation of local stiffness matrix and force vector. After calling this function, the member variables are all computed
         // @BUG (solved) previous this bootstrap step is in the ctor of derived class ElementQ8, so in the nonlinear analysis, the localStiffness and body & temp force are only computed once at the beginning!
         curr->computeStiffnessAndForce();
-
+        // if (i == 0)
+        //     std::cout << "local stiff: " << curr->localStiffness() << std::endl;
         const MatrixXd & localStiffness = curr->localStiffness();
 
         // Traverse each node and assemble the values to global stiffness matrix and global force vector

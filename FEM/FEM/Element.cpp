@@ -111,12 +111,19 @@ MatrixXd Element::BMatrix(const Vector2d & point) const
 
 void Element::computeStiffnessAndForce()
 {
+    // @BUG (solved) the same issue as the applyForce() in Analysis class,
+    // Initialization!!! Here the localStiffness_ and nodalForce_ are member variables
+    // of Element class, so when we iterate on each element, the value will accumulate if
+    // we don't propertly initialize it. Initialization in ctor only works for linear elastic
+    // but not for nonlinear analysis which requires updating these variables every time.
+    localStiffness_ = MatrixXd::Zero(2 * size_, 2 * size_);
+    nodalForce_ = VectorXd::Zero(2 * size_);
     for (int i = 0; i < shape()->gaussianPt().size(); i++) {
         // Local stiffness matrix
         // sum 2PI * B^T * E * B * |J| * r * W(i) at all Gaussian points
         localStiffness_ += 2 * M_PI * _BMatrix(i).transpose() * EMatrix(modulusAtGaussPt(i)) * _BMatrix(i) * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
-        if (i == 0)
-            std::cout << "Debug: " << modulusAtGaussPt(i) << std::endl;
+        // if (i == 0)
+        //     std::cout << "Debug: " << modulusAtGaussPt(i) << std::endl;
         // Body force
         // sum 2PI * N^T * F * |J| * r * W(i) at all Gaussian points
         nodalForce_ += 2 * M_PI * shape()->functionMat(i).transpose() * bodyForce() * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
