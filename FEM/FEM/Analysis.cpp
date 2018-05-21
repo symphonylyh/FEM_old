@@ -106,6 +106,11 @@ void Analysis::assembleStiffnessAndForce()
         curr = mesh.elementArray()[i];
         int size = curr->getSize();// element type, for Q4 element, size=4; for Q8, size=8, etc
         const VectorXi & nodeList = curr->getNodeList();// the index of nodes belong to this element, e.g., for element8, it will give you a vector contain (10,11,15,14), use this to locate row & column in globalStiffness matrix
+
+        // Bootstrap the computation of local stiffness matrix and force vector. After calling this function, the member variables are all computed
+        // @BUG (solved) previous this bootstrap step is in the ctor of derived class ElementQ8, so in the nonlinear analysis, the localStiffness and body & temp force are only computed once at the beginning!
+        curr->computeStiffnessAndForce();
+
         const MatrixXd & localStiffness = curr->localStiffness();
 
         // Traverse each node and assemble the values to global stiffness matrix and global force vector

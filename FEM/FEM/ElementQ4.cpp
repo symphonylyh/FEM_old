@@ -21,7 +21,6 @@ ElementQ4::ElementQ4(const int & index, const std::vector<int> & nodeList, Node*
   : Element(index, nodeList, meshNode, material) // call the constructor of base class in the initializer list!
 {
     modulusAtGaussPt = VectorXd::Constant(statics.shape->gaussianPt().size(), material_->modulus()); // 4 x 1 vector
-    _computeStiffnessAndForce(); // bootstrap the computation of local stiffness matrix and force vector. After calling this function, the member variables are all computed
 }
 
 ElementQ4::~ElementQ4()

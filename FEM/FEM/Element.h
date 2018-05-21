@@ -174,6 +174,12 @@ class Element
         VectorXd modulusAtGaussPt; // for nonlinear analysis, made public for easier access
 
         /**
+         * Helper function for the computation of element stiffness matrix
+         * and nodal force vector (body force and temperature load).
+         */
+        void computeStiffnessAndForce();
+
+        /**
          * Get the index of this element.
          *
          * @return The index.
@@ -311,12 +317,6 @@ class Element
 
         /** The 2n-by-1 nodal force vector where n is the number of nodes */
         VectorXd nodalForce_;
-
-        /**
-         * Private helper function for the computation of element stiffness matrix
-         * and nodal force vector (body force and temperature load).
-         */
-        void _computeStiffnessAndForce();
 
         /**
          * Private helper function for computing the B matrix (the strain-displacement

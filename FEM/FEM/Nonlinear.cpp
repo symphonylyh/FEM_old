@@ -65,13 +65,13 @@ bool Nonlinear::computeStressAtGaussPt()
                 sumError += error * error;
                 sumModulus += modulus * modulus;
                 //Debug
-                // if (i == 37 && g == 1) {
-                //     std::cout << "cylindrical stress: " << stress.transpose() << std::endl;
-                //     std::cout << "principal stress: " << principalStress(stress).transpose() << std::endl;
-                //     std::cout << "Old modulus: " << modulus_old << std::endl;
-                //     std::cout << "New modulus: " << modulus_new << std::endl;
-                //     std::cout << "True modulus: " << modulus << std::endl;
-                // }
+                if (i == 37 && g == 1) {
+                    std::cout << "cylindrical stress: " << stress.transpose() << std::endl;
+                    std::cout << "principal stress: " << principalStress(stress).transpose() << std::endl;
+                    std::cout << "Old modulus: " << modulus_old << std::endl;
+                    std::cout << "New modulus: " << modulus_new << std::endl;
+                    std::cout << "True modulus: " << modulus << std::endl;
+                }
             }
 
         }
@@ -108,14 +108,15 @@ void Nonlinear::solve()
 
     //------------------------- Iteration j ------------------------------------
     bool convergence = false;
-    int i = 0;
-    while (!convergence) { // convergence criteria
-    //for (int i = 0; i < 10; i++) {
-        //std::cout << "Iteration No." << i++ << std::endl;
+    //int i = 0;
+    //while (!convergence) { // convergence criteria
+    for (int i = 0; i < 10; i++) {
+        std::cout << "Iteration No." << i << std::endl;
         assembleStiffnessAndForce();
         SimplicialLDLT <SparseMatrix<double> > solver;
         solver.compute(globalStiffness);
         nodalDisp = solver.solve(nodalForce);
+        // std::cout << "Displacement: " << nodalDisp(0) << " " << nodalDisp(1) << std::endl;
         convergence = computeStressAtGaussPt();
     }
 

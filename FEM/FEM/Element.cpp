@@ -10,6 +10,7 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include "Element.h"
+#include <iostream>
 
 Element::Element()
 {
@@ -108,6 +109,24 @@ MatrixXd Element::BMatrix(const Vector2d & point) const
     return B;
 }
 
+void Element::computeStiffnessAndForce()
+{
+    for (int i = 0; i < shape()->gaussianPt().size(); i++) {
+        // Local stiffness matrix
+        // sum 2PI * B^T * E * B * |J| * r * W(i) at all Gaussian points
+        localStiffness_ += 2 * M_PI * _BMatrix(i).transpose() * EMatrix(modulusAtGaussPt(i)) * _BMatrix(i) * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
+
+        // Body force
+        // sum 2PI * N^T * F * |J| * r * W(i) at all Gaussian points
+        nodalForce_ += 2 * M_PI * shape()->functionMat(i).transpose() * bodyForce() * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
+
+        // Temperature load
+        // sum 2PI * B^T * E * e0 * |J| * r * W(i) at all Gaussian points
+        nodalForce_ += 2 * M_PI * _BMatrix(i).transpose() * EMatrix(modulusAtGaussPt(i)) * thermalStrain() * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
+    }
+
+}
+
 const int & Element::getIndex() const
 {
     return index_;
@@ -126,24 +145,6 @@ const VectorXi & Element::getNodeList() const
 const MatrixXd & Element::getNodeCoord() const
 {
     return nodeCoord_;
-}
-
-void Element::_computeStiffnessAndForce()
-{
-    for (int i = 0; i < shape()->gaussianPt().size(); i++) {
-        // Local stiffness matrix
-        // sum 2PI * B^T * E * B * |J| * r * W(i) at all Gaussian points
-        localStiffness_ += 2 * M_PI * _BMatrix(i).transpose() * EMatrix(modulusAtGaussPt(i)) * _BMatrix(i) * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
-
-        // Body force
-        // sum 2PI * N^T * F * |J| * r * W(i) at all Gaussian points
-        nodalForce_ += 2 * M_PI * shape()->functionMat(i).transpose() * bodyForce() * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
-
-        // Temperature load
-        // sum 2PI * B^T * E * e0 * |J| * r * W(i) at all Gaussian points
-        nodalForce_ += 2 * M_PI * _BMatrix(i).transpose() * EMatrix(modulusAtGaussPt(i)) * thermalStrain() * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
-    }
-
 }
 
 MatrixXd Element::_BMatrix(const int & i) const
