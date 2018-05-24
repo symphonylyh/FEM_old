@@ -157,6 +157,12 @@ bw = imopen(bw, strel('disk', 2* sigma)); % open: open holes (or remove objects)
 bw = bwareaopen(bw, ceil(h/100) * ceil(w/100)); % remove small object
 bw = imclearborder(bw, 8); % clear meaningless regions that are connected to image border
 
+% only for now
+% imshow(img);
+% bd = bwperim(bw);
+% hold on;
+% visboundaries(bd, 'LineWidth', 1);
+
 if PLOT
     fig = 1; % start figure No.
     figure(fig); fig = fig + 1;
