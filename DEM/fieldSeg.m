@@ -62,6 +62,7 @@ if SEGMENT
 end
 
 %% 3D volume estimation
+close all;
 if RESIZE
     S = load(fullfile(outFolderName, 'summary.mat'), '-mat');
     info = S.summary;
@@ -69,75 +70,18 @@ if RESIZE
     
     % Calculate the benchmarked dimensions (x,y,z) from the least squares 
     % solution of the linear system
-    for i = 5 % 1:6
+    for i = 1:6
         for j = 1 : 3
-            views{j} = imread(fullfile(inFolderName, 'Segmentation/', strcat('timg', sprintf('%04d', i), '_', num2str(j - 1), '_rock.png')));
+            rocks{j} = imread(fullfile(inFolderName, 'Segmentation/', strcat('timg', sprintf('%04d', i), '_', num2str(j - 1), '_rock.png')));
+            balls{j} = imread(fullfile(inFolderName, 'Segmentation/', strcat('timg', sprintf('%04d', i), '_', num2str(j - 1), '_ball.png')));
             D(j) = info(2 * i, 2 * j - 1);
         end
-        % Normalize with respect to the top view based on the size of
-        % calibration ball
-        views{2} = imresize(views{2}, D(1) / D(2));
-        views{3} = imresize(views{3}, D(1) / D(3));
-        info(2 * i - 1, 2 * 2 -1 : 2 * 2) = [size(views{2}, 2) size(views{2}, 1)];
-        info(2 * i - 1, 2 * 3 -1 : 2 * 3) = [size(views{3}, 2) size(views{3}, 1)];
-        
-        % Following the sequence of photos top-front-side
-        % a right-hand coordinates system is used:
-        % --------> x
-        % |
-        % |
-        % |
-        % |
-        % _
-        % y
-        % and positive z is pointing into the screen
-        % in the image sets taken April 25th, each row in summary matrix
-        % is [z x x y z y]
-        % so A matrix can be formed
-        b = info(2 * i - 1, :)';
-        A = [0 0 1; 1 0 0; 1 0 0; 0 1 0; 0 0 1; 0 1 0];
-        scale = ceil(A \ b); % [x y z]
-        top = imresize(views{1}, [scale(1) scale(3)]);
-        front = imresize(views{2}, [scale(2) scale(1)]);
-        side = imresize(views{3}, [scale(2) scale(3)]);
-        
-        % Extrude and rearrange into [x y z] dimension
-        top_extrude = repmat(top, [1 1 scale(2)]); % [x z y]
-        top_extrude = permute(top_extrude, [1 3 2]);
-        front_extrude = repmat(front, [1 1 scale(3)]); % [y x z]
-        front_extrude = permute(front_extrude, [2 1 3]);
-        side_extrude = repmat(side, [1 1 scale(1)]); % [y z x]
-        side_extrude = permute(side_extrude, [3 1 2]);
-        
-        % Intersect the three extruded body
-        volume = top_extrude & front_extrude & side_extrude;
-        volume = permute(volume, [1 2 3]);
-%         [Rx Ry Rz] = size(volume); % the reconstruct coordinates system used above
-%         [Vx Vy Vz] = meshgrid(1:Rz, 1:Rx, 1:Ry); % rearrange the axis to Matlab plot's right-handed system
-%         v = double(volume);
-%         p = patch( isosurface(v,0) );                 %# create isosurface patch
-%         isonormals(v, p)                              %# compute and set normals
-%         set(p, 'FaceColor','r', 'EdgeColor','none')   %# set surface props
-%         daspect([1 1 1])                              %# axes aspect ratio
-%         view(3), axis vis3d tight, box on, grid on    %# set axes props
-%         camproj perspective                           %# use perspective projection
-%         camlight, lighting phong, alpha(1)  
-%         
-%         surfaceVoxels = volume - imerode(volume, true(3));
-%         
-%         vol3d('cdata',volume,'texture','3D');
-%         view(45,15);  axis tight;axis off;
-%         camlight; camlight(-90,-10); camlight(180,-10);lighting phong;
-%         alphamap('rampup');
-%         alphamap(0.05 .* alphamap);
-%         figure;
-%         cmap = [0 0 1];
-%         hpat = PATCH_3Darray(volume, cmap);
-        
-        voxel = sum(volume(:));
-        rockVolume = voxel / D(1)^3 * 1^3; % in in^3
-        rockWeight = rockVolume * 16.3871 * 2.65; % 1 in3 = 16.3871 cm3; typically rock density 2.65g/cm3
-        volumes(i, 1) = rockVolume * 16.3871;
+        rockVoxel = reconstruct3D(rocks, D);
+        ballVoxel = reconstruct3D(balls, D);
+        rockVolume = rockVoxel / ballVoxel * 0.523599 * 16.3871; % calibration ball is V = 4/3 * PI * R3 = 0.523599 in3; 1 in3 = 16.3871 cm3
+        % rockVolume = rockVoxel / ballVoxel * 1^3 * 16.3871 / 2; % calibration ball is V = 1 in3; 1 in3 = 16.3871 cm3
+        rockWeight = rockVolume * 2.65; % typically rock density 2.65g/cm3
+        volumes(i, 1) = rockVolume;
         weights(i, 1) = rockWeight;
         % Save the 3D voxel array to disk
         % save(fullfile(outFolderName, 'volume.mat'), 'volume');
@@ -147,9 +91,11 @@ if RESIZE
     weights(:, 2) = [3175.15; 2487.7; 2463.9; 2955.1; 2235.8; 1712.5]; % old measure
     weights(:, 2) = [3214.9; 2487.7; 2463.9; 2955.1; 2235.8; 1712.5]; % new measure
     volumes(:, 2) = [1254.8; 916.4; 947.8; 1149.6; 871.7; 636.3]; % submerge measure
+    error = (volumes(:,1) - volumes(:,2)) ./ volumes(:,2) * 100; % percentage
     figure;
-    %plot(weights(:,2), weights(:,1), '*r'), xlim([1000 4000]), ylim([1000 4000]), refline(1, 0);
-    plot(volumes(:,2), volumes(:,1), '*r'), xlim([500 1500]), ylim([500 1500]), refline(1, 0);
+    plot(weights(:,2), weights(:,1), '*r'), xlim([1000 4000]), ylim([1000 4000]), refline(1, 0);
+    % plot(volumes(:,2), volumes(:,1), '*r'), xlim([500 1500]), ylim([500 1500]), refline(1, 0);
+    xlabel('Actual Volume (in cm3)'), ylabel('Reconstructed Volume (in cm3)');
     % Create output folder for the resized particle image
     outFolderName = strcat(inFolderName, 'Resizing/');
     if ~exist(outFolderName, 'dir')

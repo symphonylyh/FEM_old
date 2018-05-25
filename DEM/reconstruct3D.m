@@ -1,4 +1,4 @@
-function voxels = reconstruct3D(views, D)
+function voxel = reconstruct3D(views, D)
 % 3D reconstruction based on three near-orthogonal views.
 %
 % Input:
@@ -7,15 +7,15 @@ function voxels = reconstruct3D(views, D)
 % in each view
 %
 % Output:
-% voxels: voxel counter of the reconstructed object
+% voxel: voxel counter of the reconstructed object
 
 % Normalize/Scale with respect to the *top* view based on the diameter ratio of calibration ball
 views{2} = imresize(views{2}, D(1) / D(2));
 views{3} = imresize(views{3}, D(1) / D(3));
 
-Update the new image dimension in info table
-info(2 * i - 1, 2 * 2 -1 : 2 * 2) = [size(views{2}, 2) size(views{2}, 1)];
-info(2 * i - 1, 2 * 3 -1 : 2 * 3) = [size(views{3}, 2) size(views{3}, 1)];
+% Update the new image dimension in info table
+% info(2 * i - 1, 2 * 2 -1 : 2 * 2) = [size(views{2}, 2) size(views{2}, 1)];
+% info(2 * i - 1, 2 * 3 -1 : 2 * 3) = [size(views{3}, 2) size(views{3}, 1)];
 
 % Following the sequence of photos top-front-side
 % a right-hand coordinates system is used:
@@ -52,7 +52,13 @@ info(2 * i - 1, 2 * 3 -1 : 2 * 3) = [size(views{3}, 2) size(views{3}, 1)];
 % |_______________|/  S
 % +y
 % The text direction shows the way the photo is took
-b = info(2 * i - 1, :)';
+
+% Solve linear system
+for i = 1 : 3
+    b(2 * i - 1, 1) = size(views{i}, 2); % width
+    b(2 * i, 1) = size(views{i}, 1); % height
+end
+% b = info(2 * i - 1, :)';
 A = [0 0 1; 1 0 0; 1 0 0; 0 1 0; 0 0 1; 0 1 0];
 scale = ceil(A \ b); % [x y z]
 top = imresize(views{1}, [scale(1) scale(3)]);
@@ -93,10 +99,10 @@ volume = permute(volume, [1 2 3]);
 %         hpat = PATCH_3Darray(volume, cmap);
 
 voxel = sum(volume(:));
-rockVolume = voxel / D(1)^3 * 1^3; % in in^3
-rockWeight = rockVolume * 16.3871 * 2.65; % 1 in3 = 16.3871 cm3; typically rock density 2.65g/cm3
-volumes(i, 1) = rockVolume * 16.3871;
-weights(i, 1) = rockWeight;
+% rockVolume = voxel / D(1)^3 * 1^3; % in in^3
+% rockWeight = rockVolume * 16.3871 * 2.65; % 1 in3 = 16.3871 cm3; typically rock density 2.65g/cm3
+% volumes(i, 1) = rockVolume * 16.3871;
+% weights(i, 1) = rockWeight;
 % Save the 3D voxel array to disk
 % save(fullfile(outFolderName, 'volume.mat'), 'volume');
 
