@@ -1,4 +1,4 @@
-function [voxel, sphericity] = reconstruct3D(views, D)
+function voxel = reconstruct3D(views, D)
 % 3D reconstruction based on three near-orthogonal views.
 %
 % Input:
@@ -69,23 +69,23 @@ side = imresize(views{3}, [scale(2) scale(3)]);
 distortion = @(xyz) ( abs(xyz(1) - xyz(2)) + abs(xyz(2) - xyz(3)) + abs(xyz(1) - xyz(3)) ) / mean(xyz); 
 sphericity = 1 - distortion(scale); % calculate the sphericity of the captured calibration ball, 1 for perfect sphere
 
-% figure(1), imshow(top);
-% figure(2), imshow(front);
-% figure(3), imshow(side);
-% 
-% % Show images on a 3D cube: https://www.mathworks.com/matlabcentral/answers/32070-rgb-images-on-a-3d-cube
-% figure(4);
-% % top
-% surface([0 scale(3); 0 scale(3)], [0 0; scale(1) scale(1)], [scale(2) scale(2); scale(2) scale(2)], 'FaceColor', 'texturemap', 'CData', flip(double(top)));
-% % front
-% surface([0 scale(3); 0 scale(3)], [0 0; 0 0], [0 0; scale(2) scale(2)], 'FaceColor', 'texturemap', 'CData', flip(double(side)));
-% % left
-% flip_front = imrotate(double(front), 90);
-% flip_front = flip(flip_front, 1);
-% flip_front = flip(flip_front, 2);
-% surface([0 0; 0 0], [scale(1) scale(1); 0 0], [0 scale(2); 0 scale(2)], 'FaceColor', 'texturemap', 'CData', flip_front);
-% axis equal
-% view(3);
+figure(1), imshow(top);
+figure(2), imshow(front);
+figure(3), imshow(side);
+
+% Show images on a 3D cube: https://www.mathworks.com/matlabcentral/answers/32070-rgb-images-on-a-3d-cube
+figure(4);
+% top
+surface([0 scale(3); 0 scale(3)], [0 0; scale(1) scale(1)], [scale(2) scale(2); scale(2) scale(2)], 'FaceColor', 'texturemap', 'CData', flip(double(top)));
+% front
+surface([0 scale(3); 0 scale(3)], [0 0; 0 0], [0 0; scale(2) scale(2)], 'FaceColor', 'texturemap', 'CData', flip(double(side)));
+% left
+flip_front = imrotate(double(front), 90);
+flip_front = flip(flip_front, 1);
+flip_front = flip(flip_front, 2);
+surface([0 0; 0 0], [scale(1) scale(1); 0 0], [0 scale(2); 0 scale(2)], 'FaceColor', 'texturemap', 'CData', flip_front);
+axis equal
+view(3);
 
 % Extrude and rearrange into [x y z] dimension
 top_extrude = repmat(top, [1 1 scale(2)]); % [x z y]
@@ -100,26 +100,23 @@ volume = top_extrude & front_extrude & side_extrude;
 %volume = permute(volume, [1 2 3]);
 %         [Rx Ry Rz] = size(volume); % the reconstruct coordinates system used above
 %         [Vx Vy Vz] = meshgrid(1:Rz, 1:Rx, 1:Ry); % rearrange the axis to Matlab plot's right-handed system
+        figure(5);
+        % adjust the coordinates
+        volume = flip(volume, 1); % flip x and y
+        volume = flip(volume, 2);
+        volume = permute(volume, [1 3 2]); % exchange y and z
+        v = double(volume);
+        p = patch( isosurface(v,0) );                 %# create isosurface patch
+        isonormals(v, p)                              %# compute and set normals
+        set(p, 'FaceColor','r', 'EdgeColor','none')   %# set surface props
+        daspect([1 1 1])                              %# axes aspect ratio
+        view(0, 90), axis vis3d tight, box on, grid on    %# set axes props
+        set(gca, 'CameraUpVector', [0 1 0])
+        set(gca, 'CameraUpVectorMode', 'manual')
+        rotate3d on
+        camproj perspective                           %# use perspective projection
+        camlight, lighting phong, alpha(1)
         
-%         % Plot 3d view   
-%         figure(5);
-%         % adjust the coordinates
-%         volume = flip(volume, 1); % flip x and y
-%         volume = flip(volume, 2);
-%         volume = permute(volume, [1 3 2]); % exchange y and z
-%         v = double(volume);
-%         p = patch( isosurface(v,0) );                 %# create isosurface patch
-%         isonormals(v, p)                              %# compute and set normals
-%         set(p, 'FaceColor','r', 'EdgeColor','none')   %# set surface props
-%         daspect([1 1 1])                              %# axes aspect ratio
-%         view(0, 90), axis vis3d tight, box on, grid on    %# set axes props
-%         set(gca, 'CameraUpVector', [0 1 0])
-%         set(gca, 'CameraUpVectorMode', 'manual')
-%         rotate3d on
-%         camproj perspective                           %# use perspective projection
-%         camlight, lighting phong, alpha(1)
-%         % end plot 3d view
-
 %         
 %         surfaceVoxels = volume - imerode(volume, true(3));
 %         
