@@ -69,11 +69,12 @@ if RESIZE
     
     % Calculate the benchmarked dimensions (x,y,z) from the least squares 
     % solution of the linear system
-    for i = 1:6
+    for i = 2
         for j = 1 : 3
             rocks{j} = imread(fullfile(inFolderName, 'Segmentation/', strcat('timg', sprintf('%04d', i), '_', num2str(j - 1), '_rock.png')));
             balls{j} = imread(fullfile(inFolderName, 'Segmentation/', strcat('timg', sprintf('%04d', i), '_', num2str(j - 1), '_ball.png')));
             D(j) = info(2 * i, 2 * j - 1);
+            D(j) = min(size(balls{j}));
         end
         rockVoxel = reconstruct3D(rocks, D);
         [ballVoxel, sphericity] = reconstruct3D(balls, D);
@@ -85,7 +86,7 @@ if RESIZE
         weights(i, 1) = rockWeight;
         sphere(i,1) = sphericity;
         % Save the 3D voxel array to disk
-        % save(fullfile(outFolderName, 'volume.mat'), 'volume');
+        % save(fullfile(outFolderName, 'volume.mhat'), 'volume');
         
     end
     
@@ -101,7 +102,7 @@ if RESIZE
     hold on;
     rangeLine = 0:500:2000;
     plot(rangeLine, rangeLine, '-k', 'LineWidth', 1);
-    percent10Error = rangeLine .* 0.15;
+    percent10Error = rangeLine .* 0.1;
     percent20Error = rangeLine .* 0.2;
     plot(rangeLine, rangeLine + percent10Error, '--b', 'LineWidth', 1);
     plot(rangeLine, rangeLine - percent10Error, '--b', 'LineWidth', 1);
