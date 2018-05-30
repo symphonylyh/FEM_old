@@ -6,7 +6,7 @@ RESIZE = true;
 
 %% Read image folder
 % Specify the working folder and get all image files in it
-inFolderName = './samples/Apr_25_2018/'; % user-define
+inFolderName = './samples/May_29_2018/'; % user-define
 fnames = getAllFilesInFolder(inFolderName); % this function is tuned to ignore any additional folder such as "Segmentation" and "Resizing"
 if (mod(length(fnames),3) ~= 0)
     error("Images are not paired in triplet...Abort!");
@@ -69,7 +69,7 @@ if RESIZE
     
     % Calculate the benchmarked dimensions (x,y,z) from the least squares 
     % solution of the linear system
-    for i = 2
+    for i = 1 : nums
         for j = 1 : 3
             rocks{j} = imread(fullfile(inFolderName, 'Segmentation/', strcat('timg', sprintf('%04d', i), '_', num2str(j - 1), '_rock.png')));
             balls{j} = imread(fullfile(inFolderName, 'Segmentation/', strcat('timg', sprintf('%04d', i), '_', num2str(j - 1), '_ball.png')));
@@ -78,8 +78,8 @@ if RESIZE
         end
         rockVoxel = reconstruct3D(rocks, D);
         [ballVoxel, sphericity] = reconstruct3D(balls, D);
-        % rockVolume = rockVoxel / (4 / 3 * 3.1415926 * (D(1)/2)^3) * 0.523599 * 16.3871;
-        rockVolume = rockVoxel / ballVoxel * 8 * (2 - sqrt(2)) * 0.5^3 * 16.3871; % the orthogonal intersection volume of a sphere
+        rockVolume = rockVoxel / (4 / 3 * 3.1415926 * (D(1)/2)^3) * 0.523599 * 16.3871;
+        % rockVolume = rockVoxel / ballVoxel * 8 * (2 - sqrt(2)) * 0.5^3 * 16.3871; % the orthogonal intersection volume of a sphere
         % rockVolume = rockVoxel / ballVoxel * 0.523599 * 16.3871; % calibration ball is V = 4/3 * PI * R3 = 0.523599 in3; 1 in3 = 16.3871 cm3
         rockWeight = rockVolume * 2.65; % typically rock density 2.65g/cm3
         volumes(i, 1) = rockVolume;
@@ -90,16 +90,19 @@ if RESIZE
         
     end
     
-    weights(:, 2) = [3175.15; 2487.7; 2463.9; 2955.1; 2235.8; 1712.5]; % old measure
-    weights(:, 2) = [3214.9; 2487.7; 2463.9; 2955.1; 2235.8; 1712.5]; % new measure
-    volumes(:, 2) = [1254.8; 916.4; 947.8; 1149.6; 871.7; 636.3]; % submerge measure
+    % weights(:, 2) = [3175.15; 2487.7; 2463.9; 2955.1; 2235.8; 1712.5]; % old measure
+    % weights(:, 2) = [3214.9; 2487.7; 2463.9; 2955.1; 2235.8; 1712.5]; % new measure
+    % volumes(:, 2) = [1254.8; 916.4; 947.8; 1149.6; 871.7; 636.3]; % submerge measure
+    weights(:, 2) = [2235.8; 2235.8; 2235.8; 2235.8; 2235.8; 2235.8; 2487.7; 2487.7; 2487.7; 2487.7; 2487.7; 2487.7];
+    volumes(:, 2) = [871.7; 871.7; 871.7; 871.7; 871.7; 871.7; 916.4; 916.4; 916.4; 916.4; 916.4; 916.4];
     error = (volumes(:,1) - volumes(:,2)) ./ volumes(:,2) * 100; % percentage
     % error = (weights(:,1) - weights(:,2)) ./ weights(:,2) * 100;
-    figure;
+    figure; hold on;
     % plot(weights(:,2), weights(:,1), '*r'), xlim([0 4000]), ylim([0 4000]);
     plot(volumes(:,2), volumes(:,1), '*r'), xlim([0 2000]), ylim([0 2000]);
+    plot(volumes(1,2), 1.15 * mean(volumes(1:6,1)), 'ob'); % a consistant 1.15 calibration factor?
+    plot(volumes(7,2), 1.15 * mean(volumes(7:12,1)), 'ob');
     xlabel('Actual Volume (in cm3)'), ylabel('Reconstructed Volume (in cm3)');
-    hold on;
     rangeLine = 0:500:2000;
     plot(rangeLine, rangeLine, '-k', 'LineWidth', 1);
     percent10Error = rangeLine .* 0.1;

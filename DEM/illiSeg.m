@@ -3,9 +3,9 @@ function dimensions = illiSeg(filename)
 %% Control panel
 close all;
 RESIZE = true;
-PLOT = true; % show procedural figures
+PLOT = false; % show procedural figures
 PRINT = false; % save figures
-BOUNDARY_ENHANCE = false; % enhance boundary information
+BOUNDARY_ENHANCE = true; % enhance boundary information
     
 %% Image resize
 % avoid having too large image file and long running time
