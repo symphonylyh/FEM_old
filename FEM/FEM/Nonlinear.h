@@ -4,6 +4,7 @@
  *
  * @author Haohang Huang
  * @date May 19, 2018
+ * @note Add no tension analysis on June 1, 2018.
  */
 
 // Confusion:
@@ -26,24 +27,31 @@ class Nonlinear : public Analysis
      */
     Nonlinear(std::string const & fileName); // ctor cannot be inherited, should explicitly call base class's ctor in derived class's ctor
     ~Nonlinear();
+    void solve();
 
     /**
      * Compute principal stresses at Gaussian points, and update the modulus and E matrix for next iterations.
      *
-     * @return A boolean value incidating the convergence at this iteration.
+     * @return A boolean value incidating the convergence status at this iteration.
      */
-    bool computeStressAtGaussPt();
+    bool nonlinearIteration();
 
     /**
-     * Compute principal stresses from cylindrical coordinates.
+     * Compute unbalanced tension stresses at Gaussian points, and update the nodal force vector for next iterations.
+     *
+     * @return A boolean value incidating the convergence status at this iteration.
+     */
+    bool noTensionIteration();
+
+    /**
+     * Helper function for the convertion to principal stresses from cylindrical coordinates.
      *
      * @param stress Stresses in cylindrical coordinates, sigma_r, sigma_theta, sigma_z, tau_rz
      * @return The principal stresses in sigma3, sigma2, sigma1 order.
      */
     VectorXd principalStress(const VectorXd & stress) const;
 
-    void solve();
-
+    /** Damping ratio selected in the nonlinear iteration scheme. */
     double damping;
 
 };
