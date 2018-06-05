@@ -191,7 +191,7 @@ bool Nonlinear::noTensionIteration()
 
                 // In our FEM routine, + is tension, - is compression
                 double limit = 0.0;
-                if (/*g == 4 && */ (sigma1 > limit || sigma2 > limit || sigma3 > limit))
+                if (g == 4 && (sigma1 > limit || sigma2 > limit || sigma3 > limit))
                     convergence = false;
 
                 double t1 = sigma1 > limit ? sigma1 : 0;
