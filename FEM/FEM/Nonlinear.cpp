@@ -53,10 +53,10 @@ void Nonlinear::solve()
     bool tensionConvergence = false;
     SimplicialLDLT <SparseMatrix<double> > solver;
     solver.compute(globalStiffness);
-    // while (!tensionConvergence) { // convergence criteria
-    int i = 0; // for debug print only
-    for (int i = 0; i < 3; i++) {
-        std::cout << "Nonlinear Iteration No." << i++ << std::endl;
+    i = 0;
+    while (!tensionConvergence) { // convergence criteria
+    // for (int i = 0; i < 2; i++) { // for debug print only
+        std::cout << "Tension Iteration No." << i++ << std::endl;
         // Solve K U = F
         // Note 1: the above nonlinear iteration scheme is iteratively solving a
         // series of linear elastic cases, where K should be updated every time.
@@ -69,6 +69,7 @@ void Nonlinear::solve()
 
         // Traverse each element, compute stress at Gaussian points, and update the modulus for the next (i + 1) iteration (if current iteration is i)
         tensionConvergence = noTensionIteration();
+        std::cout << "Check: " << tensionConvergence << std::endl;
     }
     // -------------------------------------------------------------------------
     // ----------------  End of No Tension Iteration Scheme --------------------
@@ -171,34 +172,48 @@ bool Nonlinear::noTensionIteration()
                 nodeDisp(2 * j + 1) = nodalDisp(2 * nodeList(j) + 1);
             }
 
-            // Step 1: Compute stress at gaussian points based on the nodal force from last iteration
-            // Step 2: Please fill this
-            // Step 3: Please fill this
+            // Step 1: Compute stress at gaussian points based on the solved nodal displacement from last iteration
+            // Step 2: Compute principal stress and rotation angle based on the stress (sigma r, sigma theta, sigma z, tau rz), and filter out the tensile components based on the limiting tensile strength critera 0.1.
+            // Step 3: Counteract the global load vector based on the tensionForce and output the boolean convergence.
+            MatrixXd tension(4, numGaussianPt);
             for (int g = 0; g < numGaussianPt; g++) {
                 MatrixXd B = curr->BMatrix(curr->shape()->gaussianPt(g));
                 VectorXd strain = B * nodeDisp; // e = B * u
-                double modulus = (curr->modulusAtGaussPt)(g); // M_(i-1)
+                double modulus = (curr->modulusAtGaussPt)(g);
                 VectorXd stress = material->EMatrix(modulus) * (strain - curr->thermalStrain()); // sigma = E_(i-1) * (e - e0), note that the M and E are both from previous iteration
-                VectorXd principal = principalStress(stress);
+                // VectorXd principal = principalStress(stress);
 
-                // sigma r, sigma theta, sigma z, tau rz is given as a 4x1 column vector at this Gaussian point
-                // @TODO no-tension scheme
-                VectorXd tensionForce = curr->computeTensionForce(stress); // just an example, need to be modified
+                // Compute principal stress and rotation angle
+                double sigma1 = (stress(2)+stress(0))/2+std::sqrt((stress(0)-stress(2))*(stress(0)-stress(2))/4+stress(3)*stress(3));
+                double sigma2 = stress(1);
+                double sigma3 = (stress(2)+stress(0))/2-std::sqrt((stress(0)-stress(2))*(stress(0)-stress(2))/4+stress(3)*stress(3));
+                double theta = std::atan2(-2*stress(3), (stress(0) - stress(2))) / 2;
 
-                // Assemble the element tension force to global nodal force
-                for (int k = 0; k < numNodes; k++) {
-                    nodalForce(2 * nodeList(k)) += tensionForce(2 * k);
-                    nodalForce(2 * nodeList(k) + 1) += tensionForce(2 * k + 1);
-                }
-
-                // Convergence criteria
-                if (true) // modify this
+                // In our FEM routine, + is tension, - is compression
+                double limit = 0;
+                if (/*g == 4 && */sigma1 > limit && sigma2 > limit && sigma3 > limit)
                     convergence = false;
-
+                double t1 = sigma1 > limit ? sigma1 : 0;
+                double t2 = sigma2 > limit ? sigma2 : 0;
+                double t3 = sigma3 > limit ? sigma3 : 0;
+                double sigma_r = (t1 + t3) / 2 + (t1 - t3) * std::cos(2 * theta) / 2;
+                double sigma_t = t2;
+                double sigma_z = (t1 + t3) / 2 - (t1 - t3) * std::cos(2 * theta) / 2;
+                double tau_rz = (t1 - t3) * std::sin(2 * theta) / 2;
+                VectorXd tensionStress(4);
+                tensionStress << sigma_r, sigma_t, sigma_z, tau_rz;
+                tension.col(g) = tensionStress;
             }
-        } // corresponding to if(material->noTension)
+            VectorXd tensionForce = curr->computeTensionForce(tension);
+
+            // Assemble the element tension force to global nodal force
+            for (int k = 0; k < numNodes; k++) {
+                nodalForce(2 * nodeList(k)) += tensionForce(2 * k);
+                nodalForce(2 * nodeList(k) + 1) += tensionForce(2 * k + 1);
+            }
+        }
     }
-    return true; // silence warning, please modify this
+    return convergence;
 }
 
 VectorXd Nonlinear::principalStress(const VectorXd & stress) const

@@ -135,12 +135,12 @@ void Element::computeStiffnessAndForce()
 
 }
 
-VectorXd Element::computeTensionForce(const VectorXd & tension){
+VectorXd Element::computeTensionForce(const MatrixXd & tension){
     // sum 2PI * B^T * tension * |J| * r * W(i) at all Gaussian points
     // F = sum(-B^T * sigma dv), the "-" sign is already considered in the input "tension"
     VectorXd tensionForce = VectorXd::Zero(2 * size_);
     for (int i = 0; i < shape()->gaussianPt().size(); i++)
-        tensionForce += 2 * M_PI * _BMatrix(i).transpose() * tension * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
+        tensionForce += 2 * M_PI * _BMatrix(i).transpose() * tension.col(i) * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
     return tensionForce;
 }
 

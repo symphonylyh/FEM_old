@@ -182,11 +182,11 @@ class Element
         /**
          * Helper function for the computation of compensated tension force.
          *
-         * @param tension The stress vector to be considered for tension modification.
+         * @param tension The stress matrix to be considered for tension modification.
          * @return The element-wise compensated tension force.
          */
-        VectorXd computeTensionForce(const VectorXd & tension);
-        
+        VectorXd computeTensionForce(const MatrixXd & tension);
+
         /**
          * Get the index of this element.
          *
