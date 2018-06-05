@@ -183,7 +183,6 @@ bool Nonlinear::noTensionIteration()
                 VectorXd strain = B * nodeDisp; // e = B * u
                 double modulus = (curr->modulusAtGaussPt)(g);
                 VectorXd stress = material->EMatrix(modulus) * (strain - curr->thermalStrain()); // sigma = E_(i-1) * (e - e0), note that the M and E are both from previous iteration
-                // VectorXd principal = principalStress(stress);
 
                 // Compute principal stress and rotation angle
                 // p1 = (s1 + s3) / 2 + radius;
@@ -195,6 +194,12 @@ bool Nonlinear::noTensionIteration()
                 double sigma2 = stress(1);
                 double sigma3 = (stress(0) + stress(2)) / 2 - radius;
                 double theta = std::atan2(-2 * stress(3), stress(0) - stress(2)) / 2;
+                // Or use the eigen approach:
+                // VectorXd principal = principalStress(stress);
+                // double sigma1 = principal(2);
+                // double sigma2 = principal(1);
+                // double sigma3 = principal(0);
+                // double theta = std::atan2(-2 * stress(3), stress(0) - stress(2)) / 2;
 
                 // In our FEM routine, + is tension, - is compression
                 double limit = 0.0;
