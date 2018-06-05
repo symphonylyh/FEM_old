@@ -53,7 +53,10 @@ void Nonlinear::solve()
     bool tensionConvergence = false;
     SimplicialLDLT <SparseMatrix<double> > solver;
     solver.compute(globalStiffness);
-    while (!tensionConvergence) { // convergence criteria
+    // while (!tensionConvergence) { // convergence criteria
+    int i = 0; // for debug print only
+    for (int i = 0; i < 3; i++) {
+        std::cout << "Nonlinear Iteration No." << i++ << std::endl;
         // Solve K U = F
         // Note 1: the above nonlinear iteration scheme is iteratively solving a
         // series of linear elastic cases, where K should be updated every time.
@@ -148,34 +151,6 @@ bool Nonlinear::nonlinearIteration()
 
 bool Nonlinear::noTensionIteration()
 {
-    // Jiayi's code
-    // MatrixXd Nonlinear::compute_no_tension_force() {
-    //     MatrixXd newstress = (std::abs(nodalStress) - nodalStress)/2 + 0.1;
-    //     VectorXd newforce = VectorXd::Zero(2 * mesh.nodeCount());
-    //
-    //     Element* curr;
-    //     int numNodes; // number of nodes belong to the element
-    //     int numGaussianPt; // number of Gaussian points of the element
-    //     VectorXd new_local_force;
-    //     for (int i = 0; i < mesh.elementCount(); i++) {
-    //         curr = mesh.elementArray()[i];
-    //         numNodes = curr->getSize();
-    //         numGaussianPt = (int)curr->shape()->gaussianPt().size();
-    //         for (int j = 0; j < numGaussianPt; j++) {
-    //             // sum 2PI * B^T * newforce * |J| * r * W(i)
-    //             new_local_force += 2 * M_PI * _BMatrix(i).transpose() * newforce * _jacobianDet(j) * _radius(j) * curr->shape()->gaussianWt(j);
-    //         }
-    //         // Assemble the force to global force
-    //         for (int k = 0; k < numNodes; k++) {
-    //             newforce(2 * nodeList(k)) += new_local_force(2 * k);
-    //             newforce(2 * nodeList(k) + 1) += new_local_force(2 * k + 1);
-    //         }
-    //     }
-    //     return newforce;
-    // }
-    // End of Jiayi's code
-
-    // Sample code from Nonlinear::nonlinearIteration()
     bool convergence = true;
 
     Element* curr;
@@ -184,16 +159,7 @@ bool Nonlinear::noTensionIteration()
     for (int i = 0; i < mesh.elementCount(); i++) {
         curr = mesh.elementArray()[i];
         Material* material = curr->material();
-        if (material->nonlinearity) { // compute stress for no tension granular element only, skip all HMA/subgrade ones
-        // if (material->noTension) { // compute stress for no tension granular element only, skip all HMA/subgrade ones
-            // to enable this, several changes need to be made:
-            // 1. Input file
-            // 0 35 0 1 1 -- 0 - isotropic, 1 - nonlinear, 1 - no-tension correction needed
-            // 2. Mesh.cpp
-            // the readFromFile function should read in the 0/1 option for no-tension
-            // 3. Material.cpp, LinearElastic.cpp, NonlinearElastic.cpp
-            // add a new member variable noTension, and modify the constructor accordingly
-
+        if (material->noTension) { // compute stress for no tension granular elements only, skip all HMA/subgrade ones
             const VectorXi & nodeList = curr->getNodeList();
             numNodes = curr->getSize();
             numGaussianPt = (int)curr->shape()->gaussianPt().size();

@@ -95,7 +95,7 @@ void Mesh::readFromFile(std::string const & fileName)
 
     // Read element properties (modulus, Poisson's ratio, thermal parameters, etc)
     // Format:
-    // Line 1: start & end index of element, material isotropy and linearity. e.g., 0 35 0 0 means element No.0~35 are isotropic and linear elastic material.
+    // Line 1: start & end index of element, material isotropy, linearity, and tension property. e.g., 0 35 0 0 1 means element No.0~35 are isotropic and linear elastic material, with no-tension modification.
     // Line 2: material properties
     std::map<int, int> layerMap; // use an ordered map to decide layer No. by range finding, e.g., N layers, store N start indices of the element as [0 N1) [N1 N2) [N2 N3)
     std::vector<double> elementProperty;
@@ -108,10 +108,10 @@ void Mesh::readFromFile(std::string const & fileName)
         std::getline(file, readLine);
         parseLine(readLine, elementProperty);
         if (range[3] == 0) // linear elastic
-            materialList.push_back(new LinearElastic(range[2], range[3], elementProperty)); // dynamically allocated, remember to delete in destructor!
+            materialList.push_back(new LinearElastic(range[2], range[3], range[4], elementProperty)); // dynamically allocated, remember to delete in destructor!
         else // nonlinear elastic
-            materialList.push_back(new NonlinearElastic(range[2], range[3], elementProperty));
-        // 0 if isotropic, 1 if cross-anisotropic; 0 if linear elastic, 1 if nonlinear elastic.
+            materialList.push_back(new NonlinearElastic(range[2], range[3], range[4], elementProperty));
+        // 0 if isotropic, 1 if cross-anisotropic; 0 if linear elastic, 1 if nonlinear elastic; 0 if normal material, 1 if no-tension material.
     }
     std::vector<double>().swap(elementProperty);
 

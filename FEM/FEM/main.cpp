@@ -137,7 +137,7 @@ int main() {
 auto start = std::chrono::high_resolution_clock::now();
     Analysis* case1 = new Nonlinear(inFileName);
     case1->solve();
-    
+
     // case1->printDisp();
     // case1->printStrain();
     // case1->printStress();

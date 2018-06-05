@@ -395,7 +395,14 @@ void Analysis::printStress() const
     std::cout << "Averaged nodal stress: ";
     std::cout << std::endl;
     for (int i = 0; i < mesh.nodeCount(); i++) {
-        std::cout << "Node " << i << " : " << nodalStress.row(i) << std::endl;
+        // std::cout << "Node " << i << " : " << nodalStress.row(i) << std::endl;
+        VectorXd stress = nodalStress.row(i);
+        MatrixXd tensor(3,3);
+        tensor << stress(0), 0, stress(3),
+                  0, stress(1), 0,
+                  stress(3), 0, stress(2);
+        SelfAdjointEigenSolver<MatrixXd> es(tensor, EigenvaluesOnly);
+        std::cout << "Node principal " << i << " : "<< es.eigenvalues().transpose() << std::endl;
     }
     std::cout << std::endl;
     //std::cout << nodalStress << std::endl; // the whole matrix

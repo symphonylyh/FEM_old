@@ -8,8 +8,8 @@
 
 #include "Material.h"
 
-Material::Material(const bool & Anisotropy, const bool & Nonlinearity)
-  : anisotropy(Anisotropy), nonlinearity(Nonlinearity), modulus_(0), E_(MatrixXd::Zero(4,4)), thermalStrain_(VectorXd::Zero(4))
+Material::Material(const bool & Anisotropy, const bool & Nonlinearity, const bool & NoTension)
+  : anisotropy(Anisotropy), nonlinearity(Nonlinearity), noTension(NoTension), modulus_(0), E_(MatrixXd::Zero(4,4)), thermalStrain_(VectorXd::Zero(4))
 {
 }
 

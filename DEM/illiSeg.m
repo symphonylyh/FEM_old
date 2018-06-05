@@ -3,7 +3,7 @@ function dimensions = illiSeg(filename)
 %% Control panel
 close all;
 RESIZE = true;
-PLOT = false; % show procedural figures
+PLOT = true; % show procedural figures
 PRINT = false; % save figures
 BOUNDARY_ENHANCE = true; % enhance boundary information
     

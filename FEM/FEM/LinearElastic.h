@@ -15,7 +15,7 @@ class LinearElastic : public Material
 {
   public:
     /** See the documentation of base class Material. */
-    LinearElastic(const bool & isotropy, const bool & linearity, const std::vector<double> & properties);
+    LinearElastic(const bool & anisotropy, const bool & nonlinearity, const bool & noTension, const std::vector<double> & properties);
     ~LinearElastic();
 };
 

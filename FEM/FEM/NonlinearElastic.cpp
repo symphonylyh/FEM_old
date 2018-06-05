@@ -9,8 +9,8 @@
 #include "NonlinearElastic.h"
 #include <cmath>
 
-NonlinearElastic::NonlinearElastic(const bool & anisotropy, const bool & nonlinearity, const std::vector<double> & properties)
-  : Material(anisotropy, nonlinearity)
+NonlinearElastic::NonlinearElastic(const bool & anisotropy, const bool & nonlinearity, const bool & noTension, const std::vector<double> & properties)
+  : Material(anisotropy, nonlinearity, noTension)
 {
     int i = 0;
     // Uzan (1985) model:

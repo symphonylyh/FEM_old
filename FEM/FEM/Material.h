@@ -23,11 +23,12 @@ class Material
     /**
      * Custom constructor to create an element material.
      *
-     * @param isotropy A sign for material isotropy. 0 if isotropic, 1 if cross-anisotropic.
-     * @param linearity A sign for material linearity. 0 if linear elastic, 1 if nonlinear elastic.
+     * @param anisotropy A sign for material isotropy. 0 if isotropic, 1 if cross-anisotropic.
+     * @param nonlinearity A sign for material linearity. 0 if linear elastic, 1 if nonlinear elastic.
+     * @param noTension A sign for no-tension modification. 0 if normal material, 1 if no-tension modification required material (unbound aggregate).
      * @param properties A list of the material property parameters.
      */
-    Material(const bool & anisotropy, const bool & nonlinearity);
+    Material(const bool & anisotropy, const bool & nonlinearity, const bool & noTension);
 
     /**
      * Destructor.
@@ -85,6 +86,9 @@ class Material
 
     /** A sign for material linearity. 0 if linear elastic, 1 if nonlinear elastic. */
     bool nonlinearity;
+
+    /** A sign for material no-tension modification. 0 if not needed, 1 if needed. */
+    bool noTension;
 
   protected:
 

@@ -53,11 +53,11 @@
 18 18
 // -------------------------------------------------------
 // Layer properties:
-// Line 1: Element index (start, end) to assign material property
+// Line 1: Element index (start, end) to assign material property. And layer features: isotropic(0)-anisotropic(1) linear(0)-nonlinear(1) normal(0)-no tension modification(1)
 // Line 2: The assigned layer property values (Modulus, Poisson's ratio, body force (r,z), thermal coefficient, temperature change)
-0 4
+0 4 1 1 1
 30000 0.3 0 -0.0807 6.5e-6 100
-5 8
+5 8 0 0 0
 20000 0.2 0 -0.0856 6.5e-6 100
 // -------------------------------------------------------
 // Indexed element's node:
