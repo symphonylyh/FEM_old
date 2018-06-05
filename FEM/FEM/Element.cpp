@@ -135,6 +135,20 @@ void Element::computeStiffnessAndForce()
 
 }
 
+void Element::computerForce()
+{
+    nodalForce_ = VectorXd::Zero(2 * size_);
+    for (int i = 0; i < shape()->gaussianPt().size(); i++) {
+        // Body force
+        // sum 2PI * N^T * F * |J| * r * W(i) at all Gaussian points
+        nodalForce_ += 2 * M_PI * shape()->functionMat(i).transpose() * bodyForce() * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
+
+        // Temperature load
+        // sum 2PI * B^T * E * e0 * |J| * r * W(i) at all Gaussian points
+        nodalForce_ += 2 * M_PI * _BMatrix(i).transpose() * EMatrix(modulusAtGaussPt(i)) * thermalStrain() * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
+    }
+}
+
 VectorXd Element::computeTensionForce(const MatrixXd & tension){
     // sum 2PI * B^T * tension * |J| * r * W(i) at all Gaussian points
     // F = sum(-B^T * sigma dv), the "-" sign is already considered in the input "tension"

@@ -180,6 +180,13 @@ class Element
         void computeStiffnessAndForce();
 
         /**
+         * Helper function for the computation of nodal force vector (body force
+         * and temperature load). The assebly of stiffness matrix and force vector
+         * are separated due to the possible redundancy introduced in nonlinear
+         * scheme.
+         */
+        void computerForce();
+        /**
          * Helper function for the computation of compensated tension force.
          *
          * @param tension The stress matrix to be considered for tension modification.

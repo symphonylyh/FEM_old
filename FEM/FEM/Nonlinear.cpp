@@ -121,13 +121,15 @@ bool Nonlinear::nonlinearIteration()
                 (curr->modulusAtGaussPt)(g) = modulus;
 
                 // Convergence criteria
-                // Criteria 1: modulus stabilize within 5% at all Gaussian points
+                // Criteria 1: modulus stabilize within 5% at all Gaussian points (less strict criteria only checks the center Gaussian point)
                 double error = std::abs(modulus - modulus_old);
-                if (error / modulus > 0.05)
+                if (g == 4 && error / modulus > 0.05)
                     convergence = false;
                 // Criteraia 2: Accumulative modulus error within 0.2%
-                sumError += error * error;
-                sumModulus += modulus * modulus;
+                if (g == 4) { // less strict convergence criteria
+                    sumError += error * error;
+                    sumModulus += modulus * modulus;
+                }
                 // For Debug Use
                 if (i == 37 && g == 1) { // the granular element at centerline
                     // std::cout << "nodelDisp: " << nodeDisp.transpose() << std::endl;
@@ -184,19 +186,25 @@ bool Nonlinear::noTensionIteration()
                 // VectorXd principal = principalStress(stress);
 
                 // Compute principal stress and rotation angle
-                double sigma1 = (stress(2)+stress(0))/2+std::sqrt((stress(0)-stress(2))*(stress(0)-stress(2))/4+stress(3)*stress(3));
+                // p1 = (s1 + s3) / 2 + radius;
+                // p3 = (s1 + s3) / 2 - radius;
+                // p2 = s2;
+                // tan(2*theta) = -2 * tau / (s1 - s3)
+                double radius = std::sqrt( (stress(0) - stress(2)) * (stress(0) - stress(2)) / 4 + stress(3) * stress(3) ); // sqrt{ [(s1 - s3)/2]^2 + tau^2 }
+                double sigma1 = (stress(0) + stress(2)) / 2 + radius;
                 double sigma2 = stress(1);
-                double sigma3 = (stress(2)+stress(0))/2-std::sqrt((stress(0)-stress(2))*(stress(0)-stress(2))/4+stress(3)*stress(3));
-                double theta = std::atan2(-2*stress(3), (stress(0) - stress(2))) / 2;
+                double sigma3 = (stress(0) + stress(2)) / 2 - radius;
+                double theta = std::atan2(-2 * stress(3), stress(0) - stress(2)) / 2;
 
                 // In our FEM routine, + is tension, - is compression
                 double limit = 0.0;
-                if (g == 4 && (sigma1 > limit || sigma2 > limit || sigma3 > limit))
+                if (g == 4 && (sigma1 > limit || sigma2 > limit || sigma3 > limit)) // only check at center Gaussian point, otherwise the solution will diverge
                     convergence = false;
 
                 double t1 = sigma1 > limit ? sigma1 : 0;
                 double t2 = sigma2 > limit ? sigma2 : 0;
                 double t3 = sigma3 > limit ? sigma3 : 0;
+                // Principal stress -> Polar stress -> Counteract force
                 double sigma_r = (t1 + t3) / 2 + (t1 - t3) * std::cos(2 * theta) / 2;
                 double sigma_t = t2;
                 double sigma_z = (t1 + t3) / 2 - (t1 - t3) * std::cos(2 * theta) / 2;
