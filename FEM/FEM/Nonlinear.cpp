@@ -70,6 +70,7 @@ void Nonlinear::solve()
         // Traverse each element, compute stress at Gaussian points, and update the modulus for the next (i + 1) iteration (if current iteration is i)
         tensionConvergence = noTensionIteration();
         std::cout << "Converge?: " << (tensionConvergence == true ? "Yes" : "No") << std::endl;
+        // Thinking: we can add a check for divergence and stop the no-tension scheme, saying that the mesh/material is not suitable for no-tension modification
     }
     // -------------------------------------------------------------------------
     // ----------------  End of No Tension Iteration Scheme --------------------
@@ -219,17 +220,6 @@ bool Nonlinear::noTensionIteration()
                 tension.col(g) = tensionStress;
 
                 if (i == 107 && g == 1) { // the granular element at centerline
-                    // std::cout << "nodelDisp: " << nodeDisp.transpose() << std::endl;
-                    // std::cout << "Strain: " << strain.transpose() << std::endl;
-                    // std::cout << "E: " << material->EMatrix(modulus_old) << std::endl;
-                    // std::cout << "cylindrical stress: " << stress.transpose() << std::endl;
-                    // std::cout << "principal stress: " << principalStress(stress).transpose() << std::endl;
-                    // std::cout << "theta: " << theta << std::endl;
-                    // std::cout << "sigma3: " << principal(0) << std::endl;
-                    // std::cout << "sigma2: " << principal(1) << std::endl;
-                    // std::cout << "sigma1: " << principal(2) << std::endl;
-                    // std::cout << "stress: " << stress.transpose() << std::endl;
-                    // std::cout << "modulus: " << modulus<<std::endl;
                     for (int mm = 0; mm < numNodes; mm++)
                         std::cout << " NodalForce "<< mm <<": "<< nodalForce(2*nodeList(mm)) <<" "<<nodalForce(2*nodeList(mm)+1) << std::endl;
                 }
