@@ -106,10 +106,10 @@ class Mesh
         /** The boundary values corresponding to the DOF list above */
         std::vector<double> boundaryValue;
 
-        /** A DOF list (see above) of the node with applied load */
+        /** A DOF list (see above) of the node with applied point load */
         std::vector<int> loadNodeList;
 
-        /** The load values at the node */
+        /** The point load values at the node */
         std::vector<double> loadValue;
 
         /** A list of the elements with applied edge load */
@@ -121,7 +121,7 @@ class Mesh
         /** A list of the edge load values for each element above */
         std::vector<std::vector<double> > edgeLoadValue;
 
-        /** The universal body force */
+        /** The universal body force (not used) */
         std::vector<double> bodyForce;
 
     private:

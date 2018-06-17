@@ -75,11 +75,25 @@ class Material
     const Vector2d & bodyForce() const;
 
     /**
+     * Assign the body force to allow incremental loading in nonlinear scheme.
+     *
+     * @param force The incremental body force to be assigned.
+     */
+    void setBodyForce(const Vector2d & force);
+
+    /**
      * Get the thermal strain to be used in the stress computation.
      *
      * @return The thermal strain as a 4-by-1 vector for 2D axisymmetric problem.
      */
     const VectorXd & thermalStrain() const;
+
+    /**
+     * Assign the thermal strain to allow incremental loading in nonlinear scheme.
+     *
+     * @param thermalStrain The incremental thermal strain to be assigned.
+     */
+    void setThermalStrain(const VectorXd & thermalStrain);
 
     /** A sign for material isotropy. 0 if isotropic, 1 if cross-anisotropic. */
     bool anisotropy;

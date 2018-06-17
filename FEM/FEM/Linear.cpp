@@ -20,7 +20,8 @@ Linear::~Linear()
 
 void Linear::solve()
 {
-    assembleStiffnessAndForce();
+    applyForce();
+    assembleStiffness();
     // auto start = std::chrono::high_resolution_clock::now();
     //     assembleStiffnessAndForce();
     // auto finish = std::chrono::high_resolution_clock::now();

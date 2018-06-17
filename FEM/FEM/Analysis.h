@@ -62,19 +62,22 @@ class Analysis
 
         /**
          * Assemble the global stiffness matrix from the local stiffness matrix
-         * of each element.
+         * of each element, meanwhile assemble the force vector with modifications
+         * based on the applied boundary conditons.
          */
-        void assembleStiffnessAndForce();
+        void assembleStiffness();
 
         /**
-         * Apply the load at nodes.
+         * Apply point load and edge load at each node in the global force vector.
+         * The body force and temperature load should be applied element-wise
+         * during the stiffness matrix assembly steps.
          */
         void applyForce();
 
         /**
-         * Designate boundary condition at nodes.
+         * Designate boundary condition at nodes (not used).
          */
-        void boundaryCondition();
+        // void boundaryCondition();
 
         /**
          * Solve the problem using different approaches.

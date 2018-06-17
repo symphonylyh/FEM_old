@@ -9,6 +9,8 @@
 #include "Nonlinear.h"
 #include <cmath>
 #include <iostream>
+#include <algorithm>
+#include <functional>
 
 Nonlinear::Nonlinear(std::string const & fileName) : Analysis(fileName), damping(0.3) // adjustable damping ratio
 {
@@ -20,6 +22,103 @@ Nonlinear::~Nonlinear()
 
 void Nonlinear::solve()
 {
+bool incremental = false;
+if (incremental) {
+// -----------------------------------------------------------------------------
+// --------------- Start of Incremental Loading Scheme -------------------------
+// -----------------------------------------------------------------------------
+
+// Gravity and residual stress increments
+// Idea: for each material, re-assign the body force, residual stress and
+// thermal strain incrementally. At the beginning we should calculate the increments
+int gravityIncrementNum = 5; // Typically five increments for body weight (gravity load) and initial residual stress
+const std::vector<Material*> & materials = mesh.materialList;
+std::vector<Vector2d> gravityIncrement;
+std::vector<VectorXd> thermalIncrement;
+gravityIncrement.reserve(materials.size());
+thermalIncrement.reserve(materials.size());
+
+// Record the total gravity load
+for (auto & m : materials) {
+    gravityIncrement.push_back(m->bodyForce() / gravityIncrementNum);
+    thermalIncrement.push_back(m->thermalStrain() / gravityIncrementNum);
+}
+
+for (int ic = 1; ic <= gravityIncrementNum; ic++) {
+    // Apply the load incrementally
+    for (unsigned m = 0; m < materials.size(); m++) {
+        materials[m]->setBodyForce(gravityIncrement[m] * ic);
+        materials[m]->setThermalStrain(thermalIncrement[m] * ic);
+    }
+
+    // Achieve the modulus and tension convergence at each increment
+    bool nonlinearConvergence = false;
+    int count = 0;
+    while (!nonlinearConvergence) { // convergence criteria
+        // Assemble the K and F based on the mesh information (without applying any
+        // load, this is for body force and temperature load incremental only)
+        assembleStiffness();
+
+        // Solve K U = F
+        SimplicialLDLT <SparseMatrix<double> > solver;
+        solver.compute(globalStiffness);
+        nodalDisp = solver.solve(nodalForce);
+
+        // Traverse each element, compute stress at Gaussian points, and update the modulus for the next (i + 1) iteration (if current iteration is i)
+        nonlinearConvergence = nonlinearIteration();
+
+        count++;
+    }
+    std::cout << "Increment No." << ic << ", Total iterations = " << count << std::endl;
+    std::cout << "-----------------------------------------" << std::endl;
+}
+std::cout << "Material load applied! \n" << std::endl;
+
+// Should note the possible numerical error by dividing the increments, e.g.,
+// x / 5 * 5 might not be exactly the same number
+
+// Traffic load increments (point load and edge load)
+int loadIncrementNum = 10; // Typically ten increments for traffic load
+std::vector<double> pointLoadIncrement = mesh.loadValue;
+std::vector<std::vector<double> > edgeLoadIncrement = mesh.edgeLoadValue;
+std::transform(pointLoadIncrement.begin(), pointLoadIncrement.end(), pointLoadIncrement.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, 1.0 / loadIncrementNum)); // in-place change
+for (auto & e : edgeLoadIncrement)
+    std::transform(e.begin(), e.end(), e.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, 1.0 / loadIncrementNum));
+
+for (int ic = 1; ic <= loadIncrementNum; ic++) {
+    // Apply the load incrementally
+    std::transform(pointLoadIncrement.begin(), pointLoadIncrement.end(), mesh.loadValue.begin(), std::bind(std::multiplies<int>(), std::placeholders::_1, ic));
+    for (unsigned e = 0; e < edgeLoadIncrement.size(); e++)
+        std::transform(edgeLoadIncrement[e].begin(), edgeLoadIncrement[e].end(), (mesh.edgeLoadValue)[e].begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, ic));
+
+    // Achieve the modulus and tension convergence at each increment
+    bool nonlinearConvergence = false;
+    int count = 0;
+    while (!nonlinearConvergence) { // convergence criteria
+        // Assemble the K and F based on the mesh information (with traffic load applied)
+        applyForce();
+        assembleStiffness();
+
+        // Solve K U = F
+        SimplicialLDLT <SparseMatrix<double> > solver;
+        solver.compute(globalStiffness);
+        nodalDisp = solver.solve(nodalForce);
+
+        // Traverse each element, compute stress at Gaussian points, and update the modulus for the next (i + 1) iteration (if current iteration is i)
+        nonlinearConvergence = nonlinearIteration();
+
+        count++;
+    }
+    std::cout << "Increment No." << ic << ", Total iterations = " << count << std::endl;
+    std::cout << "-----------------------------------------" << std::endl;
+}
+std::cout << "Traffic load applied! \n" << std::endl;
+
+// -----------------------------------------------------------------------------
+// ----------------- End of Incremental Loading Scheme -------------------------
+// -----------------------------------------------------------------------------
+}
+else {
     // -------------------------------------------------------------------------
     // --------------- Start of Nonlinear Iteration Scheme ---------------------
     // -------------------------------------------------------------------------
@@ -29,7 +128,8 @@ void Nonlinear::solve()
     //for (int i = 0; i < 10; i++) {
         std::cout << "Nonlinear Iteration No." << i++ << std::endl;
         // Assemble the K and F based on the mesh information. At 1st iteration, the initial guess modulus M0 will be used; later on at iteration i, the stress-dependent modulus updated from (i - 1) iteratiion will be used
-        assembleStiffnessAndForce();
+        //applyForce();
+        assembleStiffness();
 
         // Solve K U = F
         SimplicialLDLT <SparseMatrix<double> > solver;
@@ -75,8 +175,8 @@ void Nonlinear::solve()
     // -------------------------------------------------------------------------
     // ----------------  End of No Tension Iteration Scheme --------------------
     // -------------------------------------------------------------------------
-
-    // After both material nonlinearity and granular no tension scheme converge,
+}
+    // After both material nonlinearity and granular no-tension scheme converge,
     // compute the nodal strain and stress from the final displacment results
     computeStrainAndStress();
     averageStrainAndStress();
@@ -166,8 +266,8 @@ bool Nonlinear::nonlinearIteration()
         }
 
     }
-    std::cout << "Sum Error: " << sumError / sumModulus << std::endl;
-    std::cout << "Modulus Element No.37: " << mesh.elementArray()[1]->modulusAtGaussPt(1) << std::endl;
+    // std::cout << "Sum Error: " << sumError / sumModulus << std::endl;
+    std::cout << "Modulus Element No.1: " << mesh.elementArray()[1]->modulusAtGaussPt(1) << std::endl;
     return (sumError / sumModulus < 0.002 && convergence) ? true : false;
 
 }

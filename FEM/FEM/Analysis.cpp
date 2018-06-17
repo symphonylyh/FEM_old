@@ -30,7 +30,7 @@ Analysis::~Analysis()
 {
 }
 
-void Analysis::assembleStiffnessAndForce()
+void Analysis::assembleStiffness()
 {
     // Reserve the space by estimating the maximum number of non-zero elements
     // in the sparse matrix. This should actually be No. of elements * 2n * 2n
@@ -81,11 +81,7 @@ void Analysis::assembleStiffnessAndForce()
     //     tripletList.push_back(T(i,j,value)); // or emplace_back()
     //     globalStiffness.setFromTriplets(tripletList.begin(), tripletList.end());
     // *Limitation: once initialized, the value cannot be modified
-
-    // Apply point load and edge load. The body force and temperature load should be applied
-    // element-wise as in following steps
     applyForce();
-
     typedef Eigen::Triplet<double> T;
     std::vector<T> tripletList;
     unsigned long int maxNum = mesh.elementCount() * 16 * 16;
@@ -156,7 +152,10 @@ void Analysis::assembleStiffnessAndForce()
             }
 
             // Also assemble the body force and temperature load vector element-wise
-            // meanwhile fix the force value at boundary locations
+            // meanwhile finalize the force value at boundary locations (the point
+            // and edge load are applied in the steps above, so here after we apply the body
+            // force and temperature load, we should finalize the boundary locations
+            // in the global force vector to be boundary value to get 1 x U = U effect
             const VectorXd & forceVec = curr->nodalForce();
             if (boundaryHash.find(2 * nodeList(j)) == boundaryHash.end())
                 nodalForce(2 * nodeList(j)) += forceVec(2 * j);
@@ -171,7 +170,9 @@ void Analysis::assembleStiffnessAndForce()
 
     }
 
-    // Assign the crossing of boundary locations to 1
+    // Assign the crossing of boundary locations to 1, so the corresponding
+    // location in U and F are both assigned the boundary value, we have 1 x U = U
+    // and can always have the exact answer at the boundary node
     for (unsigned i = 0; i < DOFList.size(); i++)
         tripletList.push_back(T(DOFList[i], DOFList[i], 1));
 
@@ -260,6 +261,7 @@ void Analysis::applyForce()
     }
 
 }
+
 
 // Old version of applying boundary conditon (very slow because we are modifying the whole sparse matrix)
 // void Analysis::boundaryCondition()

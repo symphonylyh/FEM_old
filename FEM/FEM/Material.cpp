@@ -42,7 +42,17 @@ const Vector2d & Material::bodyForce() const
     return bodyForce_;
 }
 
+void Material::setBodyForce(const Vector2d & force)
+{
+    bodyForce_ = force;
+}
+
 const VectorXd & Material::thermalStrain() const
 {
     return thermalStrain_;
+}
+
+void Material::setThermalStrain(const VectorXd & thermalStrain)
+{
+    thermalStrain_ = thermalStrain;
 }
