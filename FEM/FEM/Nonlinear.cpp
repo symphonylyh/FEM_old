@@ -10,7 +10,7 @@
 #include <cmath>
 #include <iostream>
 
-Nonlinear::Nonlinear(std::string const & fileName) : Analysis(fileName), damping(0.7) // adjustable damping ratio
+Nonlinear::Nonlinear(std::string const & fileName) : Analysis(fileName), damping(0.3) // adjustable damping ratio
 {
 }
 
@@ -81,6 +81,25 @@ void Nonlinear::solve()
     computeStrainAndStress();
     averageStrainAndStress();
 
+    // Output the axial strain (for triaxial case only)
+    double strain1;
+    strain1 = (mesh.nodeArray()[22]->getDisp()(1) +
+    mesh.nodeArray()[23]->getDisp()(1) +
+    mesh.nodeArray()[24]->getDisp()(1) +
+    mesh.nodeArray()[25]->getDisp()(1) +
+    mesh.nodeArray()[26]->getDisp()(1) +
+    mesh.nodeArray()[27]->getDisp()(1) +
+    mesh.nodeArray()[28]->getDisp()(1) ) / 7;
+    double strain2;
+    strain2 = (mesh.nodeArray()[66]->getDisp()(1) +
+    mesh.nodeArray()[67]->getDisp()(1) +
+    mesh.nodeArray()[68]->getDisp()(1) +
+    mesh.nodeArray()[69]->getDisp()(1) +
+    mesh.nodeArray()[70]->getDisp()(1) +
+    mesh.nodeArray()[71]->getDisp()(1) +
+    mesh.nodeArray()[72]->getDisp()(1) ) / 7;
+    std::cout << "Axial strain (average): " << - (strain1 - strain2) / 6 << std::endl; // "-" is compressive, "+" is tensile, so reverse the sign
+    std::cout << "Axial strain (point): " << - (mesh.nodeArray()[28]->getDisp()(1) - mesh.nodeArray()[72]->getDisp()(1)) / 6 << std::endl;
 }
 
 bool Nonlinear::nonlinearIteration()
@@ -124,10 +143,10 @@ bool Nonlinear::nonlinearIteration()
                 // Convergence criteria
                 // Criteria 1: modulus stabilize within 5% at all Gaussian points (less strict criteria only checks the center Gaussian point)
                 double error = std::abs(modulus - modulus_old);
-                if (g == 4 && error / modulus > 0.05)
+                if (/* g == 4 && */ error / modulus > 0.05)
                     convergence = false;
                 // Criteraia 2: Accumulative modulus error within 0.2%
-                if (g == 4) { // less strict convergence criteria
+                if (/* g == 4 */true) { // less strict convergence criteria
                     sumError += error * error;
                     sumModulus += modulus * modulus;
                 }
@@ -148,7 +167,7 @@ bool Nonlinear::nonlinearIteration()
 
     }
     std::cout << "Sum Error: " << sumError / sumModulus << std::endl;
-    std::cout << "Modulus Element No.37: " << mesh.elementArray()[37]->modulusAtGaussPt(1) << std::endl;
+    std::cout << "Modulus Element No.37: " << mesh.elementArray()[1]->modulusAtGaussPt(1) << std::endl;
     return (sumError / sumModulus < 0.002 && convergence) ? true : false;
 
 }

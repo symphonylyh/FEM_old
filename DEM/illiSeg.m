@@ -1,12 +1,13 @@
-function dimensions = illiSeg(filename)
+function results = illiSeg(filename)
 
 %% Control panel
 close all;
 RESIZE = true;
-PLOT = true; % show procedural figures
+PLOT = false; % show procedural figures
 PRINT = false; % save figures
 BOUNDARY_ENHANCE = true; % enhance boundary information
-    
+HOLE_DETECTION = false; % detect holes on rock surface
+
 %% Image resize
 % avoid having too large image file and long running time
 img = imread(filename);
@@ -142,7 +143,7 @@ if BOUNDARY_ENHANCE
 end
 
 % Binarize the distance map
-bw = ~imbinarize(dist);
+bw = ~imbinarize(dist, 0.2); % old: bw = ~imbinarize(dist);
 bw(shadow) = 0; % can be omitted, this is used to ensure shadow edge is not recognized as objecct boundary
 
 if PLOT
@@ -216,31 +217,30 @@ if PLOT
 end
 
 %% Obtain region properties and geometric features
-[L,N] = bwlabel(bw, 4); % N is the number of regions
-stats = regionprops(L, 'all'); 
+[Label,N] = bwlabel(bw, 4); % N is the number of regions
+stats = regionprops(Label, 'all'); 
 allArea = [stats.Area];
 allBoundingBox = [stats.BoundingBox];
 allDiameter = [stats.EquivDiameter];
 
-if length(allArea) < 2
+if N < 2
     error('Segmentation failed...');
 end
 
 % sort by the region area in descending order to distinguish ball and rock. can also use circular Hough transform to recognize ball 
-[data, index] = sort(allArea, 'descend'); 
-rock = index(1);
-ball = index(2);
-ballArea = allArea(ball);
-ballDiameter = allDiameter(ball);
+[~, index] = sort(allArea, 'descend'); 
+rockIdx = index(1);
+ballIdx = index(2);
+rockArea = allArea(rockIdx);
+ballArea = allArea(ballIdx);
+ballDiameter = allDiameter(ballIdx);
 
 % Get the mask of each object
-rockMask = ismember(L, rock);
-ballMask = ismember(L, ball);
+rockMask = ismember(Label, rockIdx);
+ballMask = ismember(Label, ballIdx);
 
-rockCrop = imcrop(rockMask,allBoundingBox(4*(rock-1)+1:4*(rock-1)+4));
-ballCrop = imcrop(ballMask,allBoundingBox(4*(ball-1)+1:4*(ball-1)+4));
-
-dimensions = [allBoundingBox(4*(rock-1)+3:4*(rock-1)+4); ballDiameter 0]; % width and height values of rock and the equivalent diameter of ball
+rockCrop = imcrop(rockMask,allBoundingBox(4*(rockIdx-1)+1:4*(rockIdx-1)+4));
+ballCrop = imcrop(ballMask,allBoundingBox(4*(ballIdx-1)+1:4*(ballIdx-1)+4));
 
 % Get the perimeter of each object and burn it onto the raw image
 mark = img;
@@ -270,6 +270,33 @@ if PLOT
         print('final result.png', '-r300', '-dpng');
     end
 end
+
+if HOLE_DETECTION
+    % Detect surface holes for volume correction
+    % Ref: https://www.mathworks.com/help/images/examples/marker-controlled-watershed-segmentation.html
+    [h, w] = size(rockCrop);
+    radius = min(ceil(0.01 * h), ceil(0.01 * w));
+    se = strel('disk', radius);
+
+    rockMask = imerode(rockMask, strel('disk', 5 * sigma)); % avoid touching the boundary
+    rock = L;
+    rock(~rockMask) = 1; % Or: rock = bsxfun(@times, L, cast(rockMask, 'like', L)); % extract the rock object from L channel image
+    rock = imcomplement(rock); % negative the image to highlight the area of hole shadows
+    rock = histeq(rock); % contrast enhancement via histogram equalization
+    surface_erode = imerode(rock, se); % erosion is essentially a local-minima convolution kernal, it assign the minimum pixel in the window to the center pixel. Dilation is local-maxima opeartor. This is true for both grayscale and binary image. 
+    surface_reconstruct = imreconstruct(surface_erode, rock); % image reconstruction is like given a seed location, and dilate many times until it is similar to the target, imreconstruct(seed, target). usually seed is got by erosion (by focusing on the highlight part), and target is usually just the original image. The result is a smoothed/denoised shape-preserving image.
+    surface_dilate = imdilate(surface_reconstruct, se);
+    surface_reconstruct = imreconstruct(imcomplement(surface_dilate), imcomplement(surface_reconstruct)); % imreconstruct works on light pixels, so should use complement image
+    surface_reconstruct = imcomplement(surface_reconstruct);
+    holes = surface_reconstruct == 1; % Or: holes = imregionalmax(surface_reconstruct);
+    holes = bwareaopen(holes, ceil(h/100) * ceil(w/100));
+    holeArea = sum(holes(:));
+%     rgb(holes) = 1;
+%     imshowpair(rgb, rock, 'montage');
+    holeRatio = holeArea / rockArea;
+end
+holeRatio = 1;
+results = [holeRatio; ballDiameter]; % hole ratio of the particle & equivalent diameter of calibration ball
 
 end % end of function
 

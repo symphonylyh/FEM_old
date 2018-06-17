@@ -1,8 +1,10 @@
 close all;
-PLOT = false;
+PLOT = true;
 BOUNDARY_ENHANCE = true; % enhance boundary information
 
-img = imread('img0006_1.JPG');
+% img = imread('img0006_1.JPG');
+img = imread('image.jpg');
+
 
 [h,w,d] = size(img);
 sigma = floor(max(h,w) / 500); 
@@ -15,10 +17,6 @@ rgb = imguidedfilter(img, 'NeighborhoodSize', 2 * sigma + 1);
 L = mat2gray(L);
 a = mat2gray(a);
 b = mat2gray(b);
-% make a copy
-L_raw = L;
-a_raw = a;
-b_raw = b;
 
 if PLOT
 fig = 1;
@@ -63,9 +61,9 @@ if BOUNDARY_ENHANCE
     
     % Overlap the boundary information from multiple channels
     % boundary = aMag+bMag; % @note: previous version by adding. Not reasonable because a and b could cancel instead of complementing each other
-    boundary = max(aMag,bMag);  
-    boundary = imguidedfilter(boundary, 'NeighborhoodSize', 2 * sigma + 1); % this step is important! Guided filter is powerful...it's like double-enhancing the boundary
-    boundaryMask = imbinarize(boundary);
+    rock = max(aMag,bMag);  
+    rock = imguidedfilter(rock, 'NeighborhoodSize', 2 * sigma + 1); % this step is important! Guided filter is powerful...it's like double-enhancing the boundary
+    boundaryMask = imbinarize(rock);
         
     % Enhance the boundary pixels in the distance map 
     dist(boundaryMask) = 0; 
@@ -73,7 +71,7 @@ if BOUNDARY_ENHANCE
     if PLOT
     figure(fig); fig = fig + 1;
     [ha, pos] = tight_subplot(1,2,[.01 .01],[.01 .01],[.01 .01]);
-    axes(ha(1)), imshow(boundary), title('Object Boundary');
+    axes(ha(1)), imshow(rock), title('Object Boundary');
     axes(ha(2)), imshow(boundaryMask), title('Boundary Mask');
     end
 end
@@ -95,63 +93,58 @@ figure(fig); fig = fig + 1;
 imshow(bw), title('Boundary Mask');
 end
 
-[L,N] = bwlabel(bw, 4); % N is the number of regions
-stats = regionprops(L, 'all'); 
+[Label,N] = bwlabel(bw, 4); % N is the number of regions
+stats = regionprops(Label, 'all'); 
 allArea = [stats.Area];
 allBoundingBox = [stats.BoundingBox];
 allDiameter = [stats.EquivDiameter];
 
 % sort by the region area in descending order to distinguish ball and rock. can also use circular Hough transform to recognize ball 
 [data, index] = sort(allArea, 'descend'); 
-rock = index(1);
-ball = index(2);
-rockArea = allArea(rock);
-ballArea = allArea(ball);
-ballDiameter = allDiameter(ball);
+rockIdx = index(1);
+ballIdx = index(2);
+rockArea = allArea(rockIdx);
+ballArea = allArea(ballIdx);
+ballDiameter = allDiameter(ballIdx);
 
 % Get the mask of each object
-rockMask = ismember(L, rock);
-ballMask = ismember(L, ball);
+rockMask = ismember(Label, rockIdx);
+ballMask = ismember(Label, ballIdx);
 
-rockCrop = imcrop(rockMask,allBoundingBox(4*(rock-1)+1:4*(rock-1)+4));
-ballCrop = imcrop(ballMask,allBoundingBox(4*(ball-1)+1:4*(ball-1)+4));
+rockCrop = imcrop(rockMask,allBoundingBox(4*(rockIdx-1)+1:4*(rockIdx-1)+4));
+ballCrop = imcrop(ballMask,allBoundingBox(4*(ballIdx-1)+1:4*(ballIdx-1)+4));
 
-[h, w] = size(rockCrop);
 
-% rockMask = imerode(rockMask, strel('disk', 5));
-[LMag, LDir] = imgradient(L_raw);
-[aMag, aDir] = imgradient(a_raw);
-[bMag, bDir] = imgradient(b_raw);
-LMag = imguidedfilter(LMag, 'NeighborhoodSize', 2 * sigma + 1); 
-aMag = imguidedfilter(aMag, 'NeighborhoodSize', 2 * sigma + 1); 
-bMag = imguidedfilter(bMag, 'NeighborhoodSize', 2 * sigma + 1); 
-% boundary = imbinarize(LMag) | imbinarize(aMag) | imbinarize(bMag);  
-% boundary = bsxfun(@times, boundary, cast(rockMask, 'like', boundary)); % extract the object from original image
-boundary = bsxfun(@times, img, cast(rockMask, 'like', img)); % extract the object from original image
-boundary = rgb2gray(boundary);
-
-%% Detect surface ridge lines for volume correction
+%% Detect surface holes for volume correction
 % https://www.mathworks.com/help/images/examples/marker-controlled-watershed-segmentation.html
-rockMask = imerode(rockMask, strel('disk', 2 * sigma));
-surface = bsxfun(@times, imcomplement(boundary), cast(rockMask, 'like', boundary));
-radius = min(floor(0.06 * h), floor(0.06 * w));
-se = strel('disk', floor(radius / 2));
-surface_erode = imerode(surface, se); % erosion is essentially a local-minima convolution kernal, it assign the minimum pixel in the window to the center pixel. Dilation is local-maxima opeartor. This is true for both grayscale and binary image. 
-imshow(surface_erode);
-surface_reconstruct = imreconstruct(surface_erode, surface, 8); % image reconstruction is like given a seed location, and dilate many times until it is similar to the target, imreconstruct(seed, target). usually seed is got by erosion (by focusing on the highlight part), and target is usually just the original image. The result is a smoothed/denoised shape-preserving image.
+[h, w] = size(rockCrop);
+radius = min(ceil(0.01 * h), ceil(0.01 * w));
+se = strel('disk', radius);
+
+rockMask = imerode(rockMask, strel('disk', 5 * sigma)); % avoid touching the boundary
+rock = L;
+rock(~rockMask) = 1; % Or: rock = bsxfun(@times, L, cast(rockMask, 'like', L)); % extract the rock object from L channel image
+rock = imcomplement(rock); % negative the image to highlight the area of hole shadows
+rock = histeq(rock); % contrast enhancement via histogram equalization
+% rock(rock >= 0.8) = 1;
+% rock(rock <= 0.2) = 0;
+% imshowpair(rock, rock_, 'montage');
+surface_erode = imerode(rock, se); % erosion is essentially a local-minima convolution kernal, it assign the minimum pixel in the window to the center pixel. Dilation is local-maxima opeartor. This is true for both grayscale and binary image. 
+surface_reconstruct = imreconstruct(surface_erode, rock); % image reconstruction is like given a seed location, and dilate many times until it is similar to the target, imreconstruct(seed, target). usually seed is got by erosion (by focusing on the highlight part), and target is usually just the original image. The result is a smoothed/denoised shape-preserving image.
 surface_dilate = imdilate(surface_reconstruct, se);
 surface_reconstruct = imreconstruct(imcomplement(surface_dilate), imcomplement(surface_reconstruct)); % imreconstruct works on light pixels, so should use complement image
 surface_reconstruct = imcomplement(surface_reconstruct);
-partition = imregionalmax(surface_reconstruct);
-partition = rockMask & partition;
-% partition = imfill(partition, 4, 'holes');
+holes = surface_reconstruct == 1; % Or: holes = imregionalmax(surface_reconstruct);
+holes = bwareaopen(holes, ceil(h/100) * ceil(w/100));
+imshow(holes);
+holeArea = sum(holes(:));
+rgb(holes) = 1;
+imshowpair(rgb, rock, 'montage');
+holeRatio = holeArea / rockArea;
 
-img(partition) = 1;
-figure;
-imshowpair(partition, img, 'montage');
-[L,N] = bwlabel(partition, 4); % N is the number of regions
+[Label,N] = bwlabel(holes, 4); % N is the number of regions
 if N > 0
-stats = regionprops(L, 'Area'); 
+stats = regionprops(Label, 'Area'); 
 partitionArea = [stats.Area];
 [data, index] = sort(partitionArea, 'descend'); 
 plane = partitionArea(index(1));
@@ -161,11 +154,11 @@ else
     arrisRatio = 0;
 end
 % totalArrisRatio = 1 - (arrisRatio1 * Area1 + arrisRatio2 * Area2 + arrisRatio3 * Area3) / (Area1 + Area2 + Area3);
-bd = edge(partition, 'canny');
+bd = edge(holes, 'canny');
 rockMask = imerode(rockMask, strel('disk', radius));
 bd = bsxfun(@times, bd, cast(rockMask, 'like', bd));
 figure(1);
-imshowpair(boundary, bd, 'montage');
+imshowpair(rock, bd, 'montage');
 
 [H,T,R] = hough(bd,'RhoResolution',2,'Theta',-90:1:89.5);
 % Pick orientations with highest vote.

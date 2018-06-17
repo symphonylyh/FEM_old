@@ -119,9 +119,9 @@ int main() {
     //--------------------------------Main program------------------------------
     //--------------------------------------------------------------------------
     // Get file name
-    std::string inFileName = "../Input/input_889_3layer_nonlinear.txt";
+    std::string inFileName = "../Input/input_wo_bc_ya.txt";
     std::string outFileName = "../Output/output_889_3layer_nonlinear.txt";
-    std::string outVTKName = "../Output/output_889_3layer_nonlinear.vtk";
+    std::string outVTKName = "../Output/output_wo_bc_ya.vtk";
     //
     // std::cout << "Enter the input file name: ";
     // std::string inFileName;

@@ -2,7 +2,7 @@
 
 %% Control panel
 SEGMENT = false;
-RESIZE = true;
+RESIZE = ~SEGMENT;
 
 %% Read image folder
 % Specify the working folder and get all image files in it
@@ -46,15 +46,16 @@ if SEGMENT
         end
         summary(2*(object-1)+1:2*(object-1)+2, :) = results;
         % summary compiles particle information of all the segmented images
-        % Columns are the bounding box dimensions of the rock particle
-        % expressed in x-y/width-height, three views stacked following the
-        % top-front-side sequence:
-        % width0(x) height0(y) width1(x) height1(y) width2(x) height2(y) 
-        % Rows are interleaved as rock-ball pair for one set of photos:
-        % set1_rock
-        % set1_ball
-        % set2_rock
-        % set2_ball
+        % Columns are the hole ratios of the rock particle and the
+        % equivalent diameters of the calibration ball, interleaved following
+        % top-front-side sequence. Rows are interleaved as rock-ball pair.
+        % Example:
+        % ratio1_top ratio1_front ratio1_side ---- rock1
+        % diamt1_top diamt1_front diamt1_side ---- ball1
+        % ratio2_top ratio2_front ratio2_side ---- rock2
+        % diamt2_top diamt2_front diamt2_side ---- ball2
+        % ratio3_top ratio3_front ratio3_side ---- rock3
+        % diamt3_top diamt3_front diamt3_side ---- ball3
         % ...
     end
     % Save the summary info to disk
@@ -72,16 +73,23 @@ if RESIZE
     % Calculate the benchmarked dimensions (x,y,z) from the least squares 
     % solution of the linear system
     for i = 1 : nums
+    %i = 15;
+        D = []; % diameters of calibration ball
+        R = []; % hole ratios of rock
         for j = 1 : 3
             rocks{j} = imread(fullfile(inFolderName, 'Segmentation/', strcat('timg', sprintf('%04d', i), '_', num2str(j - 1), '_rock.png')));
             balls{j} = imread(fullfile(inFolderName, 'Segmentation/', strcat('timg', sprintf('%04d', i), '_', num2str(j - 1), '_ball.png')));
-            D(j) = info(2 * i, 2 * j - 1);
-            D(j) = min(size(balls{j}));
+            D(j) = info(2 * i, j);
+            %D(j) = min(size(balls{j}));
+            R(j) = info(2 * i - 1, j);
         end
         rockVoxel = reconstruct3D(rocks, D);
+        %holeRatio = 1 - mean(R);
+        holeRatio = 1 / (5 * mean(R));
+        %rockVoxel = rockVoxel * holeRatio;
         [ballVoxel, sphericity] = reconstruct3D(balls, D);
-        % rockVolume = rockVoxel / (4 / 3 * 3.1415926 * (D(1)/2)^3) * 0.523599 * 16.3871;
-        rockVolume = rockVoxel / ballVoxel * 8 * (2 - sqrt(2)) * 0.5^3 * 16.3871; % the orthogonal intersection volume of a sphere
+%         rockVolume = rockVoxel / (4 / 3 * 3.1415926 * (D(1)/2)^3) * 0.523599 * 16.3871;
+        rockVolume =  0.8 * rockVoxel / ballVoxel * 8 * (2 - sqrt(2)) * 0.5^3 * 16.3871; % the orthogonal intersection volume of a sphere
         % rockVolume = rockVoxel / ballVoxel * 0.523599 * 16.3871; % calibration ball is V = 4/3 * PI * R3 = 0.523599 in3; 1 in3 = 16.3871 cm3
         rockWeight = rockVolume * 2.65; % typically rock density 2.65g/cm3
         volumes(i, 1) = rockVolume;
@@ -96,12 +104,14 @@ if RESIZE
     % weights(:, 2) = [3214.9; 2487.7; 2463.9; 2955.1; 2235.8; 1712.5]; % new measure
     % volumes(:, 2) = [1254.8; 916.4; 947.8; 1149.6; 871.7; 636.3]; % submerge measure
     % weights(:, 2) = [2235.8; 2235.8; 2235.8; 2235.8; 2235.8; 2235.8; 2487.7; 2487.7; 2487.7; 2487.7; 2487.7; 2487.7; 2955.1; 2955.1; 2955.1; 2955.1; 2955.1; 2955.1];
-    volumes(:, 2) = [871.7; 871.7; 871.7; 871.7; 871.7; 871.7; 916.4; 916.4; 916.4; 916.4; 916.4; 916.4; 1149.6; 1149.6; 1149.6; 1149.6; 1149.6; 1149.6];
+    volumes(:, 2) = [871.7; 871.7; 871.7; 871.7; 871.7; 871.7; 916.4;916.4; 916.4; 916.4; 916.4; 916.4; 1149.6; 1149.6; 1149.6; 1149.6;1149.6; 1149.6]; % May 30th
+    %volumes(:, 2) = [636.3;636.3;636.3;636.3;636.3;636.3;947.8;947.8;947.8;947.8;947.8;947.8;1254.8;1254.8;1254.8;1254.8;1254.8;1254.8]; % June 6th
     error = (volumes(:,1) - volumes(:,2)) ./ volumes(:,2) * 100; % percentage
     % error = (weights(:,1) - weights(:,2)) ./ weights(:,2) * 100;
     figure; hold on;
     % plot(weights(:,2), weights(:,1), '*r'), xlim([0 4000]), ylim([0 4000]);
     plot(volumes(:,2), volumes(:,1), '*r'), xlim([0 2000]), ylim([0 2000]);
+    text(volumes(:,2), volumes(:,1)- 500, num2str([1:18]'));
     % average
 %     plot(volumes(1,2), mean(volumes(1:6,1)), 'ob');
 %     plot(volumes(7,2), mean(volumes(7:12,1)), 'ob');
@@ -116,6 +126,7 @@ if RESIZE
     plot(rangeLine, rangeLine - percent10Error, '--b', 'LineWidth', 1);
     plot(rangeLine, rangeLine - percent20Error, '--g', 'LineWidth', 1);
     legend('Data points', 'Reference Line', '10% Eror', '20% Error', 'Location', 'NorthWest');
+    saveas(gcf, './plot1.png');
     % Create output folder for the resized particle image
     outFolderName = strcat(inFolderName, 'Resizing/');
     if ~exist(outFolderName, 'dir')
