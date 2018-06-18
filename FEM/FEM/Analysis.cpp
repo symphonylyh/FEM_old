@@ -81,7 +81,7 @@ void Analysis::assembleStiffness()
     //     tripletList.push_back(T(i,j,value)); // or emplace_back()
     //     globalStiffness.setFromTriplets(tripletList.begin(), tripletList.end());
     // *Limitation: once initialized, the value cannot be modified
-    applyForce();
+
     typedef Eigen::Triplet<double> T;
     std::vector<T> tripletList;
     unsigned long int maxNum = mesh.elementCount() * 16 * 16;

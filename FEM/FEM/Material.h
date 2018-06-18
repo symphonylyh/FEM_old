@@ -106,7 +106,7 @@ class Material
 
   protected:
 
-    /** The Young's/Resilient modulus. */
+    /** The Young's/Resilient modulus. Will be assigned in derived class for both linear and nonlinear (the initial guess Modulus) materials */
     double modulus_;
 
     /** The 4-by-4 stress-strain constitutive matrix sigma = E * e */

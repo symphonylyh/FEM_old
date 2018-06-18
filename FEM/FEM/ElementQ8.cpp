@@ -20,7 +20,7 @@ ElementQ8::ElementQ8()
 ElementQ8::ElementQ8(const int & index, const std::vector<int> & nodeList, Node** const meshNode, Material* const material)
     : Element(index, nodeList, meshNode, material) // call the constructor of base class in the initializer list!
 {
-    modulusAtGaussPt = VectorXd::Constant(statics.shape->gaussianPt().size(), material_->modulus()); // 9 x 1 vector
+    modulusAtGaussPt = VectorXd::Constant(statics.shape->gaussianPt().size(), material_->modulus()); // 9 x 1 vector, the length depends on element type, so can only be initialized in derived class
 }
 
 ElementQ8::~ElementQ8()

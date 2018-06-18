@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <functional>
 
-Nonlinear::Nonlinear(std::string const & fileName) : Analysis(fileName), damping(0.3) // adjustable damping ratio
+Nonlinear::Nonlinear(std::string const & fileName) : Analysis(fileName)/*, damping(0.3)*/ // adjustable damping ratio
 {
 }
 
@@ -22,7 +22,7 @@ Nonlinear::~Nonlinear()
 
 void Nonlinear::solve()
 {
-bool incremental = false;
+bool incremental = true;
 if (incremental) {
 // -----------------------------------------------------------------------------
 // --------------- Start of Incremental Loading Scheme -------------------------
@@ -31,6 +31,8 @@ if (incremental) {
 // Gravity and residual stress increments
 // Idea: for each material, re-assign the body force, residual stress and
 // thermal strain incrementally. At the beginning we should calculate the increments
+// A good observation: with gravity load only, the stress is independent with the modulus,
+// so any arbitrary initial guess of the modulus won't affect the stress-dependent modulus.
 int gravityIncrementNum = 5; // Typically five increments for body weight (gravity load) and initial residual stress
 const std::vector<Material*> & materials = mesh.materialList;
 std::vector<Vector2d> gravityIncrement;
@@ -57,6 +59,11 @@ for (int ic = 1; ic <= gravityIncrementNum; ic++) {
     while (!nonlinearConvergence) { // convergence criteria
         // Assemble the K and F based on the mesh information (without applying any
         // load, this is for body force and temperature load incremental only)
+        // @BUG(solved) Normally applyForce() will initialize the global force vector
+        // and assembleStiffness() below will always do += for nodal force. But
+        // in the body force increments, applyForce() is not called, therefore we
+        // need to manually reset the nodalForce otherwise it will keeps accumulating.
+        nodalForce = VectorXd::Zero(2 * mesh.nodeCount());
         assembleStiffness();
 
         // Solve K U = F
@@ -65,11 +72,18 @@ for (int ic = 1; ic <= gravityIncrementNum; ic++) {
         nodalDisp = solver.solve(nodalForce);
 
         // Traverse each element, compute stress at Gaussian points, and update the modulus for the next (i + 1) iteration (if current iteration is i)
-        nonlinearConvergence = nonlinearIteration();
+        nonlinearConvergence = nonlinearIteration(1.0);
 
         count++;
     }
-    std::cout << "Increment No." << ic << ", Total iterations = " << count << std::endl;
+
+    std::cout << "Body Force Increment No." << ic << ", Total iterations = " << count << std::endl;
+    // std::cout << "Nodal Displacement: ";
+    // std::cout << std::endl;
+    // for (int i = 0; i < mesh.nodeCount(); i++) {
+    //   std::cout << "Node " << i << " : " << nodalDisp(2 * i) << " " << nodalDisp(2 * i + 1) << std::endl;
+    // }
+    // std::cout << std::endl;
     std::cout << "-----------------------------------------" << std::endl;
 }
 std::cout << "Material load applied! \n" << std::endl;
@@ -105,11 +119,19 @@ for (int ic = 1; ic <= loadIncrementNum; ic++) {
         nodalDisp = solver.solve(nodalForce);
 
         // Traverse each element, compute stress at Gaussian points, and update the modulus for the next (i + 1) iteration (if current iteration is i)
-        nonlinearConvergence = nonlinearIteration();
+        nonlinearConvergence = nonlinearIteration(0.3);
 
         count++;
     }
-    std::cout << "Increment No." << ic << ", Total iterations = " << count << std::endl;
+    // For the exit iteration, the new converged modulus is updated, but the nodalDisp
+    // is for the last iteration, so we should do one more solve to match the modulus & displacment
+    applyForce();
+    assembleStiffness();
+    SimplicialLDLT <SparseMatrix<double> > solver;
+    solver.compute(globalStiffness);
+    nodalDisp = solver.solve(nodalForce);
+
+    std::cout << "Traffic Load Increment No." << ic << ", Total iterations = " << count << std::endl;
     std::cout << "-----------------------------------------" << std::endl;
 }
 std::cout << "Traffic load applied! \n" << std::endl;
@@ -128,7 +150,7 @@ else {
     //for (int i = 0; i < 10; i++) {
         std::cout << "Nonlinear Iteration No." << i++ << std::endl;
         // Assemble the K and F based on the mesh information. At 1st iteration, the initial guess modulus M0 will be used; later on at iteration i, the stress-dependent modulus updated from (i - 1) iteratiion will be used
-        //applyForce();
+        applyForce();
         assembleStiffness();
 
         // Solve K U = F
@@ -137,7 +159,7 @@ else {
         nodalDisp = solver.solve(nodalForce);
 
         // Traverse each element, compute stress at Gaussian points, and update the modulus for the next (i + 1) iteration (if current iteration is i)
-        nonlinearConvergence = nonlinearIteration();
+        nonlinearConvergence = nonlinearIteration(0.3);
     }
     // After convergence is achieved at the last iteration, the solved displacment
     // is stored in the protected member of Analysis class -- nodalDisp. And
@@ -200,9 +222,11 @@ else {
     mesh.nodeArray()[72]->getDisp()(1) ) / 7;
     std::cout << "Axial strain (average): " << - (strain1 - strain2) / 6 << std::endl; // "-" is compressive, "+" is tensile, so reverse the sign
     std::cout << "Axial strain (point): " << - (mesh.nodeArray()[28]->getDisp()(1) - mesh.nodeArray()[72]->getDisp()(1)) / 6 << std::endl;
+    std::cout << "Displacement (upper clamp): " << mesh.nodeArray()[28]->getDisp()(1) << std::endl;
+    std::cout << "Displacement (lower clamp): " << mesh.nodeArray()[72]->getDisp()(1) << std::endl;
 }
 
-bool Nonlinear::nonlinearIteration()
+bool Nonlinear::nonlinearIteration(double damping)
 {
     bool convergence = true;
     double sumError = 0;
@@ -229,29 +253,47 @@ bool Nonlinear::nonlinearIteration()
             // Step 1: Compute stress at gaussian points based on cached M & E from last iteration
             // Step 2: Update new modulus based on the stress from step 1 and mix with old modulus via damping ratio
             // Step 3: Cache the modulus to be used in the next iteration
-            for (int g = 0; g < numGaussianPt; g++) {
-                MatrixXd B = curr->BMatrix(curr->shape()->gaussianPt(g));
-                VectorXd strain = B * nodeDisp; // e = B * u
-                double modulus_old = (curr->modulusAtGaussPt)(g); // M_(i-1)
-                VectorXd stress = material->EMatrix(modulus_old) * (strain - curr->thermalStrain()); // sigma = E_(i-1) * (e - e0), note that the M and E are both from previous iteration
+            // Note: Tutu's approach only use the center Gaussian point for the whole element, as follows
+            MatrixXd B = curr->BMatrix(curr->shape()->gaussianPt(4));
+            VectorXd strain = B * nodeDisp; // e = B * u
+            double modulus_old = (curr->modulusAtGaussPt)(4); // M_(i-1)
+            VectorXd stress = material->EMatrix(modulus_old) * (strain - curr->thermalStrain()); // sigma = E_(i-1) * (e - e0), note that the M and E are both from previous iteration
+            // if (i == 23) {
+            //     std::cout << "NodeDisp: " << nodeDisp << std::endl;
+            //     std::cout << "B: " << B.transpose() << std::endl;
+            //     std::cout << "strain: " << strain.transpose() << std::endl;
+            //     std::cout << "M_old: " << modulus_old << std::endl;
+            //     std::cout << "E: " << material->EMatrix(modulus_old) << std::endl;
+            // }
+            // if (i == 23)
+                // std::cout << "stress: " << stress.transpose() << std::endl;
+            double modulus_new = material->stressDependentModulus(principalStress(stress)); // M_i
+            double modulus = (1 - damping) * modulus_old + damping * modulus_new; // true M_i after applying damping ratio
 
-                double modulus_new = material->stressDependentModulus(principalStress(stress)); // M_i
-                double modulus = (1 - damping) * modulus_old + damping * modulus_new; // true M_i after applying damping ratio
+            for (int g = 0; g < numGaussianPt; g++) {
+                // More strict approach
+                // MatrixXd B = curr->BMatrix(curr->shape()->gaussianPt(g));
+                // VectorXd strain = B * nodeDisp; // e = B * u
+                // double modulus_old = (curr->modulusAtGaussPt)(g); // M_(i-1)
+                // VectorXd stress = material->EMatrix(modulus_old) * (strain - curr->thermalStrain()); // sigma = E_(i-1) * (e - e0), note that the M and E are both from previous iteration
+
+                // double modulus_new = material->stressDependentModulus(principalStress(stress)); // M_i
+                // double modulus = (1 - damping) * modulus_old + damping * modulus_new; // true M_i after applying damping ratio
 
                 (curr->modulusAtGaussPt)(g) = modulus;
 
                 // Convergence criteria
                 // Criteria 1: modulus stabilize within 5% at all Gaussian points (less strict criteria only checks the center Gaussian point)
                 double error = std::abs(modulus - modulus_old);
-                if (/* g == 4 && */ error / modulus > 0.05)
+                if (/*g == 4 && */error / modulus_old > 0.05) // tutu uses modulus_old, but I want to use modulus
                     convergence = false;
                 // Criteraia 2: Accumulative modulus error within 0.2%
-                if (/* g == 4 */true) { // less strict convergence criteria
+                if (/*g == 4*/true) { // less strict convergence criteria
                     sumError += error * error;
-                    sumModulus += modulus * modulus;
+                    sumModulus += modulus_old * modulus_old; // tutu uses modulus_old, but I want to use modulus
                 }
                 // For Debug Use
-                if (i == 37 && g == 1) { // the granular element at centerline
+                if (i == 1 && g == 4) { // the granular element at centerline
                     // std::cout << "nodelDisp: " << nodeDisp.transpose() << std::endl;
                     // std::cout << "Strain: " << strain.transpose() << std::endl;
                     // std::cout << "E: " << material->EMatrix(modulus_old) << std::endl;
@@ -266,8 +308,8 @@ bool Nonlinear::nonlinearIteration()
         }
 
     }
-    // std::cout << "Sum Error: " << sumError / sumModulus << std::endl;
-    std::cout << "Modulus Element No.1: " << mesh.elementArray()[1]->modulusAtGaussPt(1) << std::endl;
+    std::cout << "Sum Error: " << sumError / sumModulus << std::endl;
+    //std::cout << "Modulus Element No.1: " << mesh.elementArray()[1]->modulusAtGaussPt(1) << std::endl;
     return (sumError / sumModulus < 0.002 && convergence) ? true : false;
 
 }
@@ -357,10 +399,21 @@ bool Nonlinear::noTensionIteration()
 
 VectorXd Nonlinear::principalStress(const VectorXd & stress) const
 {
-    MatrixXd tensor(3,3);
-    tensor << stress(0), 0, stress(3),
-              0, stress(1), 0,
-              stress(3), 0, stress(2);
-    SelfAdjointEigenSolver<MatrixXd> es(tensor, EigenvaluesOnly);
-    return es.eigenvalues();
+    // MatrixXd tensor(3,3);
+    // tensor << stress(0), 0, stress(3),
+    //           0, stress(1), 0,
+    //           stress(3), 0, stress(2);
+    // SelfAdjointEigenSolver<MatrixXd> es(tensor, EigenvaluesOnly);
+    // return es.eigenvalues();
+
+    // Tutu's approach
+    VectorXd result(3);
+    double radius = std::sqrt( (stress(0) - stress(2)) * (stress(0) - stress(2)) / 4 + stress(3) * stress(3) ); // sqrt{ [(s1 - s3)/2]^2 + tau^2 }
+    double sigma1 = (stress(0) + stress(2)) / 2 + radius;
+    double sigma2 = stress(1);
+    double sigma3 = (stress(0) + stress(2)) / 2 - radius;
+    if (sigma2 < sigma3)
+        std::swap(sigma2, sigma3);
+    result << sigma3, sigma2, sigma1;
+    return result;
 }

@@ -119,9 +119,9 @@ int main() {
     //--------------------------------Main program------------------------------
     //--------------------------------------------------------------------------
     // Get file name
-    std::string inFileName = "../Input/input_wo_bc_ya.txt";
+    std::string inFileName = "../Input/input_triaxial.txt";
     std::string outFileName = "../Output/output_889_3layer_nonlinear.txt";
-    std::string outVTKName = "../Output/output_wo_bc_ya.vtk";
+    std::string outVTKName = "../Output/input_triaxial.vtk";
     //
     // std::cout << "Enter the input file name: ";
     // std::string inFileName;
@@ -142,7 +142,7 @@ auto start = std::chrono::high_resolution_clock::now();
     // case1->printStrain();
     // case1->printStress();
     // case1->writeToFile(outFileName);
-    case1->writeToVTK(outVTKName);
+    // case1->writeToVTK(outVTKName);
 
     delete case1; case1 = NULL;
 

@@ -34,7 +34,7 @@ class Nonlinear : public Analysis
      *
      * @return A boolean value incidating the convergence status at this iteration.
      */
-    bool nonlinearIteration();
+    bool nonlinearIteration(double damping);
 
     /**
      * Compute unbalanced tension stresses at Gaussian points, and update the nodal force vector for next iterations.
@@ -52,7 +52,7 @@ class Nonlinear : public Analysis
     VectorXd principalStress(const VectorXd & stress) const;
 
     /** Damping ratio selected in the nonlinear iteration scheme. */
-    double damping;
+    // double damping;
 
 };
 
