@@ -3,7 +3,7 @@ PLOT = true;
 BOUNDARY_ENHANCE = true; % enhance boundary information
 
 % img = imread('img0006_1.JPG');
-img = imread('image.jpg');
+img = imread('ball.jpg');
 
 
 [h,w,d] = size(img);
@@ -43,9 +43,9 @@ B = Bvalues(Bpeaks(10));
 dist = abs((a - A)/5).^2 + abs((b - B)/2).^2; % normalize w.r.t. the different ranges in a & b space % this approach is still problematic, can also try: max(abs((a - A)/5).^2, abs((b - B)/2).^2)
 dist = mat2gray(dist); % scale to [0,1]
 
+
 if PLOT
-figure(fig); fig = fig + 1;
-imshow(dist), title('Distance Map, Original');
+    dist_plot = dist;
 end
 
 if BOUNDARY_ENHANCE
@@ -73,11 +73,24 @@ if BOUNDARY_ENHANCE
     [ha, pos] = tight_subplot(1,2,[.01 .01],[.01 .01],[.01 .01]);
     axes(ha(1)), imshow(rock), title('Object Boundary');
     axes(ha(2)), imshow(boundaryMask), title('Boundary Mask');
+    
+    figure(fig); fig = fig + 1;
+    [ha, pos] = tight_subplot(1,2,[.01 .01],[.01 .01],[.01 .01]);
+    axes(ha(1)), imshow(dist_plot), title('Distance Map, Original');
+    axes(ha(2)), imshow(dist), title('Distance Map, Boundary Enhanced');
     end
 end
 
+% Multi-level thresholding (using Otsu's method) to segment the rock and calibration ball
+% respectively
+level = multithresh(dist, 2);
+segment_label = imquantize(dist, level);
+coloring = label2rgb(segment_label);
+figure(fig); fig = fig + 1;
+imshow(coloring);
+
 % Binarize the distance map
-bw = ~imbinarize(dist);
+bw = ~imbinarize(dist); % bw = ~imbinarize(dist, 0.2);
 bw(shadow) = 0; % can be omitted, this is used to ensure shadow edge is not recognized as objecct boundary
 
 % Morphological operations on binary image
