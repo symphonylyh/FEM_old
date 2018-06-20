@@ -39,7 +39,7 @@ if (incremental) {
 // thermal strain incrementally. At the beginning we should calculate the increments
 // A good observation: with gravity load only, the stress is independent with the modulus,
 // so any arbitrary initial guess of the modulus won't affect the stress-dependent modulus.
-int gravityIncrementNum = 5; // Typically five increments for body weight (gravity load) and initial residual stress
+int gravityIncrementNum = 1; // Typically five increments for body weight (gravity load) and initial residual stress
 const std::vector<Material*> & materials = mesh.materialList;
 std::vector<Vector2d> gravityIncrement;
 std::vector<VectorXd> thermalIncrement;
@@ -98,7 +98,7 @@ std::cout << "Material load applied! \n" << std::endl;
 // x / 5 * 5 might not be exactly the same number
 
 // Traffic load increments (point load and edge load)
-int loadIncrementNum = 10; // Typically ten increments for traffic load
+int loadIncrementNum = 1; // Typically ten increments for traffic load
 std::vector<double> pointLoadIncrement = mesh.loadValue;
 std::vector<std::vector<double> > edgeLoadIncrement = mesh.edgeLoadValue;
 std::transform(pointLoadIncrement.begin(), pointLoadIncrement.end(), pointLoadIncrement.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, 1.0 / loadIncrementNum)); // in-place change
