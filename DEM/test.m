@@ -46,6 +46,8 @@ dist = mat2gray(dist); % scale to [0,1]
 
 if PLOT
     dist_plot = dist;
+    a_plot = a;
+    b_plot = b;
 end
 
 if BOUNDARY_ENHANCE
@@ -69,6 +71,16 @@ if BOUNDARY_ENHANCE
     dist(boundaryMask) = 0; 
     
     if PLOT
+    figure(fig); fig = fig + 1;
+    subplot(2,3,1), imshow(a_plot), title('a Channel');
+    subplot(2,3,2), bar(Avalues, Acounts), title('Pixel histogram of a channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Pixel Count', 'FontSize', 10);
+    subplot(2,3,3), plot(Avalues, Adistribution, '-r'), y1 = get(gca, 'ylim'); hold on, plot([A A], y1, '--b'), title('Pixel cdf of a channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Cumulative sum', 'FontSize', 10);
+
+    subplot(2,3,4), imshow(b_plot), title('b Channel');
+    subplot(2,3,5), bar(Bvalues, Bcounts), title('Pixel histogram of b channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Pixel Count', 'FontSize', 10);  
+    subplot(2,3,6), plot(Bvalues, Bdistribution, '-r'), y2 = get(gca, 'ylim'); hold on, plot([B B], y2, '--b'), title('Pixel cdf of b channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Cumulative sum', 'FontSize', 10);
+    tightfig;
+    
     figure(fig); fig = fig + 1;
     [ha, pos] = tight_subplot(1,2,[.01 .01],[.01 .01],[.01 .01]);
     axes(ha(1)), imshow(rock), title('Object Boundary');
