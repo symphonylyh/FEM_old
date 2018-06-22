@@ -2,27 +2,13 @@ function results = illiSeg(filename)
 
 %% Control panel
 close all;
-RESIZE = true;
 PLOT = false; % show procedural figures
 PRINT = false; % save figures
 BOUNDARY_ENHANCE = true; % enhance boundary information
 HOLE_DETECTION = false; % detect holes on rock surface
 
-%% Image resize
-% avoid having too large image file and long running time
-img = imread(filename);
-
-% set a default dimension of 1024
-if RESIZE
-    [h,w,d] = size(img);
-    if h > w
-        img = imresize(img, [1024 NaN]);
-    else
-        img = imresize(img, [NaN 1024]);
-    end
-end
-
 %% Filter the image to remove noises
+img = imread(filename);
 [h,w,d] = size(img);
 sigma = floor(max(h,w) / 500); % estimate filter size based on image size
 % rgb = imgaussfilt(img, sigma); % @note: not as good as guided filter
@@ -248,7 +234,8 @@ rockBoundary = bwperim(rockMask, 4);
 ballBoundary = bwperim(ballMask, 4);
 mark = imoverlay(mark, rockBoundary, 'red');
 mark = imoverlay(mark, ballBoundary, 'yellow');
-[path, name, extension] = fileparts(filename);
+[path, name, extension] = fileparts(filename); % path is to "Compressed folder"
+path = erase(path, '/Compressed');
 imwrite(mark, fullfile(path, 'Segmentation/', strcat(name, '.png')));
 imwrite(rockCrop, fullfile(path, 'Segmentation/', strcat('t', name, '_rock', '.png')));
 imwrite(ballCrop, fullfile(path, 'Segmentation/', strcat('t', name, '_ball', '.png')));

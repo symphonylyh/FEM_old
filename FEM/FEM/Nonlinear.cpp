@@ -28,6 +28,8 @@ void Nonlinear::solve()
 // 3. Whether to do incremental loading, and how many increments
 // 4. A strict (check every individual Gaussian) or loose (check only at center) convergence criteria, also to use different modulus for every Gaussian or for every element
 // 5. Convergence criteria to compare with old modulus or new modulus
+// no increment, all Gaussian but only check convergence at center, 0.3 damping, no final run --> 2.57e-4 result
+
 bool incremental = true;
 if (incremental) {
 // -----------------------------------------------------------------------------
@@ -39,7 +41,7 @@ if (incremental) {
 // thermal strain incrementally. At the beginning we should calculate the increments
 // A good observation: with gravity load only, the stress is independent with the modulus,
 // so any arbitrary initial guess of the modulus won't affect the stress-dependent modulus.
-int gravityIncrementNum = 1; // Typically five increments for body weight (gravity load) and initial residual stress
+int gravityIncrementNum = 5; // Typically five increments for body weight (gravity load) and initial residual stress
 const std::vector<Material*> & materials = mesh.materialList;
 std::vector<Vector2d> gravityIncrement;
 std::vector<VectorXd> thermalIncrement;
@@ -78,10 +80,16 @@ for (int ic = 1; ic <= gravityIncrementNum; ic++) {
         nodalDisp = solver.solve(nodalForce);
 
         // Traverse each element, compute stress at Gaussian points, and update the modulus for the next (i + 1) iteration (if current iteration is i)
-        nonlinearConvergence = nonlinearIteration(1.0);
+        nonlinearConvergence = nonlinearIteration(0.3);
 
         count++;
     }
+    // Final run
+    applyForce();
+    assembleStiffness();
+    SimplicialLDLT <SparseMatrix<double> > solver;
+    solver.compute(globalStiffness);
+    nodalDisp = solver.solve(nodalForce);
 
     std::cout << "Body Force Increment No." << ic << ", Total iterations = " << count << std::endl;
     // std::cout << "Nodal Displacement: ";
@@ -98,7 +106,7 @@ std::cout << "Material load applied! \n" << std::endl;
 // x / 5 * 5 might not be exactly the same number
 
 // Traffic load increments (point load and edge load)
-int loadIncrementNum = 1; // Typically ten increments for traffic load
+int loadIncrementNum = 5; // Typically ten increments for traffic load
 std::vector<double> pointLoadIncrement = mesh.loadValue;
 std::vector<std::vector<double> > edgeLoadIncrement = mesh.edgeLoadValue;
 std::transform(pointLoadIncrement.begin(), pointLoadIncrement.end(), pointLoadIncrement.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, 1.0 / loadIncrementNum)); // in-place change
@@ -167,11 +175,11 @@ else {
         // Traverse each element, compute stress at Gaussian points, and update the modulus for the next (i + 1) iteration (if current iteration is i)
         nonlinearConvergence = nonlinearIteration(0.3);
     }
-    // applyForce();
-    // assembleStiffness();
-    // SimplicialLDLT <SparseMatrix<double> > solver1;
-    // solver1.compute(globalStiffness);
-    // nodalDisp = solver1.solve(nodalForce);
+    applyForce();
+    assembleStiffness();
+    SimplicialLDLT <SparseMatrix<double> > solver1;
+    solver1.compute(globalStiffness);
+    nodalDisp = solver1.solve(nodalForce);
     // After convergence is achieved at the last iteration, the solved displacment
     // is stored in the protected member of Analysis class -- nodalDisp. And
     // globalStiffness & nodalForce are also pre-cached. K, U, F are all knowns
@@ -265,37 +273,37 @@ bool Nonlinear::nonlinearIteration(double damping)
             // Step 2: Update new modulus based on the stress from step 1 and mix with old modulus via damping ratio
             // Step 3: Cache the modulus to be used in the next iteration
             // Note: Tutu's approach only use the center Gaussian point for the whole element, as follows
-            MatrixXd B = curr->BMatrix(curr->shape()->gaussianPt(4));
-            VectorXd strain = B * nodeDisp; // e = B * u
-            double modulus_old = (curr->modulusAtGaussPt)(4); // M_(i-1)
-            VectorXd stress = material->EMatrix(modulus_old) * (strain - curr->thermalStrain()); // sigma = E_(i-1) * (e - e0), note that the M and E are both from previous iteration
-            double modulus_new = material->stressDependentModulus(principalStress(stress)); // M_i
-            double modulus = (1 - damping) * modulus_old + damping * modulus_new; // true M_i after applying damping ratio
+            // MatrixXd B = curr->BMatrix(curr->shape()->gaussianPt(4));
+            // VectorXd strain = B * nodeDisp; // e = B * u
+            // double modulus_old = (curr->modulusAtGaussPt)(4); // M_(i-1)
+            // VectorXd stress = material->EMatrix(modulus_old) * (strain - curr->thermalStrain()); // sigma = E_(i-1) * (e - e0), note that the M and E are both from previous iteration
+            // double modulus_new = material->stressDependentModulus(principalStress(stress)); // M_i
+            // double modulus = (1 - damping) * modulus_old + damping * modulus_new; // true M_i after applying damping ratio
 
             for (int g = 0; g < numGaussianPt; g++) {
                 // More strict approach
-                // MatrixXd B = curr->BMatrix(curr->shape()->gaussianPt(g));
-                // VectorXd strain = B * nodeDisp; // e = B * u
-                // double modulus_old = (curr->modulusAtGaussPt)(g); // M_(i-1)
-                // VectorXd stress = material->EMatrix(modulus_old) * (strain - curr->thermalStrain()); // sigma = E_(i-1) * (e - e0), note that the M and E are both from previous iteration
-                // // tension modification
-                // // VectorXd principal = principalStress(stress);
-                // // for (int x = 0; x < 3; x++) {
-                // //     if (principal(x) > 0) principal(x) = 0;
-                // // }
-                // // double modulus_new = material->stressDependentModulus(principal);
-                // double modulus_new = material->stressDependentModulus(principalStress(stress)); // M_i
-                // double modulus = (1 - damping) * modulus_old + damping * modulus_new; // true M_i after applying damping ratio
+                MatrixXd B = curr->BMatrix(curr->shape()->gaussianPt(g));
+                VectorXd strain = B * nodeDisp; // e = B * u
+                double modulus_old = (curr->modulusAtGaussPt)(g); // M_(i-1)
+                VectorXd stress = material->EMatrix(modulus_old) * (strain - curr->thermalStrain()); // sigma = E_(i-1) * (e - e0), note that the M and E are both from previous iteration
+                // tension modification
+                // VectorXd principal = principalStress(stress);
+                // for (int x = 0; x < 3; x++) {
+                //     if (principal(x) > 0) principal(x) = 0;
+                // }
+                // double modulus_new = material->stressDependentModulus(principal);
+                double modulus_new = material->stressDependentModulus(principalStress(stress)); // M_i
+                double modulus = (1 - damping) * modulus_old + damping * modulus_new; // true M_i after applying damping ratio
 
                 (curr->modulusAtGaussPt)(g) = modulus;
 
                 // Convergence criteria
                 // Criteria 1: modulus stabilize within 5% at all Gaussian points (less strict criteria only checks the center Gaussian point)
-                double error = std::abs(modulus - modulus_old);
-                if (g == 4 && error / modulus_old > 0.05) // tutu uses modulus_old, but I want to use modulus
+                double error = std::abs(modulus - modulus_new);
+                if (/*g == 4 && */error / modulus_old > 0.05) // tutu uses modulus_old, but I want to use modulus
                     convergence = false;
                 // Criteraia 2: Accumulative modulus error within 0.2%
-                if (g == 4) { // less strict convergence criteria
+                if (/*g == 4*/true) { // less strict convergence criteria
                     sumError += error * error;
                     sumModulus += modulus_old * modulus_old; // tutu uses modulus_old, but I want to use modulus
                 }

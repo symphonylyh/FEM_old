@@ -7,8 +7,8 @@
 % 
 
 %% Control panel
-READ = false; COMPRESS = true; compress_size = 1024;
-SEGMENT = true;
+READ = true; COMPRESS = true; compress_size = 1024;
+SEGMENT = false;
 RECONSTRUCT = false;
 
 % User define folder name here
@@ -56,9 +56,9 @@ if READ
             % Fix a default dimension of 1024
             [h,w,d] = size(img);
             if h > w
-                img = imresize(img, [compress_size NaN]);
+                img = imresize(img, [1024 NaN]);
             else
-                img = imresize(img, [NaN compress_size]);
+                img = imresize(img, [NaN 1024]);
             end
 
             % Save compressed image

@@ -1,8 +1,8 @@
 ***********************************************************************
 *
-*                     FINITE ELEMENT ANALYSIS      
-*  
-*          OF ANISOTROPIC LAYERED NONLINEAR ELASTIC SYSTEMS 
+*                     FINITE ELEMENT ANALYSIS
+*
+*          OF ANISOTROPIC LAYERED NONLINEAR ELASTIC SYSTEMS
 *
 *                              USING
 *
@@ -17,7 +17,7 @@
 *
 ************************************************************************
 *	THIS PROGRAM SOLVES FOR THE NODAL DISPLACEMENTS AND STRESSES
-*	OF AN AXISYMMETRIC 8-NODE QUADRILATERAL ELEMENT UNDER THE 
+*	OF AN AXISYMMETRIC 8-NODE QUADRILATERAL ELEMENT UNDER THE
 *	LOADINGS OF TEMPERATURE FORCES, BODY FORCES, AND EDGE FORCES.
 *	THIS PROGRAM USES THE POLAR COORDINATES; R, THETA, Z.
 ************************************************************************
@@ -74,8 +74,8 @@
 *	IEDGE( ) : ELEMENT NUMBER ARRAY WITH EDGE LOAD
 *	IJ( )	 : BOOKKEEPING ARRAY FOR ADSTIF SUBROUTINE
 *       IMAX( )  : NODE NUMBER WITH MAXIMUM STRESSES
-*       IMIN( )  : NODE NUMBER WITH MINIMUM STRESSES  
-*	INTELM( ): INTERFACE ELEMENTS @ THE CENTERLINE     
+*       IMIN( )  : NODE NUMBER WITH MINIMUM STRESSES
+*	INTELM( ): INTERFACE ELEMENTS @ THE CENTERLINE
 * 	ISOT( )	 : INDICATOR FOR ISOTROPY/ANISOTROPY ('0' OR '1')
 *       ITEMP	 : TEMPERATURE LOAD INDICATOR ('1' OR '0')
 *	ITER	 : ITERATION COUNTER FOR NONLINEAR ANALYSIS
@@ -130,7 +130,7 @@
 *       RET      : DERIVATIVE OF R WITH RESPECT TO ETA
 *	RI(,)	 : TEMPORARY ARRAY FOR READING IN CONCENTRATED LOADS
 *	RINIT	 : INITIAL R-COORDINATES OF THE FIRST NODAL POINT
-*	RR	 : RADIUS USED IN INTEGRATION OF ELEMENT STIFFNESS 
+*	RR	 : RADIUS USED IN INTEGRATION OF ELEMENT STIFFNESS
 *	RRS      : RADIUS USED IN INTEGRATION OF ELEMENT EDGE LOADS
 *	RQ(,)	 : ASSOCIATES R COORDINATES WITH ELEMENTS
 *	RXI	 : DERIVATIVE OF R WITH RESPECT TO XI
@@ -150,7 +150,7 @@
 *	SRES(,)  : RESIDUAL STRESSES EXISTING ON THE LAYER
 *	SPLAY( ) : LAYER SPACING USED IN ELEMENT MESH
 *	ST(,)	 : GLOBAL ASSEMBLED BANDED STIFFNESS MATRIX
-*       STRAIN(,): STRAIN VALUES AT THE NODES OF ELEMENTS 
+*       STRAIN(,): STRAIN VALUES AT THE NODES OF ELEMENTS
 *       TENMOD	 : HORIZONTAL TENSION MODIFICATION COEFF. IN BASE LAYER
 *	U( )	 : USED TO PICK UP DISPLACEMENTS FOR NODES OF ELEMENTS
 *	WGT( )	 : WEIGHT FACTORS FOR INTEGRATION POINTS
@@ -166,15 +166,15 @@
      +           P(2800), ST(2800,400), SIGMA(4,1400), STRAIN(4,1400),
      +           PLACE(3),WGT(3),NEL(400),NPT(1400),AVGSTR(4,1400),
      +           AVGSIG(4,1400),ICONT(1400),ICON(1400),IMAX(4),IMIN(4),
-     +           SIGMAX(4),SIGMIN(4),NDT(1400), DT(1400), EQR0(8,400), 
-     +           EQTH0(8,400),EQZ0(8,400),E0(4,400),IEDGE(400),U(2800), 
+     +           SIGMAX(4),SIGMIN(4),NDT(1400), DT(1400), EQR0(8,400),
+     +           EQTH0(8,400),EQZ0(8,400),E0(4,400),IEDGE(400),U(2800),
      +           ELOAD(8,400), PES(16), INTELM(20),MATID(400),LJOI(1400)
      +		 ,SIGNL1(9,400),SIGNL2(9,400),SIGNL3(9,400),BFR(10),
      +           BFZ(10),ELD(8,400), SRES(4,400),SR(4,400),
      +           SIGNL(4,9,400),STRNL(4,9,400),ANGLENL(9,400),
      +           GRQ(9,400),GZQ(9,400)
 ************************************************************************
-      COMMON /CV/  L1,L2,NBAND,NTPTS                  
+      COMMON /CV/  L1,L2,NBAND,NTPTS
       COMMON /PROP/ISOT(10),EM(10),PR(10),E2(10),G2(10),PR1(10),PR2(10),
      +            RATION(10),RATIOM(10),ALPHA(10),BODYFR(10),BODYFZ(10),
      +		  LAYNAME(10)
@@ -185,7 +185,7 @@
      +              G2EL(9,400),PR2EL(400),RNEL(9,400),RMEL(9,400)
       COMMON /NLIN/ NICBF,NICEL,ITER,ITLAST,ITER2,BLAMBDA,SLAMBDA,
      +              ITLAST2,TENMOD
-      COMMON /NLIN2/ MOD,CK1,CK2,CK4,CK6,CK7,CK8,CA,CB            
+      COMMON /NLIN2/ MOD,CK1,CK2,CK4,CK6,CK7,CK8,CA,CB
 ************************************************************************
       DOUBLE PRECISION PLACE,WGT,DETJAC,S,PE,P,ST,U,B,EN,SIGMA,AVGSIG,
      +		       SIGMAX,SIGMIN,PES,STRAIN,AVGSTR,SIGNL1,SIGNL2,
@@ -195,19 +195,19 @@
       DATA PLACE/-0.774596669241483,0.,0.774596669241483/
       DATA WGT/0.555555555555555,0.888888888888888,0.555555555555555/
 ************************************************************************
-***********************************************************************	
-*-----    N1 = MAX TOTAL NUM OF ELEMENTS                               
-*-----    L1 = MAX TOTAL NUM OF DEGREES OF FREEDOM OF THE SYSTEM        
-*-----    L2 = MAX HALF BAND WIDTH OF THE SYSTEM                        
-*-----    L3 = MAX TOTAL ELEMENT DEGREES OF FREEDOM                     
+***********************************************************************
+*-----    N1 = MAX TOTAL NUM OF ELEMENTS
+*-----    L1 = MAX TOTAL NUM OF DEGREES OF FREEDOM OF THE SYSTEM
+*-----    L2 = MAX HALF BAND WIDTH OF THE SYSTEM
+*-----    L3 = MAX TOTAL ELEMENT DEGREES OF FREEDOM
 *-----    L4 = MAX TOTAL NUM OF NODES
 ***********************************************************************
-      N1 = 400                                                           
-      L1 = 2800                                                          
-      L2 = 200                                                         
+      N1 = 400
+      L1 = 2800
+      L2 = 200
       L3 = 16
-      L4 = 1400                                                           
-      NDFRE = 2                                                        
+      L4 = 1400
+      NDFRE = 2
       NGAUSS= 3
       NODES = 8
 ***********************************************************************
@@ -219,8 +219,8 @@
       READ(*,2000)OUTPUT
       WRITE(*,1750)
  1750 FORMAT(1X, 'PLOT FILE NAME (.DAT) ==>')
-      READ(*,2000)PREPLOT 
- 2000 FORMAT(A80)		
+      READ(*,2000)PREPLOT
+ 2000 FORMAT(A80)
       OPEN(5,FILE=INPUT, ACCESS='SEQUENTIAL', STATUS='OLD')
       OPEN(8,FILE=OUTPUT, ACCESS='SEQUENTIAL', STATUS='NEW')
       OPEN(7,FILE=PREPLOT, ACCESS='SEQUENTIAL', STATUS='NEW')
@@ -228,10 +228,10 @@
 *	 OUTPUT FILE DESIGN (Formats..)
 ***********************************************************************
     1 FORMAT(1H1)
-   50 FORMAT(///,40H     COMPUTED NODAL POINT DISPLACEMENTS,  ,//,      
+   50 FORMAT(///,40H     COMPUTED NODAL POINT DISPLACEMENTS,  ,//,
      +           5X,'NODE',4X,'R-COORD',3X,'Z-COORD',
      +              4X,'R-DIRECTION',3X,'Z-DIRECTION',//)
-   51 FORMAT(3X,I5,4X,F8.3,3X,F8.3,4X,E10.3,4X,E10.3)                        
+   51 FORMAT(3X,I5,4X,F8.3,3X,F8.3,4X,E10.3,4X,E10.3)
    52 FORMAT(//,2X,'AVERAGE STRAINS :',//,2X,'JOINT',2X,
      +       'NUMBER OF ELEMENTS',5X,' EPS R ',6X,' EPS TH ',8X,
      +       ' EPS Z ',8X,'GAMMA RZ',7X,'R-COORD',4X,'Z-COORD',
@@ -263,7 +263,7 @@
    78 FORMAT(4X,I3,5X,4(E13.7,2X))
    79 FORMAT(//,2X,'STRAINS @ CENTER OF THE ELEMENTS:',///,2X,
      +        'ELEMENT',6X,' EPS R ',8X,' EPS TH ',7X,' EPS Z ',
-     +        7X,' EPS RZ',/)    
+     +        7X,' EPS RZ',/)
    80 FORMAT(4X,I3,5X,4(E13.7,2X))
 ***********************************************************************
 *	CALL INOUT FOR GENERAL INPUT & OUTPUT INFORMATION
@@ -272,7 +272,7 @@
      +           NDT,DT,EQR0,EQTH0,EQZ0,IEDGE,ELOAD,NLPTS,
      +           NUMEL,NUPTS,NUBPTS,NN,INTELM,MATID,NINTEL,
      +           NUMMAT,NEDGE,SRES)
-***********************************************************************  
+***********************************************************************
       ITER=1
       ITLAST=0
       ITER2=0
@@ -303,9 +303,9 @@
         DO 94 J=1, 8
 	  ELD(J,LL)=0.
    94   CONTINUE
-   92 CONTINUE	  	
+   92 CONTINUE
 *----------------------------------------------------------------------
-*		NON-LINEAR INCREMENTS & ITERATIONS !..   
+*		NON-LINEAR INCREMENTS & ITERATIONS !..
 *----------------------------------------------------------------------
 *	CONTINUE TO INCREMENT LOADS & ITERATIONS FROM THIS POINT!...
 *----------------------------------------------------------------------
@@ -316,11 +316,11 @@
       CALL NONLIN(BFR,BFZ,ELD,NUMMAT,NEDGE,ELOAD,IEDGE,NUMEL,
      +                  MATID,SIGNL1,SIGNL2,SIGNL3,SIGNL,SRES,SR)
       IF(ITLAST.EQ.ITER) GO TO 375
-      IF(ITLAST2.EQ.ITER2) GO TO 375       
+      IF(ITLAST2.EQ.ITER2) GO TO 375
 *----------------------------------------------------------------------
 *		END OF NON-LINEAR CALCULATIONS !...
 *----------------------------------------------------------------------
-*      
+*
 *------------------------------------------------------------
 *	INITIALIZE THE CONSTITUTIVE RELATION  MATRIX [E] !..
 *------------------------------------------------------------
@@ -332,14 +332,14 @@
   247 CONTINUE
 *-------------------------------------------------
 *	INITIALIZE [P] AND [ST] MATRICES...
-*-------------------------------------------------  
-      DO  240  J = 1, L1                                                
+*-------------------------------------------------
+      DO  240  J = 1, L1
         P(J)=0.
-        DO  240  I = 1, L2                                                
+        DO  240  I = 1, L2
           ST(J,I) = 0.0
-  240 CONTINUE                                                          
+  240 CONTINUE
 *------------------------------
-*       START THE ELEMENT LOOP	
+*       START THE ELEMENT LOOP
 *------------------------------
       DO 250 LL=1, NUMEL
 ***********************************************************************
@@ -348,7 +348,7 @@
         CALL QUADSTF(LL,RQ,ZQ,S,PE,PLACE,WGT,DETJAC,E0,
      +		     EQR0,EQTH0,EQZ0,PES,ELD,BFR,BFZ,MATID,SR)
 ************************************************************************
-*	 CALL ADSTIF TO ADD THE ELEMENT STIFFNESS MATRIX [S] TO THE 
+*	 CALL ADSTIF TO ADD THE ELEMENT STIFFNESS MATRIX [S] TO THE
 *	 PROPER LOCATIONS OF THE TOTAL BANDED STIFFNESS MATRIX [ST]...
 ************************************************************************
 	CALL ADSTIF(LL,S,ST,IJ,P,PE,KQ,NN)
@@ -359,77 +359,77 @@
 *-----------------------------------------------------------------------
       PPR=0.
       PPZ=0.
-      DO  350  J = 1, NLPTS                                             
+      DO  350  J = 1, NLPTS
 	DO  373  K = 1, NDFRE
 	  RI(J,K)=2.*(3.141592654)*RI(J,K)
-  373   CONTINUE    
-        DO  374  K = 1, NDFRE                                            
-          I = NDFRE*(LJOI(J)-1) + K                                            
-          P(I) = P(I) + RI(J,K)                                               
-  374   CONTINUE                                                          
+  373   CONTINUE
+        DO  374  K = 1, NDFRE
+          I = NDFRE*(LJOI(J)-1) + K
+          P(I) = P(I) + RI(J,K)
+  374   CONTINUE
 *------ TOTAL APPLIED CONCENTRATED LOADS...
 	PPR= PPR+RI(J,1)
 	PPZ= PPZ+RI(J,2)
-  350 CONTINUE	  
+  350 CONTINUE
   351 CONTINUE
 ************************************************************************
-*	 CALL BC TO MODIFY THE STIFFNESS MATRIX [ST] AND THE LOAD 
+*	 CALL BC TO MODIFY THE STIFFNESS MATRIX [ST] AND THE LOAD
 *	 VECTOR (P) FOR THE SPECIFIED DISPLACEMENTS...
 ************************************************************************
-      DO  370  N = 1, NUBPTS                                            
-      DO  360  K = 2, NFP1                                              
-      IF ( IBD(N,K) .EQ. 0 )       GO TO 360                            
-      NEQ = NDFRE*(IBD(N,1)-1) + K - 1                                  
+      DO  370  N = 1, NUBPTS
+      DO  360  K = 2, NFP1
+      IF ( IBD(N,K) .EQ. 0 )       GO TO 360
+      NEQ = NDFRE*(IBD(N,1)-1) + K - 1
       VALUE = BVAL(N,K-1)
 ************************************************************************
       CALL BC (ST,P,NEQ,VALUE)
 ************************************************************************
 *------
-  360 CONTINUE                                                        
-  370 CONTINUE                                                         
-*------  
-************************************************************************  
+  360 CONTINUE
+  370 CONTINUE
+*------
+************************************************************************
 *	 CALL BANEL TO TRIANGULARIZE THE BANDED AND SYMMETRIC COEFFICIENT
 *	 MATRIX (only the upper half band portion of the coefficient
 *	 matrix is stored as a rectangular array...)
-************************************************************************  
-      CALL BANEL (ST)                             
+************************************************************************
+      CALL BANEL (ST)
 ************************************************************************
 *	 CALL BANSOL TO MULTIPLY THE INVERSE OF LEFT TRIANGULAR FORM WITH
 *	 THE RIGHT HAND SIDE VECTOR, AND THEN SOLVES FOR THE UNKNOWNS BY
 *	 BACK SUBSTITUTION PROCESS ( only the upper half band portion of
 *	 the coefficient matrix is stored as a rectangular array...)
 ************************************************************************
-      CALL BANSOL (ST,P,P)                        
+      CALL BANSOL (ST,P,P)
 ************************************************************************
   375 CONTINUE
-*                                                                    
-*------ OUTPUT COMPUTED DISPLACEMENTS                               
-*       
-      if(iter2.eq.itlast2.and.iter.ne.itlast) then                 
+*
+*------ OUTPUT COMPUTED DISPLACEMENTS
+*
+      if(iter2.eq.itlast2.and.iter.ne.itlast) then
         write(8,*)' '
-        write(8,*)' iteration no: ',iter                                      
-        WRITE(8,1)                                           
-        WRITE(8,50)                                           
-        DO 400 I=1, NUPTS                                             
-          II = NDFRE*I - NDFRE + 1                                          
-          JJ = NDFRE*I                                                      
-          WRITE(8,51) I, R(I), Z(I), (P(K), K = II, JJ)        
-  400   CONTINUE                                                          
-        go to 95 
-      end if 
-      if(iter.eq.itlast) then                 
+        write(8,*)' iteration no: ',iter
+        WRITE(8,1)
+        WRITE(8,50)
+        DO 400 I=1, NUPTS
+          II = NDFRE*I - NDFRE + 1
+          JJ = NDFRE*I
+          WRITE(8,51) I, R(I), Z(I), (P(K), K = II, JJ)
+  400   CONTINUE
+        go to 95
+      end if
+      if(iter.eq.itlast) then
         write(8,*)' '
-        write(8,*)' iteration no: ',iter                                      
-        WRITE(8,1)                                           
-        WRITE(8,50)                                           
-        DO 401 I=1, NUPTS                                             
-          II = NDFRE*I - NDFRE + 1                                          
-          JJ = NDFRE*I                                                      
-          WRITE(8,51) I, R(I), Z(I), (P(K), K = II, JJ)        
-  401   CONTINUE                                                          
-      end if       
-***********************************************************************      
+        write(8,*)' iteration no: ',iter
+        WRITE(8,1)
+        WRITE(8,50)
+        DO 401 I=1, NUPTS
+          II = NDFRE*I - NDFRE + 1
+          JJ = NDFRE*I
+          WRITE(8,51) I, R(I), Z(I), (P(K), K = II, JJ)
+  401   CONTINUE
+      end if
+***********************************************************************
 *-------- AVERAGING STRESSES & STRAINS !..
       DO 405 I=1, NUPTS
         ICON(I)= 0
@@ -437,16 +437,16 @@
         DO 405 J=1, 4
           AVGSIG(J,I)= 0.
 	  AVGSTR(J,I)= 0.
-  405 CONTINUE    
+  405 CONTINUE
       DO 410 LL=1, NUMEL
 ************************************************************************
 *      CALL STRESS SUBROUTINE TO COMPUTE AND OUTPUT STRESSES!..
-************************************************************************      
+************************************************************************
         CALL STRESS (LL,P,KQ,RQ,ZQ,SIGMA,U,STRAIN,AVGSIG,AVGSTR,
      +               INTELM,ICONT,ICON,E0,EQR0,EQTH0,EQZ0,MATID,
      +               NINTEL,NUMEL,SIGNL1,SIGNL2,SIGNL3,SR,
      +               SIGNL,STRNL,ANGLENL,PLACE)
-***********************************************************************     
+***********************************************************************
   410 CONTINUE
 *----------------------------------------------------------------------
 *			NON-LINEAR ITERATIONS
@@ -456,7 +456,7 @@
 	ITER2=ITER2+1
         GO TO 95
       END IF
-*------------------ END OF NON-LINEAR ITERATIONS ----------------------     
+*------------------ END OF NON-LINEAR ITERATIONS ----------------------
 *
 *----------------------------------------------------------------------
 *       CALCULATE STRESSES AND STRAINS @ GAUSS POINTS!..
@@ -464,7 +464,7 @@
       DO 381 LL=1, NUMEL
         DX=ABS(RQ(2,LL)-RQ(1,LL))
         DY=ABS(ZQ(4,LL)-ZQ(1,LL))
-        DIST=0.774596669241483 
+        DIST=0.774596669241483
         GRQ(1,LL)=RQ(1,LL)+((1-DIST)*DX/2.)
         GRQ(2,LL)=GRQ(1,LL)
         GRQ(3,LL)=GRQ(1,LL)
@@ -487,17 +487,17 @@
           SIGNL(1,I,LL)= SIGNL(1,I,LL)
           SIGNL(2,I,LL)= SIGNL(2,I,LL)
           SIGNL(3,I,LL)= SIGNL(3,I,LL)
-          SIGNL(4,I,LL)= SIGNL(4,I,LL)     
-  398   CONTINUE 
+          SIGNL(4,I,LL)= SIGNL(4,I,LL)
+  398   CONTINUE
   381 CONTINUE
       DO 383 LL=1, NUMEL
         DO 399 I=1, 9
           STRNL(1,I,LL)= STRNL(1,I,LL)
           STRNL(2,I,LL)= STRNL(2,I,LL)
           STRNL(3,I,LL)= STRNL(3,I,LL)
-          STRNL(4,I,LL)= STRNL(4,I,LL)  
-  399 CONTINUE 
-  383 CONTINUE  
+          STRNL(4,I,LL)= STRNL(4,I,LL)
+  399 CONTINUE
+  383 CONTINUE
 *
 *-----------------------------------------------------------------------
 *	PRINT STRESSES & STRAINS @ THE CENTER OF EACH ELEMENT !..
@@ -514,15 +514,15 @@
       WRITE(8,79)
       DO 413 LL=1, NUMEL
         WRITE(8,80)LL,(STRNL(K,5,LL),K=1,4)
-  413 CONTINUE	
+  413 CONTINUE
 *-------------------------------------------
-*      PRINT AVERAGE STRAINS AND STRESSES...	    
+*      PRINT AVERAGE STRAINS AND STRESSES...
 *-------------------------------------------
       WRITE(8,52)
       DO 414 I=1, NUPTS
         DO 415 N=1,4
 	  AVGSTR(N,I)= (AVGSTR(N,I)/ICONT(I))
-  415   CONTINUE	
+  415   CONTINUE
         WRITE(8,60) I, ICONT(I), (AVGSTR(M,I),M=1,4), R(I), Z(I)
   414 CONTINUE
       WRITE(8,55)
@@ -533,11 +533,11 @@
         WRITE(8,60) I, ICONT(I), (AVGSIG(M,I),M=1,4), R(I), Z(I)
   420 CONTINUE
 *---------------------------------------------------------
-*      CALCULATE AND PRINT MAXIMUM AND MINIMUM STRESSES...  
+*      CALCULATE AND PRINT MAXIMUM AND MINIMUM STRESSES...
 *---------------------------------------------------------
       DO 440 N=1,4
         SIGMIN(N)= AVGSIG(N,1)
-        SIGMAX(N)= AVGSIG(N,1)  
+        SIGMAX(N)= AVGSIG(N,1)
         IMIN(N)= 1
         IMAX(N)= 1
   440 CONTINUE
@@ -553,9 +553,9 @@
           IMIN(N)= I
         END IF
   450 CONTINUE
-      WRITE(8,70) SIGMAX(1),IMAX(1),SIGMIN(1),IMIN(1)  
-      WRITE(8,71) SIGMAX(2),IMAX(2),SIGMIN(2),IMIN(2)  
-      WRITE(8,72) SIGMAX(3),IMAX(3),SIGMIN(3),IMIN(3)  
+      WRITE(8,70) SIGMAX(1),IMAX(1),SIGMIN(1),IMIN(1)
+      WRITE(8,71) SIGMAX(2),IMAX(2),SIGMIN(2),IMIN(2)
+      WRITE(8,72) SIGMAX(3),IMAX(3),SIGMIN(3),IMIN(3)
       WRITE(8,73) SIGMAX(4),IMAX(4),SIGMIN(4),IMIN(4)
 *----------------------------------------------------------------------
 *	PRINT TO OUTPUT DATA FOR PREPLOT!..
@@ -572,21 +572,21 @@
       AVGSTR(1,NUPTS+1)=0.
       AVGSIG(1,NUPTS+1)=0.
       DO 510 I=1, NUPTS
-        II = NDFRE*I - NDFRE + 1                                          
-        JJ = NDFRE*I                                                      
+        II = NDFRE*I - NDFRE + 1
+        JJ = NDFRE*I
         WRITE(7,505) R(I),Z(I),(P(K),K=II,JJ),AVGSTR(1,NUPTS+1),
      +          AVGSTR(1,NUPTS+1),AVGSTR(1,NUPTS+1),AVGSTR(1,NUPTS+1),
      +          AVGSIG(1,NUPTS+1),AVGSIG(1,NUPTS+1),AVGSIG(1,NUPTS+1),
      +          AVGSIG(1,NUPTS+1),AVGSIG(1,NUPTS+1),AVGSIG(1,NUPTS+1),
      +          AVGSIG(1,NUPTS+1),AVGSIG(1,NUPTS+1)
   510 CONTINUE
-  505 FORMAT(1X,4(F11.8,1X),12(F13.7,1X))	                          
+  505 FORMAT(1X,4(F11.8,1X),12(F13.7,1X))
       DO 520 M=1, NUMEL
-        WRITE(7,*)(KQ(I,M),I = 1, 4) 
+        WRITE(7,*)(KQ(I,M),I = 1, 4)
   520 CONTINUE
       GRQ(1,NUMEL+1)=0.
       GZQ(1,NUMEL+1)=0.
-      NUMINTG=9*NUMEL	        	 
+      NUMINTG=9*NUMEL
       WRITE(7,521) NUMINTG
   521 FORMAT(' ZONE T="STRESS & STRAIN", I=',I5,', F=POINT')
       DO 530 LL=1,NUMEL
@@ -599,15 +599,15 @@
           DUMMY=SIGMA3
 	  SIGMA3=SIGMA2
 	  SIGMA2=DUMMY
-        END IF            
-*------	
+        END IF
+*------
         WRITE(7,540)GRQ(I,LL),GZQ(I,LL),GRQ(1,NUMEL+1),GZQ(1,NUMEL+1),
      +       STRNL(1,I,LL),STRNL(2,I,LL),STRNL(3,I,LL),STRNL(4,I,LL),
      +       SIGNL(1,I,LL),SIGNL(2,I,LL),SIGNL(3,I,LL),SIGNL(4,I,LL),
-     +       SIGMA1,SIGMA2,SIGMA3,ANGLENL(I,LL)      
-  530 CONTINUE	
-  540 FORMAT(1X,4(F11.8,1X),12(F13.7,1X))	                          
-      CONTINUE                                                          
+     +       SIGMA1,SIGMA2,SIGMA3,ANGLENL(I,LL)
+  530 CONTINUE
+  540 FORMAT(1X,4(F11.8,1X),12(F13.7,1X))
+      CONTINUE
       STOP ' THANK YOU FOR USING THIS PROGRAM!..   EROL TUTUMLUER,1994'
       END
 *
@@ -616,7 +616,7 @@
 *
 *
 ***********************************************************************
-*	SUBROUTINE INOUT FOR GENERAL INPUT AND OUTPUT 
+*	SUBROUTINE INOUT FOR GENERAL INPUT AND OUTPUT
 ***********************************************************************
       SUBROUTINE INOUT(TITLE,IBD,BVAL,NEL,NPT,KQ,RQ,ZQ,R,Z,RI,LJOI,
      +                 NDT,DT,EQR0,EQTH0,EQZ0,IEDGE,ELOAD,NLPTS,
@@ -629,7 +629,7 @@
      +           EQTH0(8,N1),EQZ0(8,N1),IEDGE(N1),ELOAD(8,N1),
      +           SPLAY(30), COLSP(30),INTELM(20), MATID(N1),NELRES(30)
 *----------------------------------------------------------------------
-      COMMON /CV/  L1,L2,NBAND,NTPTS                  
+      COMMON /CV/  L1,L2,NBAND,NTPTS
       COMMON /PROP/ISOT(10),EM(10),PR(10),E2(10),G2(10),PR1(10),PR2(10),
      +            RATION(10),RATIOM(10),ALPHA(10),BODYFR(10),BODYFZ(10),
      +		  LAYNAME(10)
@@ -637,7 +637,7 @@
       COMMON /INT/ L4,NGAUSS
       COMMON /NLIN/ NICBF,NICEL,ITER,ITLAST,ITER2,BLAMBDA,SLAMBDA,
      +              ITLAST2,TENMOD
-      COMMON /NLIN2/ MOD,CK1,CK2,CK4,CK6,CK7,CK8,CA,CB            
+      COMMON /NLIN2/ MOD,CK1,CK2,CK4,CK6,CK7,CK8,CA,CB
       CHARACTER*80 TITLE
       CHARACTER*20 LAYNAME
       DOUBLE PRECISION SRES
@@ -648,13 +648,13 @@
 *---------------------------------------------------------------
 *      INPUT NUM. OF ELEMENTS, NUM OF TOTAL NODAL POINTS, NUM OF
 *      BOUNDARY POINTS, NUM OF ELEMENT DEGREE OF FREEDOM, NUM OF
-*      ELEMENT NODES                     
+*      ELEMENT NODES
 *---------------------------------------------------------------
-      READ(5,*) NUMEL, NUPTS, NUBPTS                                    
-      WRITE(8,21) NUMEL, NUPTS, NUBPTS, NDFRE, NODES                      
-      NN = NDFRE*NODES                                                  
-      NTPTS = NUPTS*NDFRE                                               
-      NFP1 = NDFRE + 1                                                  
+      READ(5,*) NUMEL, NUPTS, NUBPTS
+      WRITE(8,21) NUMEL, NUPTS, NUBPTS, NDFRE, NODES
+      NN = NDFRE*NODES
+      NTPTS = NUPTS*NDFRE
+      NFP1 = NDFRE + 1
       WRITE(8,30)
 *-----------------------------------------------------------------
 *      INPUT NUMBER OF MATERIAL TYPES
@@ -662,23 +662,23 @@
       READ(5,*) NUMMAT
       READ(5,*) (ISOT(I),I=1,NUMMAT)
       WRITE(8,22) NUMMAT
-      WRITE(8,20) (I,ISOT(I),I=1,NUMMAT)	      
+      WRITE(8,20) (I,ISOT(I),I=1,NUMMAT)
       DO 100 I=1,NUMMAT
 *-----------------------------------------------------------------
 *      IF ISOTROPIC MATERIAL, INPUT E, POISSON'S RATIO AND THERMAL
-*      EXPANSION COEFFICIENT !... 
+*      EXPANSION COEFFICIENT !...
 *-----------------------------------------------------------------
       IF(ISOT(I).EQ.1) GO TO 500
       READ(5,998) LAYNAME(I)
   998 FORMAT(A20)
-      READ(5,*) EM(I), PR(I), ALPHA(I), BODYFR(I), BODYFZ(I)                   
+      READ(5,*) EM(I), PR(I), ALPHA(I), BODYFR(I), BODYFZ(I)
       WRITE(8,23) LAYNAME(I),I,EM(I), PR(I), ALPHA(I), BODYFR(I),
      +            BODYFZ(I)
       IF(PR(I).EQ.0.5) PR(I)=0.499
-*--------------------------------------------------------------      
-*      IF ANISOTROPIC MATERIAL, INPUT E2, G2, PR1, PR2, MODULI 
-*      RATIOS n and m AND THERMAL EXPANSION COEFFICIENT !...      
-*--------------------------------------------------------------      
+*--------------------------------------------------------------
+*      IF ANISOTROPIC MATERIAL, INPUT E2, G2, PR1, PR2, MODULI
+*      RATIOS n and m AND THERMAL EXPANSION COEFFICIENT !...
+*--------------------------------------------------------------
   500 IF(ISOT(I).EQ.1) THEN
       READ(5,998) LAYNAME(I)
       READ(5,*) E2(I),G2(I),PR1(I),PR2(I),RATION(I),RATIOM(I),ALPHA(I),
@@ -687,11 +687,11 @@
      +            RATIOM(I),ALPHA(I),BODYFR(I),BODYFZ(I)
       IF(PR1(I).EQ.0.5) PR1(I)=0.499
       IF(PR2(I).EQ.0.5) PR2(I)=0.499
-      END IF             
-  100 CONTINUE               
-*---------------------------------------------------                          
-*      INPUT DATA FOR AUTOMATIC MESH GENERATION...                            
-*---------------------------------------------------                           
+      END IF
+  100 CONTINUE
+*---------------------------------------------------
+*      INPUT DATA FOR AUTOMATIC MESH GENERATION...
+*---------------------------------------------------
       READ(5,*) NLAY,NCOL,NUMOPT,RINIT,ZINIT
       READ(5,*) (SPLAY(I),I=1,NLAY)
       READ(5,*) (COLSP(I),I=1,NCOL)
@@ -702,13 +702,13 @@
 ***********************************************************************
       CALL MESHGR(NUMOPT,NLAY,NCOL,SPLAY,COLSP,R,Z,NPT,NEL,
      +            NNODER,NNODEZ,KQ,RINIT,ZINIT,NELRES)
-***********************************************************************        
+***********************************************************************
 *------------------------------------------------------------------
 *	INPUT ELEMENT MATERIAL TYPES & INTERFACE ELEMENTS IF ANY...
 *------------------------------------------------------------------
       DO 230 I= 1,400
       READ(5,*) MSTART, MSTOP, MATTYP
-      IF(MSTART.EQ.0) GOTO 239      
+      IF(MSTART.EQ.0) GOTO 239
       DO 235 J= MSTART, MSTOP
       MATID(J) = MATTYP
   235 CONTINUE
@@ -716,30 +716,30 @@
   239 CONTINUE
       READ(5,*) NINTEL
       IF(NINTEL.NE.0.AND.NINTEL.NE.NUMEL) THEN
-        READ(5,*) (INTELM(I),I=1,NINTEL)  
+        READ(5,*) (INTELM(I),I=1,NINTEL)
       END IF
 *---------------------------------------------------------------------
 *   PRINT LAYER & COLUMN SPACINGS; ELEMENT INCIDENCES & MATERIAL TYPES
 *---------------------------------------------------------------------
-      WRITE(8,5)NLAY,NCOL,NUMOPT,RINIT,ZINIT 
+      WRITE(8,5)NLAY,NCOL,NUMOPT,RINIT,ZINIT
       WRITE(8,6)
       WRITE(8,8) (SPLAY(I), I=1,NLAY)
       WRITE(8,7)
       WRITE(8,8) (COLSP(I), I=1,NCOL)
-      WRITE(8,27)                                                          
+      WRITE(8,27)
       DO  220  M = 1, NUMEL
-        WRITE(8,29) NEL(M), MATID (M), (KQ(I,M),I = 1, NODES)         
-        DO  215 J = 1, NODES                                              
-          K = KQ(J,M)                                                       
-          RQ(J,M) = R(K)                                                    
-          ZQ(J,M) = Z(K)                                                   
-  215   CONTINUE                                                          
+        WRITE(8,29) NEL(M), MATID (M), (KQ(I,M),I = 1, NODES)
+        DO  215 J = 1, NODES
+          K = KQ(J,M)
+          RQ(J,M) = R(K)
+          ZQ(J,M) = Z(K)
+  215   CONTINUE
   220 CONTINUE
 *----------------------------------------------------------------------
 *	INPUT NONLINEAR PARAMETERS AND COEFFICIENTS...
 *----------------------------------------------------------------------
       READ(5,*) NICBF, NICEL, BLAMBDA, SLAMBDA, TENMOD
-      READ(5,*) MOD,CK1,CK2,CK4,CK6,CK7,CK8,CA,CB  
+      READ(5,*) MOD,CK1,CK2,CK4,CK6,CK7,CK8,CA,CB
       WRITE(8,50) NICBF, NICEL, BLAMBDA,SLAMBDA, TENMOD
       WRITE(8,51) MOD,CK1,CK2,CK4,CK6,CK7,CK8,CA,CB
 *---------------------------------------------------
@@ -760,12 +760,12 @@
       DO 242 I=1, NUPTS
         READ(5,*) NDT(I), DT(I)
   242 CONTINUE
-  243 WRITE(8,32)    
+  243 WRITE(8,32)
       DO 244 I=1, NUPTS
         WRITE(8,33) NDT(I), DT(I)
   244 CONTINUE
 *------- SPECIFY INITIAL STRAINS (R, THETA, AND Z)
-      DO 245 M=1, NUMEL 
+      DO 245 M=1, NUMEL
         DO 245 J=1, NODES
 	  K= KQ(J,M)
 	  II=MATID(M)
@@ -779,12 +779,12 @@
 *---------------------------
       READ(5,*) NEDGE
       WRITE(8,45) NEDGE
-      DO 246 I=1, NEDGE  
+      DO 246 I=1, NEDGE
       READ(5,*) IEDGE(I)
       READ(5,*) (ELOAD(J,IEDGE(I)),J=1,8)
       WRITE(8,46) IEDGE(I)
       WRITE(8,47) (ELOAD(J,IEDGE(I)),J=1,8)
-  246 CONTINUE    
+  246 CONTINUE
 *-----------------------------------------------------------------------
 *	INPUT HORIZONTAL RESIDUAL STRESSES @ EACH ROW IN BASE/SUBBASE..
 *-----------------------------------------------------------------------
@@ -795,7 +795,7 @@
   248 CONTINUE
 *-------
       READ(5,*) NUMRES
-      WRITE(8,55) NUMRES  
+      WRITE(8,55) NUMRES
       IF(NUMRES.EQ.0) GO TO 251
       DO 250 I=1, NUMRES
         READ(5,*) LRES, RESVAL
@@ -808,31 +808,31 @@
   251 CONTINUE
 *
 *-----------------------------------------------------------------------
-*      INPUT SPECIFIED BOUNDARY DISPLACEMENTS                        
+*      INPUT SPECIFIED BOUNDARY DISPLACEMENTS
 *-----------------------------------------------------------------------
-      WRITE(8,35)                                                          
-      DO  260  N = 1, NUBPTS                                          
-      READ(5,*) ( IBD(N,K),K=1,NFP1 ), ( BVAL(N,K),K=1,NDFRE )          
-      WRITE(8,34) ( IBD(N,K),K=1,NFP1 ), ( BVAL(N,K),K=1,NDFRE )         
-  260 CONTINUE                                                          
+      WRITE(8,35)
+      DO  260  N = 1, NUBPTS
+      READ(5,*) ( IBD(N,K),K=1,NFP1 ), ( BVAL(N,K),K=1,NDFRE )
+      WRITE(8,34) ( IBD(N,K),K=1,NFP1 ), ( BVAL(N,K),K=1,NDFRE )
+  260 CONTINUE
 *-----------------------------------------------------------------------
-*      INPUT NUM OF LOADED POINTS AND NODAL POINT LOADS              
-*----------------------------------------------------------------------- 
-      READ(5,*) NLPTS                                                   
-      WRITE(8,36) NLPTS                                                   
+*      INPUT NUM OF LOADED POINTS AND NODAL POINT LOADS
+*-----------------------------------------------------------------------
+      READ(5,*) NLPTS
+      WRITE(8,36) NLPTS
       IF (NLPTS.EQ.0) GOTO 351
       WRITE(8,39)
       DO 350 J=1, NLPTS
-      READ(5,*) LJOI(J), (RI(J,K), K = 1, NDFRE )                          
-      WRITE(8,41) LJOI(J), (RI(J,K), K = 1, NDFRE )                          
-  350 CONTINUE                                                                
+      READ(5,*) LJOI(J), (RI(J,K), K = 1, NDFRE )
+      WRITE(8,41) LJOI(J), (RI(J,K), K = 1, NDFRE )
+  350 CONTINUE
   351 CONTINUE
-*------     
+*------
 ***********************************************************************
 *	 OUTPUT FILE DESIGN (Formats..)
 ***********************************************************************
     1 FORMAT(1H1)
-    2 FORMAT(///)                                                    
+    2 FORMAT(///)
     5 FORMAT(//,5X,'TOTAL NUM OF LAYERS USED IN MESH GENERATION:',2X,
      +I5,//,5X,'TOTAL NUM OF COLUMNS USED IN MESH GENERATION:',1X,I5,
      +//,5X,'NUMBERING OPTION [HORIZONTAL=0; VERTICAL=1]:',2X,I2,//,5X,
@@ -841,10 +841,10 @@
     6 FORMAT(//,5X,'ELEMENT MESH LAYER THICKNESSES (bottom to top):')
     7 FORMAT(//,5X,'ELEMENT MESH COLUMN WIDTHS (left to right):')
     8 FORMAT(/,6(3X,F8.3))
-   21 FORMAT(//, 35H     NUM OF ELEMENTS                       ,I5 ,/,  
-     +           35H     NUM OF POINTS                         ,I5, /,   
-     +           35H     NUM OF BOUNDARY POINTS                ,I5, ///, 
-     +           35H     NUM OF ELEM DEG OF FREEDOM            ,I5, /,   
+   21 FORMAT(//, 35H     NUM OF ELEMENTS                       ,I5 ,/,
+     +           35H     NUM OF POINTS                         ,I5, /,
+     +           35H     NUM OF BOUNDARY POINTS                ,I5, ///,
+     +           35H     NUM OF ELEM DEG OF FREEDOM            ,I5, /,
      +           35H     NUM OF ELEM NODES                     ,I5, /)
    22 FORMAT(//, 35H     MATERIAL PROPERTIES                      ,//,
      +           35H     NUM OF MATERIAL TYPES                 ,I5,//,
@@ -868,7 +868,7 @@
      +           40H     COEFF. OF THERMAL EXPANSION           ,E12.5,/,
      +           40H     BODYFORCE IN R DIRECTION              ,E12.5,/,
      +           40H     BODYFORCE IN Z DIRECTION              ,E12.5,/)
-   27 FORMAT(//,10X,' 4----7----3', 
+   27 FORMAT(//,10X,' 4----7----3',
      +        /,10X,' |         |',
      +        /,10X,' 8         6',
      +        /,10X,' |         |',
@@ -885,14 +885,14 @@
    47 FORMAT(12X,'EDGE 1',13X,'EDGE 2',13X,'EDGE 3',13X,'EDGE 4',//,
      +       6X,'R - DIR',2X,'Z - DIR',3(3X,'R - DIR',2X,'Z - DIR'),//,
      +       6X,F7.2,2X,F7.2,3(3X,F7.2,2X,F7.2))
-   34 FORMAT(5X,3I8,2X,E15.3,3X,E15.3)                           
-   35 FORMAT(///,40H      BOUNDARY CONDITIONS,                ,//        
-     +     5X,   45H     NODE    R-DIR   Z-DIR       R-VALUE      ,      
-     +           20H      Z-VALUE            ,// )                      
-   36 FORMAT(//, 35H     NUM OF NODES WITH JOINT LOADS  ,I5, /  ) 
-   39 FORMAT(//, 49H     APPLIED LOADS (to be multiplied by "2*pi")  ,//    
-     +     3X,   45H     NODE        R-DIRECTION    Z-DIRECTION  ,// )  
-   41 FORMAT( 5X, I5, 5X, 2E15.3 )                                             
+   34 FORMAT(5X,3I8,2X,E15.3,3X,E15.3)
+   35 FORMAT(///,40H      BOUNDARY CONDITIONS,                ,//
+     +     5X,   45H     NODE    R-DIR   Z-DIR       R-VALUE      ,
+     +           20H      Z-VALUE            ,// )
+   36 FORMAT(//, 35H     NUM OF NODES WITH JOINT LOADS  ,I5, /  )
+   39 FORMAT(//, 49H     APPLIED LOADS (to be multiplied by "2*pi")  ,//
+     +     3X,   45H     NODE        R-DIRECTION    Z-DIRECTION  ,// )
+   41 FORMAT( 5X, I5, 5X, 2E15.3 )
    50 FORMAT(///,24H     NONLINEAR ANALYSIS ,
      +       //, 46H     NO. OF INCREMENTS FOR BODY FORCE LOADING:,I5,
      +        /, 46H     NO. OF INCREMENTS FOR EDGE LOADING:      ,I5,
@@ -913,7 +913,7 @@
      +         /,50H     WITH MEASURED HORIZONTAL RESIDUAL STRESSES:
      +          ,I2)
    56 FORMAT(/,5X,'ROW ELEMENT NO:',I3,5X,'HORIZONTAL RESIDUAL STRESS:'
-     +           ,F7.2) 
+     +           ,F7.2)
 ***********************************************************************
       RETURN
       END
@@ -936,7 +936,7 @@
      +            RATION(10),RATIOM(10),ALPHA(10),BODYFR(10),BODYFZ(10),
      +		  LAYNAME(10)
       COMMON /VAL/ L3,N1,NDFRE,NFP1,NODES
-      COMMON /INT/ L4,NGAUSS       
+      COMMON /INT/ L4,NGAUSS
 *-----------------------------------------------------------------------
       CHARACTER*20 LAYNAME
       DOUBLE PRECISION K0, SRES
@@ -956,7 +956,7 @@
 	IF(I.NE.ICOUNT) SINSITU=SINSITU+K0*BODYFZ(II)*(ZQ(4,NELRES(I))-
      +                                  ZQ(1,NELRES(I)))
 	IF(I.EQ.ICOUNT) SINSITU=SINSITU+K0*BODYFZ(II)*(ZQ(4,NELRES(I))-
-     +                                  ZQ(1,NELRES(I)))/2.    	        
+     +                                  ZQ(1,NELRES(I)))/2.
    20 CONTINUE
 *------- Then, the residual stress in the layer is:
       SRES(1,LRES)= RESVAL-SINSITU
@@ -973,7 +973,7 @@
 	  SRES(1,LRES+(I*NLAY))=SRES(1,LRES)
 	  SRES(2,LRES+(I*NLAY))=SRES(2,LRES)
    50   CONTINUE
-      END IF               
+      END IF
       RETURN
       END
 *
@@ -989,12 +989,12 @@
 *----------------------------------------------------------------------
       DIMENSION SPLAY(30),COLSP(30),R(L4),Z(L4),KQ(8,N1),
      +          NEL(N1),NPT(L4),NELRES(30)
-*----------------------------------------------------------------------      
+*----------------------------------------------------------------------
       COMMON /VAL/ L3,N1,NDFRE,NFP1,NODES
-      COMMON /INT/ L4,NGAUSS      
+      COMMON /INT/ L4,NGAUSS
 *----------------------------------------------------------------------
       IF(NUMOPT.EQ.1) GOTO 169
-*      
+*
 *------ HORIZONTAL NUMBERING AND ELEMENT MESH GENERATION...
 *
       ICOUNT=0
@@ -1017,10 +1017,10 @@
 	    NPT(ICOUNT+I)=ICOUNT+I
 	    R(ICOUNT+I)=R((ICOUNT+I)-(NNODER-(I-1)))
 	    Z(ICOUNT+I)=Z((ICOUNT+I)-(NNODER-(I-1)))+SPLAY(J)/2
-  155	 CONTINUE   
-         ICOUNT=ICOUNT+(NNODER+NCOL+1) 
+  155	 CONTINUE
+         ICOUNT=ICOUNT+(NNODER+NCOL+1)
   150 CONTINUE
-*------element mesh generation...	  
+*------element mesh generation...
       ICOUNT=0
       KCOUNT=0
       DO 160 J=1,NLAY
@@ -1034,20 +1034,20 @@
 	    KQ(5,ICOUNT+I)=2+KCOUNT+JCOUNT
 	    KQ(6,ICOUNT+I)=2+NNODER+KCOUNT+JCOUNT-(I-1)
 	    KQ(7,ICOUNT+I)=2+(NNODER+NCOL+1)+KCOUNT+JCOUNT
-	    KQ(8,ICOUNT+I)=1+NNODER+KCOUNT+JCOUNT-(I-1)      
+	    KQ(8,ICOUNT+I)=1+NNODER+KCOUNT+JCOUNT-(I-1)
 	    JCOUNT=JCOUNT+2
   165	 CONTINUE
          ICOUNT=J*NCOL
-	 KCOUNT=(NNODER+NCOL+1)*J  
+	 KCOUNT=(NNODER+NCOL+1)*J
 *------ INFORMATION OBTAINED FOR RESIDUAL STRESS CALCULATIONS (nelres)..
          NELRES(NLAY+1-J)=1
 	 IF(J.GT.1) THEN
 	   NELRES(NLAY+1-J)=(J-1)*NCOL+1
-	 END IF  
+	 END IF
 *------
   160 CONTINUE
       GOTO 199
-*      
+*
 *------ VERTICAL NUMBERING AND ELEMENT MESH GENERATION...
 *
   169 JCOUNT=0
@@ -1070,10 +1070,10 @@
 	    NPT(JCOUNT+J)=JCOUNT+J
 	    R(JCOUNT+J)=R((JCOUNT+J)-(NNODEZ-(J-1)))+COLSP(I)/2
 	    Z(JCOUNT+J)=Z((JCOUNT+J)-(NNODEZ-(J-1)))
-  185	 CONTINUE   
-         JCOUNT=JCOUNT+(NNODEZ+NLAY+1) 
+  185	 CONTINUE
+         JCOUNT=JCOUNT+(NNODEZ+NLAY+1)
   180 CONTINUE
-*------element mesh generation...	  
+*------element mesh generation...
       JCOUNT=0
       KCOUNT=0
       DO 190 I=1,NCOL
@@ -1087,20 +1087,20 @@
 	    KQ(5,JCOUNT+J)=1+NNODEZ+KCOUNT+ICOUNT-(J-1)
 	    KQ(6,JCOUNT+J)=2+(NNODEZ+NLAY+1)+KCOUNT+ICOUNT
 	    KQ(7,JCOUNT+J)=2+NNODEZ+KCOUNT+ICOUNT-(J-1)
-	    KQ(8,JCOUNT+J)=2+KCOUNT+ICOUNT      
+	    KQ(8,JCOUNT+J)=2+KCOUNT+ICOUNT
 	    ICOUNT=ICOUNT+2
 *------ INFORMATION OBTAINED FOR RESIDUAL STRESS CALCULATIONS (nelres)..
             NELRES(NLAY+1-J)=1
 	    IF(J.GT.1) THEN
 	      NELRES(NLAY+1-J)=J
-	    END IF  
-*------	    
+	    END IF
+*------
   195	 CONTINUE
          JCOUNT=I*NLAY
-	 KCOUNT=(NNODEZ+NLAY+1)*I  
+	 KCOUNT=(NNODEZ+NLAY+1)*I
   190 CONTINUE
-  199 CONTINUE            
-      RETURN 
+  199 CONTINUE
+      RETURN
       END
 *
 *
@@ -1109,7 +1109,7 @@
 *
 *
 ***********************************************************************
-*	SUBROUTINE NONLIN FOR NONLINEAR ITERATIONS...      
+*	SUBROUTINE NONLIN FOR NONLINEAR ITERATIONS...
 ***********************************************************************
       SUBROUTINE NONLIN(BFR,BFZ,ELD,NUMMAT,NEDGE,ELOAD,IEDGE,NUMEL,
      +                  MATID,SIGNL1,SIGNL2,SIGNL3,SIGNL,SRES,SR)
@@ -1123,16 +1123,16 @@
      +              G2EL(9,400),PR2EL(400),RNEL(9,400),RMEL(9,400)
       COMMON /NLIN/ NICBF,NICEL,ITER,ITLAST,ITER2,BLAMBDA,SLAMBDA,
      +              ITLAST2,TENMOD
-      COMMON /NLIN2/ MOD,CK1,CK2,CK4,CK6,CK7,CK8,CA,CB            
+      COMMON /NLIN2/ MOD,CK1,CK2,CK4,CK6,CK7,CK8,CA,CB
 *----------------------------------------------------------------------
       DIMENSION ERMAX(30),E2OLD(9,400),EMOLD(9,400),BFR(10),BFZ(10),
      +          ELD(NODES,N1),SIGNL1(9,N1),SIGNL2(9,N1),SIGNL3(9,N1),
      +          ELOAD(NODES,N1),IEDGE(N1),MATID(N1),SIGNL(4,9,N1),
      +          SRES(4,N1),SR(4,N1)
       DOUBLE PRECISION SIGNL,SIGNL1,SIGNL2,SIGNL3,SRES,SR,SIGMA1,
-     +                 SIGMA2,SIGMA3	
-      CHARACTER*20 LAYNAME     
-*----------------------------------------------------------------------      
+     +                 SIGMA2,SIGMA3
+      CHARACTER*20 LAYNAME
+*----------------------------------------------------------------------
 *----------------------------------------------------------------------
       IF(ITER2.NE.ITLAST2) GO TO 125
 *----------------------------------------------------------------------
@@ -1147,7 +1147,7 @@
          DO 105 LL=1, NUMEL
 	   DO 105 K=1, 4
 	     SR(K,LL)=ITER*COEFF*SRES(K,LL)
-  105    CONTINUE	     
+  105    CONTINUE
          WRITE(*,82) ITER
 	 WRITE(8,82) ITER
       END IF
@@ -1158,12 +1158,12 @@
         COEFF=1./NICEL
 	ITR=ITER-NICBF
         DO 110 I=1, NEDGE
-c********** modified****		
+c********** modified****
 	  do 120 j=1, 8
 	    eld(j,iedge(i))=eload(j,iedge(i))
   120     continue
-	  ELD(6,IEDGE(I))=ITR*COEFF*ELOAD(6,IEDGE(I))   
-c***********  modified **  
+	  ELD(6,IEDGE(I))=ITR*COEFF*ELOAD(6,IEDGE(I))
+c***********  modified **
   110   CONTINUE
         WRITE(*,84) ITR
 	WRITE(8,84) ITR
@@ -1173,7 +1173,7 @@ c***********  modified **
 ***********************************************************************
 *	START HERE FOR INTERMEDIATE ITERATIONS @ ONE LOAD INCREMENT !..
 ***********************************************************************
-  125 CONTINUE    
+  125 CONTINUE
 ***********************************************************************
 *	CALL SUBROUTINE MODEL FOR NONLINEAR ANALYSIS...
 ***********************************************************************
@@ -1188,9 +1188,9 @@ c***********  modified **
       IF(ITER.EQ.1.AND.ITER2.EQ.1) GOTO 145
         DO 140 LL=1, NUMEL
           CALL MODEL(LL,MATID,SIGNL1,SIGNL2,SIGNL3,SIGNL)
-*----------------------- MODULI AVERAGING SCHEME ----------------------	  
+*----------------------- MODULI AVERAGING SCHEME ----------------------
 	  II=MATID(LL)
-          DO 141 I=1, 9 
+          DO 141 I=1, 9
        	    IF(ITER.LE.NICBF) THEN
               IF(ISOT(II).EQ.1) E2EL(I,LL)=(1.-BLAMBDA)*E2OLD(I,LL)+
      +                                    E2EL(I,LL)*BLAMBDA
@@ -1203,11 +1203,11 @@ c***********  modified **
               IF(ISOT(II).EQ.0) EMEL(I,LL)=(1.-SLAMBDA)*EMOLD(I,LL)+
      +                   	          EMEL(I,LL)*SLAMBDA
             END IF
-  141     CONTINUE	  	  
-*----------------------------------------------------------------------	  
+  141     CONTINUE
+*----------------------------------------------------------------------
   140   CONTINUE
   145   CONTINUE
-***********************************************************************  
+***********************************************************************
 *----------------------------------------------------------------------
 *	CONVERGENCE CRITERIA...
 *----------------------------------------------------------------------
@@ -1215,26 +1215,26 @@ c***********  modified **
       EDENOM=0.
       ERMAX(ITER2)=0.
       DO 150 LL=1, NUMEL
-        II=MATID(LL)        
+        II=MATID(LL)
 	IF(LAYNAME(II).NE.'AC'.OR.LAYNAME(II).NE.'ac') THEN
-          DO 155 I=1, 9 
+          DO 155 I=1, 9
 	    IF(ISOT(II).EQ.1) THEN
-              ENUMER=ENUMER+(E2EL(I,LL)-E2OLD(I,LL))**2   
+              ENUMER=ENUMER+(E2EL(I,LL)-E2OLD(I,LL))**2
               EDENOM=EDENOM+E2OLD(I,LL)**2
               ERROR=ABS((E2EL(I,LL)-E2OLD(I,LL))/E2OLD(I,LL))
               IF(ERROR.GT.ERMAX(ITER2)) THEN
 	        ERMAX(ITER2)=ERROR
 	        NERROR=LL
-	      END IF  
-	    END IF  
+	      END IF
+	    END IF
 	    IF(ISOT(II).EQ.0) THEN
-              ENUMER=ENUMER+(EMEL(I,LL)-EMOLD(I,LL))**2   
+              ENUMER=ENUMER+(EMEL(I,LL)-EMOLD(I,LL))**2
               EDENOM=EDENOM+EMOLD(I,LL)**2
               ERROR=ABS((EMEL(I,LL)-EMOLD(I,LL))/EMOLD(I,LL))
               IF(ERROR.GT.ERMAX(ITER2)) THEN
 	        ERMAX(ITER2)=ERROR
 	        NERROR=LL
-	      END IF  
+	      END IF
 	    END IF
   155     CONTINUE
 *((((((((((((((((((((((( NEW )))))))))))))))))))))))))))))))))))))))
@@ -1247,12 +1247,12 @@ C     +	                                  signl2(5,ll), signl3(5,ll)
 C             if(isot(ii).eq.1) write(8,*) iter,iprint,ll,error
 C             if(isot(ii).eq.1) write(8,*) e2el(5,ll),signl1(5,ll),
 C     +	                                  signl2(5,ll), signl3(5,ll)
-C           end if  	  	  
+C           end if
 *((((((((((((((((((((((((((())))))))))))))))))))))))))))))))))))))))
-	END IF  
+	END IF
   150 CONTINUE
-      ERR2=ENUMER/EDENOM  
-*------------- FINAL CONVERGENCE CRITERIA  -----------------------------      
+      ERR2=ENUMER/EDENOM
+*------------- FINAL CONVERGENCE CRITERIA  -----------------------------
       IF(ERMAX(ITER2).LE.0.05.AND.ERR2.LE.0.002.AND.ITER2.GT.1.
      +                               .AND.ITER.EQ.(NICBF+NICEL)) THEN
         ITLAST=ITER
@@ -1263,7 +1263,7 @@ C           end if
           WRITE(8,75) IPRINT, ERR2, ERMAX(ITER2), NERROR
 	  WRITE(*,75) IPRINT, ERR2, ERMAX(ITER2), NERROR
 	END IF
-	WRITE(8,79)	
+	WRITE(8,79)
 	DO 160 LL=1, NUMEL
 	  II=MATID(LL)
           SIGMA1=-1.*SIGNL3(5,LL)
@@ -1273,20 +1273,20 @@ C           end if
             DUMMY=SIGMA3
 	    SIGMA3=SIGMA2
 	    SIGMA2=DUMMY
-          END IF	  
+          END IF
 	  IF(ISOT(II).EQ.1) E1=RNEL(5,LL)*E2EL(5,LL)
 	  IF(ISOT(II).EQ.0) WRITE(8,80) LL,EMEL(5,LL),EMEL(5,LL),
-     +                                      SIGMA1,SIGMA2,SIGMA3	  
+     +                                      SIGMA1,SIGMA2,SIGMA3
 	  IF(ISOT(II).EQ.1) WRITE(8,80) LL,E2EL(5,LL),E1,
-     +                                      SIGMA1,SIGMA2,SIGMA3	  
+     +                                      SIGMA1,SIGMA2,SIGMA3
   160 	CONTINUE
-        RETURN 
+        RETURN
       END IF
 *------------- CONVERGENCE CRITERIA FOR LOAD INCREMENTS ----------------
       IF(ERMAX(ITER2).LE.0.05.AND.ERR2.LE.0.002.AND.ITER2.GT.1) THEN
         ITLAST2=ITER2
 	IPRINT=ITER2-1
-	WRITE(*,75) IPRINT, ERR2, ERMAX(ITER2), NERROR	
+	WRITE(*,75) IPRINT, ERR2, ERMAX(ITER2), NERROR
 	WRITE(8,75) IPRINT, ERR2, ERMAX(ITER2), NERROR
 	ITER=ITER+1
 C*(((((((((((((((((((((    NEW    )))))))))))))))))))))))))))))))
@@ -1297,37 +1297,37 @@ C	      IF(ISOT(II).EQ.0) WRITE(8,80) LL,EMEL(5,LL),EMEL(5,LL)
 C	      IF(ISOT(II).EQ.1) WRITE(8,80) LL,E2EL(5,LL),E1
 C 1630 	 CONTINUE
 C*(((((((((((((((((((((   ...   	))))))))))))))))))))))))))))))))
-	RETURN 
-      END IF	           
+	RETURN
+      END IF
 *-----------------------------------------------------------------------
       IPRINT=ITER2-1
       IF(IPRINT.GT.0) THEN
         WRITE(*,76) IPRINT, ERR2, ERMAX(ITER2), NERROR
 	WRITE(8,76) IPRINT, ERR2, ERMAX(ITER2), NERROR
-*------- IF NO CONVERGENCE, THEN GO TO NEXT LOAD INCREMENT!...	
+*------- IF NO CONVERGENCE, THEN GO TO NEXT LOAD INCREMENT!...
         IF(ERMAX(ITER2).GT.ERMAX(ITER2-1).AND.ITER2.GT.2) THEN
 	  DO 162 LL=1,NUMEL
 	    II=MATID(LL)
-            DO 159 I=1, 9  
+            DO 159 I=1, 9
   	      IF(ISOT(II).EQ.0) EMEL(I,LL)=EMOLD(I,LL)
 	      IF(ISOT(II).EQ.1) E2EL(I,LL)=E2OLD(I,LL)
   159       CONTINUE
   162 	  CONTINUE
-          WRITE(*,77) 
+          WRITE(*,77)
           WRITE(8,77)
-C*((((((((((((((    NEW   ))))))))))))))))))))))))))))	  
+C*((((((((((((((    NEW   ))))))))))))))))))))))))))))
 C	  DO 1631 LL=1, NUMEL
 C	      II=MATID(LL)
 C	      IF(ISOT(II).EQ.1) E1=RNEL(5,LL)*E2EL(5,LL)
 C	      IF(ISOT(II).EQ.0) WRITE(8,80) LL,EMEL(5,LL),EMEL(5,LL)
 C	      IF(ISOT(II).EQ.1) WRITE(8,80) LL,E2EL(5,LL),E1
-C 1631 	  CONTINUE	   	  
-C*(((((((((((((((   ...   )))))))))))))))))))))))))))))  
-*------ IF LAST INCREMENT & NO CONVERGENCE THEN ....	  
+C 1631 	  CONTINUE
+C*(((((((((((((((   ...   )))))))))))))))))))))))))))))
+*------ IF LAST INCREMENT & NO CONVERGENCE THEN ....
 	  IF(ITER.EQ.(NICBF+NICEL)) THEN
 	    ITLAST=ITER
 	    ITER2=ITLAST2
-	    WRITE(8,79)	
+	    WRITE(8,79)
 	    DO 163 LL=1, NUMEL
 	      II=MATID(LL)
               SIGMA1=-1.*SIGNL3(5,LL)
@@ -1340,19 +1340,19 @@ C*(((((((((((((((   ...   )))))))))))))))))))))))))))))
               END IF
 	      IF(ISOT(II).EQ.1) E1=RNEL(5,LL)*E2EL(5,LL)
 	      IF(ISOT(II).EQ.0) WRITE(8,80) LL,EMEL(5,LL),EMEL(5,LL),
-     +                                      SIGMA1,SIGMA2,SIGMA3	  
+     +                                      SIGMA1,SIGMA2,SIGMA3
 	      IF(ISOT(II).EQ.1) WRITE(8,80) LL,E2EL(5,LL),E1,
-     +                                      SIGMA1,SIGMA2,SIGMA3	       
+     +                                      SIGMA1,SIGMA2,SIGMA3
   163 	    CONTINUE
-            WRITE(*,78)   
+            WRITE(*,78)
             WRITE(8,78)
-            RETURN	    
-	  END IF 
-	  ITLAST2=ITER2 
+            RETURN
+	  END IF
+	  ITLAST2=ITER2
 	  ITER=ITER+1
 	  RETURN
-	END IF    
-      END IF  
+	END IF
+      END IF
 *(((((((((((((((((((((( NEW )))))))))))))))))))))))))))))))))))))))))))
 C      if(iter.gt.nicbf) then
 C        do 165 ll=1,numel
@@ -1371,7 +1371,7 @@ C      end if
      +        /,45H     CONVERGENCE IS REACHED AT ITERATON NO:  ,I2,
      +        /,30H     CUMULATIVE ERROR:        ,E13.7,
      +        /,30H     MAX. INDIVIDUAL ERROR:   ,E13.7,
-     +        /,30H     OCCURRED @ ELEMENT NO:   ,I5,         
+     +        /,30H     OCCURRED @ ELEMENT NO:   ,I5,
      +        /,50H   ********************************************** )
    76 FORMAT(//,28H     ITERATION NO:          ,I2,
      +        /,28H     CUMULATIVE ERROR:      ,E13.7,
@@ -1380,16 +1380,16 @@ C      end if
    77 FORMAT(//,40H   ###################################  ,
      +        /,40H     DUE TO INCREASE IN ERROR,          ,
      +        /,40H     NEXT LOAD INCREMENT INITIATED !..  ,
-     +        /,40H   ###################################  )	  
+     +        /,40H   ###################################  )
    78 FORMAT(//,40H   +++++++++++++++++++++++++++++++      ,
      +        /,40H     RESULTS ARE PRINTED WITHOUT        ,
      +	      /,40H     CONVERGENCE IS REACHED !..         ,
-     +        /,40H   +++++++++++++++++++++++++++++++      )	    
+     +        /,40H   +++++++++++++++++++++++++++++++      )
    79 FORMAT(//,5X,'ELEMENT',3X,'MODULUS IN Z-DIR',2X,
-     +       'MODULUS IN R-DIR',5X,' SIGMA 1 ',6X,' SIGMA 2 ',6X, 
+     +       'MODULUS IN R-DIR',5X,' SIGMA 1 ',6X,' SIGMA 2 ',6X,
      +       ' SIGMA 3 ',/,4X,8('-'),2X,17('-'),2X,17('-'),2X,
      +       13('-'),2X,13('-'),2X,13('-'))
-   80 FORMAT(5X,I5,7X,E13.7,5X,E13.7,4X,E13.7,2X,E13.7,2X,E13.7)  
+   80 FORMAT(5X,I5,7X,E13.7,5X,E13.7,4X,E13.7,2X,E13.7,2X,E13.7)
    82 FORMAT(/,19H     INCREMENT NO: ,I2,' FOR BODY FORCE LOADING')
    84 FORMAT(/,19H     INCREMENT NO: ,I2,' FOR SURFACE FORCE LOADING')
 ************************************************************************
@@ -1411,10 +1411,10 @@ C      end if
 *----------------------------------------------------------------------
       COMMON /PROP/ISOT(10),EM(10),PR(10),E2(10),G2(10),PR1(10),PR2(10),
      +            RATION(10),RATIOM(10),ALPHA(10),BODYFR(10),BODYFZ(10),
-     +		  LAYNAME(10)      
+     +		  LAYNAME(10)
       COMMON /CV/ L1,L2,NBAND,NTPTS
       COMMON /VAL/ L3,N1,NDFRE,NFP1,NODES
-      COMMON /INT/ L4,NGAUSS         
+      COMMON /INT/ L4,NGAUSS
       COMMON /PROP2/ EMEL(9,400),PREL(400),E2EL(9,400),PR1EL(400),
      +             G2EL(9,400),PR2EL(400),RNEL(9,400),RMEL(9,400)
       COMMON /NLIN/ NICBF,NICEL,ITER,ITLAST,ITER2,BLAMBDA,SLAMBDA,
@@ -1443,36 +1443,36 @@ C      end if
         IF(LAYNAME(II).EQ.'BASE'.OR.LAYNAME(II).EQ.'SUBBASE'.OR.
      +     LAYNAME(II).EQ.'base'.OR.LAYNAME(II).EQ.'subbase') THEN
           TETA=SIGMA1+SIGMA2+SIGMA3
-	  DEVTR=SIGMA1-SIGMA3           
-*-------  TENSION MODIFICATIONS FOR THETA AND/OR DEVTR ...	
+	  DEVTR=SIGMA1-SIGMA3
+*-------  TENSION MODIFICATIONS FOR THETA AND/OR DEVTR ...
           IF(SIGMA2.LT.0.AND.SIGMA3.LT.0.) THEN
 	    TETA=SIGMA1
 	    DEVTR=SIGMA1
           END IF
 	  IF(SIGMA2.GT.0.AND.SIGMA3.LT.0.) THEN
 	    TETA=SIGMA1+SIGMA2
-            DEVTR=SIGMA1     	    
+            DEVTR=SIGMA1
 	  END IF
-	  IF(TETA.LT.0.OR.DEVTR.LT.0.) THEN 
+	  IF(TETA.LT.0.OR.DEVTR.LT.0.) THEN
 	    WRITE(8,5) LL,ITER2,SIGMA1,SIGMA2,SIGMA3
 	    WRITE(*,5) LL,ITER2,SIGMA1,SIGMA2,SIGMA3
     5       FORMAT(/,43H     BASE MODEL HAS NEGATIVE THETA OR DEVTR,
-     +             /,15H     ELEMENT:  ,I5,3X,'ITER:  ',I2, 
-     +             /,15H     SIGMA1 :  ,E13.7,	  
+     +             /,15H     ELEMENT:  ,I5,3X,'ITER:  ',I2,
+     +             /,15H     SIGMA1 :  ,E13.7,
      +             /,15H     SIGMA2 :  ,E13.7,
      +             /,15H     SIGMA3 :  ,E13.7)
             STOP
-          END IF	  	    
-*-------------------- UZAN MODEL... ------------------------------------    
+          END IF
+*-------------------- UZAN MODEL... ------------------------------------
           IF(MOD.EQ.1) THEN
 	    IF(ISOT(II).EQ.0) EMEL(I,LL)= CK1*(TETA**CK2)*(DEVTR**CK4)
 	    IF(ISOT(II).EQ.1) THEN
 	      E2EL(I,LL)= CK1*(TETA**CK2)*(DEVTR**CK4)
 	      G2EL(I,LL)= RMEL(I,LL)*E2EL(I,LL)
-	    END IF  
+	    END IF
 *------ CHECK FOR TENSION (set n=e1/e2= ## % if sigma r < 0)
             IF(SIGNL(1,I,LL).GT.0.) RNEL(I,LL)=TENMOD
-	  END IF  
+	  END IF
 *-------------------- UT AUSTIN MODEL ----------------------------------
           IF(MOD.EQ.2) THEN
             S3=ABS(SIGMA3)
@@ -1480,11 +1480,11 @@ C      end if
 	    IF(ISOT(II).EQ.1) THEN
 	      E2EL(I,LL)= CK6*(DEVTR**CK7)*(S3**CK8)
 	      G2EL(I,LL)= RMEL(I,LL)*E2EL(I,LL)
-	    END IF  
+	    END IF
 *------ CHECK FOR TENSION (set n=e1/e2= ## % if sigma r < 0)
-            IF(SIGNL(1,I,LL).GT.0.) RNEL(I,LL)=TENMOD	
-	  END IF  
-*----------------------------------------------------------------------	  
+            IF(SIGNL(1,I,LL).GT.0.) RNEL(I,LL)=TENMOD
+	  END IF
+*----------------------------------------------------------------------
         END IF
 *----------------------------------------------------------------------
 *	IF ELEMENT IS IN SUBGRADE LAYER...
@@ -1492,41 +1492,41 @@ C      end if
         IF(LAYNAME(II).EQ.'SUBGRADE'.OR.LAYNAME(II).EQ.'subgrade') THEN
           TETA=SIGMA1+SIGMA2+SIGMA3
 	  DEVTR=SIGMA1-SIGMA3
-*-------  TENSION MODIFICATIONS FOR THETA AND/OR DEVTR ...	
+*-------  TENSION MODIFICATIONS FOR THETA AND/OR DEVTR ...
           IF(SIGMA2.LT.0.AND.SIGMA3.LT.0.) THEN
 	    TETA=SIGMA1
 	    DEVTR=SIGMA1
           END IF
 	  IF(SIGMA2.GT.0.AND.SIGMA3.LT.0.) THEN
 	    TETA=SIGMA1+SIGMA2
-            DEVTR=SIGMA1     	    
+            DEVTR=SIGMA1
 	  END IF
-	  IF(TETA.LT.0.OR.DEVTR.LT.0) THEN 
+	  IF(TETA.LT.0.OR.DEVTR.LT.0) THEN
 	    WRITE(8,6) LL,ITER2,SIGMA1,SIGMA2,SIGMA3
-	    WRITE(*,6) LL,ITER2,SIGMA1,SIGMA2,SIGMA3	    
+	    WRITE(*,6) LL,ITER2,SIGMA1,SIGMA2,SIGMA3
     6     FORMAT(/,47H     SUBGRADE MODEL HAS NEGATIVE THETA OR DEVTR,
-     +             /,15H     ELEMENT:  ,I5,3X,'ITER:  ',I2, 
-     +             /,15H     SIGMA1 :  ,E13.7,	  
+     +             /,15H     ELEMENT:  ,I5,3X,'ITER:  ',I2,
+     +             /,15H     SIGMA1 :  ,E13.7,
      +             /,15H     SIGMA2 :  ,E13.7,
      +             /,15H     SIGMA3 :  ,E13.7)
             STOP
-          END IF	  	    
+          END IF
 *-------
           P0=(SIGMA1+SIGMA2+SIGMA3)/3.
 *-------  TENSION MODIFICATIONS FOR P0 !...
           IF(SIGMA2.LT.0.AND.SIGMA3.LT.0.) P0=(SIGMA1)/3.
 	  IF(SIGMA2.GT.0.AND.SIGMA3.LT.0.) P0=(SIGMA1+SIGMA2)/3.
-	  IF(P0.LT.0.) THEN 
+	  IF(P0.LT.0.) THEN
 	    WRITE(8,7) LL,ITER2,SIGMA1,SIGMA2,SIGMA3
-	    WRITE(*,7) LL,ITER2,SIGMA1,SIGMA2,SIGMA3	  
+	    WRITE(*,7) LL,ITER2,SIGMA1,SIGMA2,SIGMA3
     7       FORMAT(/,35H     SUBGRADE MODEL HAS NEGATIVE P0,
-     +             /,15H     ELEMENT:  ,I5,3X,'ITER:  ',I2, 
-     +             /,15H     SIGMA1 :  ,E13.7,	  
+     +             /,15H     ELEMENT:  ,I5,3X,'ITER:  ',I2,
+     +             /,15H     SIGMA1 :  ,E13.7,
      +             /,15H     SIGMA2 :  ,E13.7,
      +             /,15H     SIGMA3 :  ,E13.7)
             STOP
-          END IF	  	    
-*-------	
+          END IF
+*-------
 	  IF(ISOT(II).EQ.1) GOTO 10
           IF(DEVTR.LT.2.5) EMEL(I,LL)=(-11640.*DEVTR)+35000.
 	  IF(DEVTR.GE.2.5.AND.DEVTR.LE.7.5) EMEL(I,LL)=5900.
@@ -1536,15 +1536,15 @@ C	  EMEL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
    10	  IF(ISOT(II).EQ.1) THEN
 	    IF(DEVTR.LT.2.5) E2EL(I,LL)=(-11640.*DEVTR)+35000.
 	    IF(DEVTR.GE.2.5.AND.DEVTR.LE.7.5) E2EL(I,LL)=5900.
-	    IF(DEVTR.GT.7.5) E2EL(I,LL)= (-80.*DEVTR)+6500.          
-C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)        
-            G2EL(I,LL)= RMEL(I,LL)*E2EL(I,LL) 
-          END IF   
+	    IF(DEVTR.GT.7.5) E2EL(I,LL)= (-80.*DEVTR)+6500.
+C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
+            G2EL(I,LL)= RMEL(I,LL)*E2EL(I,LL)
+          END IF
    20     CONTINUE
-        END IF    
+        END IF
     1 CONTINUE
       RETURN
-      END      
+      END
 *
 *
 *
@@ -1587,12 +1587,12 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
    10 CONTINUE
 *------------------ FORM [E] MATRIX------------------
       II=MATID(LL)
-      DO 12 I=1, 9  
+      DO 12 I=1, 9
         IF(ISOT(II).EQ.1) GOTO 15
   	  E(I,LL,1,1) = (EMEL(I,LL)*(1-PREL(LL)))/
      +                      ((1+PREL(LL))*(1-2*PREL(LL)))
 	  E(I,LL,1,2) = (EMEL(I,LL)*PREL(LL))/
-     +                      ((1+PREL(LL))*(1-2*PREL(LL)))	
+     +                      ((1+PREL(LL))*(1-2*PREL(LL)))
 	  E(I,LL,1,3) = E(I,LL,1,2)
 	  E(I,LL,2,1) = E(I,LL,1,2)
 	  E(I,LL,2,2) = E(I,LL,1,1)
@@ -1618,7 +1618,7 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
 	  E(I,LL,4,4) = C*RMEL(I,LL)*(1+PR1EL(LL))*(1-PR1EL(LL)
      +                          -(2*RNEL(I,LL)*(PR2EL(LL)**2)))
         END IF
-   12 CONTINUE	
+   12 CONTINUE
 *----------------------------------------------------------------------
 *	 START GAUSS QUADRATURE LOOP. USE NGAUSS BY NGAUSS RULE (3 x 3)
 *----------------------------------------------------------------------
@@ -1627,13 +1627,13 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
 	PXI = PLACE(NA)
         DO 80 NB=1, NGAUSS
 	  PET = PLACE(NB)
-          IC = IC+1       
+          IC = IC+1
 ************************************************************************
 *	 CALL SHAPE SUBROUTINE TO FORM THE [B] MATRIX
 ************************************************************************
 	CALL SHAPE(LL,PXI,PET,RQ,ZQ,DETJAC,RR,E0,EQR0,EQTH0,EQZ0)
 *------
-	DV = DETJAC*WGT(NA)*WGT(NB)*2.*(3.141592654)*RR	  
+	DV = DETJAC*WGT(NA)*WGT(NB)*2.*(3.141592654)*RR
 *----------------------------------------------------------------------
       DO 30 J=1, 8
         L=2*J
@@ -1651,15 +1651,15 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
 *------ ADD CONTRIBUTION OF RESIDUAL STRESSES TO ELEMENT NODAL ARRAY
 	PE(K)=PE(K)-(B(1,K)*SR(1,LL)+B(2,K)*SR(2,LL)+
      +               B(4,K)*SR(4,LL))*DV
-        PE(L)=PE(L)-(B(3,L)*SR(3,LL)+B(4,L)*SR(4,LL))*DV	
+        PE(L)=PE(L)-(B(3,L)*SR(3,LL)+B(4,L)*SR(4,LL))*DV
    30 CONTINUE
-*------ LOOP ON ROWS AND COLUMNS OF ELEMENT STIFFNESS MATRIX  
+*------ LOOP ON ROWS AND COLUMNS OF ELEMENT STIFFNESS MATRIX
       DO 70 NROW=1, 16
 *------ ADD CONTRIBUTION OF INITIAL STRAINS TO LOAD ARRAY {PE}
-      DO 40 J=1, 4	      
+      DO 40 J=1, 4
         PE(NROW)= PE(NROW)+BTE(NROW,J)*E0(J,LL)*DV
    40 CONTINUE
-*------   
+*------
       DO 60 NCOL=NROW, 16
 	DUM=0.
 *------ LOOP FOR PRODUCT [B]T*[E]*[B]. ZEROS IN [B] NOT SKIPPED
@@ -1672,15 +1672,15 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
    80 CONTINUE
    90 CONTINUE
 ************************************************************************
-*      CALL EDGE SUBROUTINE TO ADD THE EDGE LOADS IN LOAD ARRAY {PE}!..   
+*      CALL EDGE SUBROUTINE TO ADD THE EDGE LOADS IN LOAD ARRAY {PE}!..
 ************************************************************************
       IF(ITER.GT.NICBF) THEN
       CALL EDGE(LL,RQ,ZQ,PLACE,WGT,PES,ELD)
-*------ 
+*------
       DO 95 J=1,16
         PE(J)= PE(J)+PES(J)
-   95 CONTINUE          
-      END IF	
+   95 CONTINUE
+      END IF
 *--------------------------------------------------------------------
 *	 FILL IN LOWER TRIANGLE OF ELEMENT STIFFNESS MATRIX BY SYMMETRY
 *--------------------------------------------------------------------
@@ -1688,8 +1688,8 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
       DO 100 L=K,16
 	S(L,K)= S(K,L)
   100 CONTINUE
-      RETURN 
-      END	
+      RETURN
+      END
 *
 *
 *
@@ -1702,14 +1702,14 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
 *      DERIVATIVES AND TO FORM [B] MATRIX.
 ************************************************************************
       SUBROUTINE SHAPE(LL,PXI,PET,RQ,ZQ,DETJAC,RR,E0,EQR0,EQTH0,
-     +		       EQZ0)	  
+     +		       EQZ0)
 *-----------------------------------------------------------------------
       COMMON/VAL/L3,N1,NDFRE,NFP1,NODES
       COMMON/Q8/EN(8),E(9,400,4,4),B(16,16)
-*-----------------------------------------------------------------------      
+*-----------------------------------------------------------------------
       DIMENSION RQ(NODES,N1),ZQ(NODES,N1),NXI(8),NET(8),
      +          E0(4,N1),EQR0(NODES,N1),EQTH0(NODES,N1),EQZ0(NODES,N1),
-     +		JAC(2,2)      
+     +		JAC(2,2)
 *-----------------------------------------------------------------------
       DOUBLE PRECISION PXI,PET,NXI,NET,JAC,DETJAC,RR,EN,B
 *-----------------------------------------------------------------------
@@ -1717,30 +1717,30 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
 *-----------------------------------------------------------------------
         EN(1)=0.25*(1-PXI)*(1-PET)*(-PXI-PET-1)
 	EN(2)=0.25*(1+PXI)*(1-PET)*(PXI-PET-1)
-	EN(3)=0.25*(1+PXI)*(1+PET)*(PXI+PET-1)	
+	EN(3)=0.25*(1+PXI)*(1+PET)*(PXI+PET-1)
 	EN(4)=0.25*(1-PXI)*(1+PET)*(-PXI+PET-1)
-	EN(5)=0.50*(1-(PXI*PXI))*(1-PET)		
-	EN(6)=0.50*(1+PXI)*(1-(PET*PET))		
-	EN(7)=0.50*(1-(PXI*PXI))*(1+PET)		
-	EN(8)=0.50*(1-PXI)*(1-(PET*PET))			
+	EN(5)=0.50*(1-(PXI*PXI))*(1-PET)
+	EN(6)=0.50*(1+PXI)*(1-(PET*PET))
+	EN(7)=0.50*(1-(PXI*PXI))*(1+PET)
+	EN(8)=0.50*(1-PXI)*(1-(PET*PET))
 *------
-	NXI(1)=0.25*(2*PXI+PET)*(1-PET)	
-	NXI(2)=0.25*(2*PXI-PET)*(1-PET)	
-	NXI(3)=0.25*(2*PXI+PET)*(1+PET)	
-	NXI(4)=0.25*(2*PXI-PET)*(1+PET)				
+	NXI(1)=0.25*(2*PXI+PET)*(1-PET)
+	NXI(2)=0.25*(2*PXI-PET)*(1-PET)
+	NXI(3)=0.25*(2*PXI+PET)*(1+PET)
+	NXI(4)=0.25*(2*PXI-PET)*(1+PET)
 	NXI(5)=(-1.)*PXI*(1-PET)
 	NXI(6)=0.50*(1-(PET*PET))
 	NXI(7)=(-1.)*PXI*(1+PET)
-	NXI(8)=(-0.50)*(1-(PET*PET))	
+	NXI(8)=(-0.50)*(1-(PET*PET))
 *------
-	NET(1)=0.25*(1-PXI)*(2*PET+PXI)		
-	NET(2)=0.25*(1+PXI)*(2*PET-PXI)		
-	NET(3)=0.25*(1+PXI)*(2*PET+PXI)		
-	NET(4)=0.25*(1-PXI)*(2*PET-PXI)		
+	NET(1)=0.25*(1-PXI)*(2*PET+PXI)
+	NET(2)=0.25*(1+PXI)*(2*PET-PXI)
+	NET(3)=0.25*(1+PXI)*(2*PET+PXI)
+	NET(4)=0.25*(1-PXI)*(2*PET-PXI)
 	NET(5)=(-0.50)*(1-(PXI*PXI))
 	NET(6)=(-1.)*PET*(1+PXI)
 	NET(7)=0.50*(1-(PXI*PXI))
-	NET(8)=(-1.)*PET*(1-PXI)	
+	NET(8)=(-1.)*PET*(1-PXI)
 *------ CLEAR ARRAY JACOBIAN (JAC)
 	DO 20 L=1, 2
 	DO 20 M=1, 2
@@ -1748,9 +1748,9 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
    20 CONTINUE
 *----------------------------------------------------
 *	 FIND JACOBIAN [JAC] AND ITS INVERSE [JAC]^-1
-*----------------------------------------------------  	
+*----------------------------------------------------
       DO 30 L=1, 8
-	JAC(1,1)= JAC(1,1)+NXI(L)*RQ(L,LL)	
+	JAC(1,1)= JAC(1,1)+NXI(L)*RQ(L,LL)
 	JAC(1,2)= JAC(1,2)+NXI(L)*ZQ(L,LL)
 	JAC(2,1)= JAC(2,1)+NET(L)*RQ(L,LL)
 	JAC(2,2)= JAC(2,2)+NET(L)*ZQ(L,LL)
@@ -1795,9 +1795,9 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
       DO 50 J=1, 8
         E0(1,LL)= E0(1,LL)+EN(J)*EQR0(J,LL)
 	E0(2,LL)= E0(2,LL)+EN(J)*EQTH0(J,LL)
-	E0(3,LL)= E0(3,LL)+EN(J)*EQZ0(J,LL)   
+	E0(3,LL)= E0(3,LL)+EN(J)*EQZ0(J,LL)
 	E0(4,LL)= E0(4,LL)
-   50 CONTINUE	
+   50 CONTINUE
    	RETURN
 	END
 *
@@ -1816,7 +1816,7 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
       COMMON/VAL/L3,N1,NDFRE,NFP1,NODES
       COMMON/INT/L4,NGAUSS
 *-----------------------------------------------------------------------
-      DIMENSION ENS1(8),ENS2(8),ENS3(8),ENS4(8),PES(16), 
+      DIMENSION ENS1(8),ENS2(8),ENS3(8),ENS4(8),PES(16),
      +          PLACE(NGAUSS),WGT(NGAUSS),ELD(8,N1),
      +          RQ(NODES,N1),ZQ(NODES,N1)
       DOUBLE PRECISION PXI,PET,PLACE,WGT,RXI,RET,ZXI,ZET,DETJACS,RRS,
@@ -1832,20 +1832,20 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
       ENS4(I)= 0.
       PES(K)= 0.
       PES(L)= 0.
-   10 CONTINUE   
+   10 CONTINUE
 *-----------------------------------------------
 *	EDGE LOAD FORMULATIONS FOR EDGES 1 AND 3
 *-----------------------------------------------
       DO 20 NA= 1, NGAUSS
         PXI= PLACE(NA)
-*---------------- EDGE 1 
+*---------------- EDGE 1
         ENS1(1)= (-.50)*PXI*(1-PXI)
         ENS1(2)= .50*PXI*(1+PXI)
         ENS1(5)= (1-(PXI*PXI))
         RXI= (0.50*(2*PXI-1))*RQ(1,LL)+(0.50*(2*PXI+1))*RQ(2,LL)
      +       -2*PXI*RQ(5,LL)
         ZXI= (0.50*(2*PXI-1))*ZQ(1,LL)+(0.50*(2*PXI+1))*ZQ(2,LL)
-     +       -2*PXI*ZQ(5,LL)      
+     +       -2*PXI*ZQ(5,LL)
         DETJACS= ((RXI**2)+(ZXI**2))**(0.5)
         RRS= ENS1(1)*RQ(1,LL)+ENS1(2)*RQ(2,LL)+ENS1(5)*RQ(5,LL)
         DS= DETJACS*WGT(NA)*RRS*2.*(3.141592654)
@@ -1862,7 +1862,7 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
         RXI= (0.50*(2*PXI+1))*RQ(3,LL)+(0.50*(2*PXI-1))*RQ(4,LL)
      +       -2*PXI*RQ(7,LL)
         ZXI= (0.50*(2*PXI+1))*ZQ(3,LL)+(0.50*(2*PXI-1))*ZQ(4,LL)
-     +       -2*PXI*ZQ(7,LL)      
+     +       -2*PXI*ZQ(7,LL)
         DETJACS= ((RXI**2)+(ZXI**2))**(0.5)
         RRS= ENS3(3)*RQ(3,LL)+ENS3(4)*RQ(4,LL)+ENS3(7)*RQ(7,LL)
         DS= DETJACS*WGT(NA)*RRS*2.*(3.141592654)
@@ -1871,21 +1871,21 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
 	  K=L-1
 	  PES(K)= PES(K)+ENS3(J)*ELD(5,LL)*DS
           PES(L)= PES(L)+ENS3(J)*ELD(6,LL)*DS
-   40   CONTINUE   	  
+   40   CONTINUE
    20 CONTINUE
 *-----------------------------------------------
 *	EDGE LOAD FORMULATIONS FOR EDGES 2 AND 4
 *-----------------------------------------------
       DO 50 NB= 1, NGAUSS
         PET= PLACE(NB)
-*---------------- EDGE 2 
+*---------------- EDGE 2
         ENS2(2)= (-.50)*PET*(1-PET)
         ENS2(3)= .50*PET*(1+PET)
         ENS2(6)= (1-(PET*PET))
         RET= (0.50*(2*PET-1))*RQ(2,LL)+(0.50*(2*PET+1))*RQ(3,LL)
      +       -2*PET*RQ(6,LL)
         ZET= (0.50*(2*PET-1))*ZQ(2,LL)+(0.50*(2*PET+1))*ZQ(3,LL)
-     +       -2*PET*ZQ(6,LL)      
+     +       -2*PET*ZQ(6,LL)
         DETJACS= ((RET**2)+(ZET**2))**(0.5)
         RRS= ENS2(2)*RQ(2,LL)+ENS2(3)*RQ(3,LL)+ENS2(6)*RQ(6,LL)
         DS= DETJACS*WGT(NB)*RRS*2.*(3.141592654)
@@ -1895,14 +1895,14 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
 	  PES(K)= PES(K)+ENS2(J)*ELD(3,LL)*DS
           PES(L)= PES(L)+ENS2(J)*ELD(4,LL)*DS
    60   CONTINUE
-*---------------- EDGE 4 
+*---------------- EDGE 4
         ENS4(1)= (-.50)*PET*(1-PET)
         ENS4(4)= .50*PET*(1+PET)
         ENS4(8)= (1-(PET*PET))
         RET= (0.50*(2*PET-1))*RQ(1,LL)+(0.50*(2*PET+1))*RQ(4,LL)
      +       -2*PET*RQ(8,LL)
         ZET= (0.50*(2*PET-1))*ZQ(1,LL)+(0.50*(2*PET+1))*ZQ(4,LL)
-     +       -2*PET*ZQ(8,LL)      
+     +       -2*PET*ZQ(8,LL)
         DETJACS= ((RET**2)+(ZET**2))**(0.5)
 	RRS= ENS4(1)*RQ(1,LL)+ENS4(4)*RQ(4,LL)+ENS4(8)*RQ(8,LL)
         DS= DETJACS*WGT(NB)*RRS*2.*(3.141592654)
@@ -1911,7 +1911,7 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
 	  K=L-1
 	  PES(K)= PES(K)+ENS4(J)*ELD(7,LL)*DS
           PES(L)= PES(L)+ENS4(J)*ELD(8,LL)*DS
-   70   CONTINUE   
+   70   CONTINUE
    50 CONTINUE
       RETURN
       END
@@ -1927,19 +1927,19 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
 *      SUBROUTINE TO ADD THE ELEMENT STIFFNESS MATRIX [S] TO THE
 *      PROPER LOCATIONS OF THE TOTAL BANDED STIFFNESS MATRIX [ST]
 ************************************************************************
-      SUBROUTINE ADSTIF(LL,S,ST,IJ,P,PE,KQ,NN) 
+      SUBROUTINE ADSTIF(LL,S,ST,IJ,P,PE,KQ,NN)
 *-----------------------------------------------------------------------
       COMMON/CV/ L1,L2,NBAND,NTPTS
       COMMON/VAL/ L3,N1,NDFRE,NFP1,NODES
 *-----------------------------------------------------------------------
       DIMENSION ST(L1,L2),S(L3,L3),IJ(L3),P(L1),PE(L3),KQ(NODES,N1)
       DOUBLE PRECISION S,ST,P,PE
-      DATA  ICOUNT/0/                                                   
+      DATA  ICOUNT/0/
 *-----------------------------------------------------------------------
 *------
-   10 FORMAT( //,47H     DIMENSIONS OF STIFFNESS  MATRIX EXCEEDED  ,/   
-     +           40H     DEGREE OF FREEDOM NUMBER           ,I3,/       
-     +           40H     BAND WIDTH                         ,I3, // )   
+   10 FORMAT( //,47H     DIMENSIONS OF STIFFNESS  MATRIX EXCEEDED  ,/
+     +           40H     DEGREE OF FREEDOM NUMBER           ,I3,/
+     +           40H     BAND WIDTH                         ,I3, // )
 *------
 	K=0.
       DO 245 I=1, NODES
@@ -1947,23 +1947,23 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
 	K=K+1
 	IJ(K)= NDFRE*(KQ(I,LL)-1)+J
   245 CONTINUE
-*------    
-      IF (ICOUNT.EQ.0) NBAND = 0                                 
-      ICOUNT = 1                                                        
-      DO  300  I = 1, NN                                               
-      I1 = IJ(I)                                                        
-      IF (I1.GT.L1) GO TO 350                                      
+*------
+      IF (ICOUNT.EQ.0) NBAND = 0
+      ICOUNT = 1
+      DO  300  I = 1, NN
+      I1 = IJ(I)
+      IF (I1.GT.L1) GO TO 350
       P(I1)=P(I1) + PE(I)
-      DO  250  J = 1, NN                                              
-      J1 = IJ(J) - I1 + 1                                              
-      NBAND = MAX0(NBAND,J1)                                          
-      IF (J1.LT.1) GO TO 250                                      
-      IF (J1.GT.L2) GO TO 350                                 
-      ST(I1,J1) = ST(I1,J1) + S(I,J)                                   
-  250 CONTINUE                                                         
-  300 CONTINUE                                                          
-      RETURN                                                            
-  350 WRITE(8,10) I1, J1                                                  
+      DO  250  J = 1, NN
+      J1 = IJ(J) - I1 + 1
+      NBAND = MAX0(NBAND,J1)
+      IF (J1.LT.1) GO TO 250
+      IF (J1.GT.L2) GO TO 350
+      ST(I1,J1) = ST(I1,J1) + S(I,J)
+  250 CONTINUE
+  300 CONTINUE
+      RETURN
+  350 WRITE(8,10) I1, J1
       END
 *
 *
@@ -1975,28 +1975,28 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
 ************************************************************************
 *      SUBROUTINE BC TO MODIFY THE STIFFNESS MATRIX [ST] AND THE
 *      LOAD VECTOR (P) FOR THE SPECIFIED DISPLACEMENTS...
-************************************************************************	
+************************************************************************
       SUBROUTINE BC (ST,P,NEQ,VALUE)
 *-----------------------------------------------------------------------
       COMMON/CV/ L1,L2,NBAND,NTPTS
 *-----------------------------------------------------------------------
       DIMENSION  ST(L1,L2), P(L1)
-      DOUBLE PRECISION ST,P                                       
+      DOUBLE PRECISION ST,P
 *-----------------------------------------------------------------------
 *------
-      ST(NEQ,1) = 1.0                                                  
-      P(NEQ) = VALUE                                                    
-*------	
-      DO  200  N = 2, NBAND                                            
-      IF ((NEQ-N+1).LT.1) GO TO 150                                
-      P(NEQ-N+1) = P(NEQ-N+1)-ST(NEQ-N+1,N)*VALUE                       
-      ST(NEQ-N+1,N) = 0.0                                               
-  150 IF ((NEQ+N-1).GT.L1) GO TO 200                           
+      ST(NEQ,1) = 1.0
+      P(NEQ) = VALUE
+*------
+      DO  200  N = 2, NBAND
+      IF ((NEQ-N+1).LT.1) GO TO 150
+      P(NEQ-N+1) = P(NEQ-N+1)-ST(NEQ-N+1,N)*VALUE
+      ST(NEQ-N+1,N) = 0.0
+  150 IF ((NEQ+N-1).GT.L1) GO TO 200
   	P(NEQ+N-1) = P(NEQ+N-1)-ST(NEQ,N)*VALUE
-      ST(NEQ,N) = 0.0                                                  
-  200 CONTINUE                           
-*------                                
-      RETURN                                                           
+      ST(NEQ,N) = 0.0
+  200 CONTINUE
+*------
+      RETURN
       END
 *
 *
@@ -2004,9 +2004,9 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
 *
 *
 *
-*	
+*
 ************************************************************************
-*      SUBROUTINE BANEL TO TRANGULARIZE THE BANDED AND SYMMETRIC 
+*      SUBROUTINE BANEL TO TRANGULARIZE THE BANDED AND SYMMETRIC
 *      COEFFICIENT MATRIX ( only the upper half band portion of the
 *      coefficient matrix is stored as a rectangular array...)
 ************************************************************************
@@ -2015,23 +2015,23 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
       COMMON/CV/ L1,L2,NBAND,NTPTS
 *-----------------------------------------------------------------------
       DIMENSION  A(L1,L2)
-      DOUBLE PRECISION A                                               
+      DOUBLE PRECISION A
 *-----------------------------------------------------------------------
-*------                                                                        
-          DO  120  I = 2, NTPTS                                            
-               M1 = MIN0(NBAND-1,NTPTS-I+1)                                    
-          DO  110  J = 1, M1                                            
-               SUM = 0.0                                                
-               K1 = MIN0(I-1,NBAND-J)                                      
-          DO  100  K = 1, K1                                           
-               SUM = SUM + A(I-K,K+1)* A(I-K,J+K)/A(I-K,1)             
-  100     CONTINUE                                                     
-               A(I,J) = A(I,J) - SUM                                    
-  110     CONTINUE                                                      
-  120     CONTINUE                    
-*------                                   
-      RETURN                                                           
-      END                                                               
+*------
+          DO  120  I = 2, NTPTS
+               M1 = MIN0(NBAND-1,NTPTS-I+1)
+          DO  110  J = 1, M1
+               SUM = 0.0
+               K1 = MIN0(I-1,NBAND-J)
+          DO  100  K = 1, K1
+               SUM = SUM + A(I-K,K+1)* A(I-K,J+K)/A(I-K,1)
+  100     CONTINUE
+               A(I,J) = A(I,J) - SUM
+  110     CONTINUE
+  120     CONTINUE
+*------
+      RETURN
+      END
 *
 *
 *
@@ -2041,9 +2041,9 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
 *
 ************************************************************************
 *      SUBROUTINE BANSOL TO MULTIPLY THE INVERSE OF LEFT TRIANGULAR FORM
-*      WITH THE RIGHT HAND SIDE VECTOR, AND THEN SOLVES FOR THE UNKNOWNS 
-*      BY BACK SUBSTITUTION PROCESS ( only the upper half band portion 
-*      of the coefficient matrix is stored as a rectangular array...)	 
+*      WITH THE RIGHT HAND SIDE VECTOR, AND THEN SOLVES FOR THE UNKNOWNS
+*      BY BACK SUBSTITUTION PROCESS ( only the upper half band portion
+*      of the coefficient matrix is stored as a rectangular array...)
 ************************************************************************
       SUBROUTINE BANSOL (A,X,B)
 *-----------------------------------------------------------------------
@@ -2051,37 +2051,37 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
       COMMON /NLIN/ NICBF,NICEL,ITER,ITLAST,ITER2,BLAMBDA,SLAMBDA,
      +              ITLAST2,TENMOD
 *-----------------------------------------------------------------------
-      DIMENSION  A(L1,L2), X(L1), B(L1)                                  
+      DIMENSION  A(L1,L2), X(L1), B(L1)
       DOUBLE PRECISION  A,X,B,SUM
 *-----------------------------------------------------------------------
    10 FORMAT(//,5X,' BAND WITH : ',I3,//)
-*------                                                                       
-               NP1 = NTPTS + 1                                             
-          DO  110  I = 2, NTPTS                                             
-               SUM = 0.0                                               
-               K1 = MIN0(NBAND-1,I-1)                                     
-          DO  100  K = 1, K1                                            
-               SUM = SUM + A(I-K,K+1)/A(I-K,1)*B(I-K)                   
-  100     CONTINUE                                                     
-               B(I) = B(I) - SUM                                       
-  110     CONTINUE                                                      
-*                                                                       
-*-----    BEGIN BACK SUBSTITUTION                                      
-*                                                                       
-               X(NTPTS) = B(NTPTS)/A(NTPTS,1)          
-          DO  130  K = 2, NTPTS                                             
-               I = NP1 - K                                              
-               J1 = I + 1                                               
-               J2 = MIN0(NTPTS,I+NBAND-1)                                     
-               SUM = 0.0                                                
-          DO  120  J = J1, J2                                           
-               MM = J - J1 + 2                                          
-               SUM = SUM + X(J)*A(I,MM)                                 
-  120     CONTINUE                                                     
-               X(I) = (B(I)-SUM)/A(I,1)                           
-  130     CONTINUE                                                      
+*------
+               NP1 = NTPTS + 1
+          DO  110  I = 2, NTPTS
+               SUM = 0.0
+               K1 = MIN0(NBAND-1,I-1)
+          DO  100  K = 1, K1
+               SUM = SUM + A(I-K,K+1)/A(I-K,1)*B(I-K)
+  100     CONTINUE
+               B(I) = B(I) - SUM
+  110     CONTINUE
+*
+*-----    BEGIN BACK SUBSTITUTION
+*
+               X(NTPTS) = B(NTPTS)/A(NTPTS,1)
+          DO  130  K = 2, NTPTS
+               I = NP1 - K
+               J1 = I + 1
+               J2 = MIN0(NTPTS,I+NBAND-1)
+               SUM = 0.0
+          DO  120  J = J1, J2
+               MM = J - J1 + 2
+               SUM = SUM + X(J)*A(I,MM)
+  120     CONTINUE
+               X(I) = (B(I)-SUM)/A(I,1)
+  130     CONTINUE
       IF(ITER.EQ.ITLAST) WRITE(8,10) NBAND
-      RETURN                                                            
+      RETURN
       END
 *
 *
@@ -2103,7 +2103,7 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
       COMMON/INT/ L4,NGAUSS
       COMMON/Q8/ EN(8),E(9,400,4,4),B(16,16)
       COMMON /NLIN/ NICBF,NICEL,ITER,ITLAST,ITER2,BLAMBDA,SLAMBDA,
-     +              ITLAST2,TENMOD      
+     +              ITLAST2,TENMOD
 *-----------------------------------------------------------------------
       DIMENSION RQ(NODES,N1), ZQ(NODES,N1), SIGMA(4,L4),KQ(NODES,N1),
      +          STRAIN(4,N1),P(L1),AVGSTR(4,L4),U(L1),XI(8),ET(8),
@@ -2126,10 +2126,10 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
 	U(2*J)= P(IZ)
    10 CONTINUE
 *------
-      II=MATID(LL) 
+      II=MATID(LL)
 *------
 *------------------------------------------------------------------------
-*	CALCULATE STRESSES @ INTEGRATION POINTS FOR NONLINEAR ANALYSIS  
+*	CALCULATE STRESSES @ INTEGRATION POINTS FOR NONLINEAR ANALYSIS
 *------------------------------------------------------------------------
       IC=0
       DO 12 NA=1, NGAUSS
@@ -2149,29 +2149,29 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
    14 CONTINUE
       DO 16 N=1, 4
         SIGNL(N,IC,LL)=0.
-        DO 18 K=1, 4	
+        DO 18 K=1, 4
 	  SIGNL(N,IC,LL)= SIGNL(N,IC,LL)+E(IC,LL,N,K)*STRNL(K,IC,LL)
      +	                  -E(IC,LL,N,K)*E0(K,LL)
    18   CONTINUE
         SIGNL(N,IC,LL)= SIGNL(N,IC,LL)+SR(N,LL)
    16 CONTINUE
-*-------  CALCULATE PRINCIPAL STRESSES 
+*-------  CALCULATE PRINCIPAL STRESSES
       SIGNL1(IC,LL)=(SIGNL(1,IC,LL)+SIGNL(3,IC,LL))/2+(((((
      +SIGNL(1,IC,LL)-SIGNL(3,IC,LL))/2)**(2))+SIGNL(4,IC,LL)**2)**(0.5))
       SIGNL3(IC,LL)=(SIGNL(1,IC,LL)+SIGNL(3,IC,LL))/2-(((((
      +SIGNL(1,IC,LL)-SIGNL(3,IC,LL))/2)**(2))+SIGNL(4,IC,LL)**2)**(0.5))
-      SIGNL2(IC,LL)=SIGNL(2,IC,LL)   
+      SIGNL2(IC,LL)=SIGNL(2,IC,LL)
       ANGLENL(IC,LL)=(0.5*(ATAN((2*SIGNL(4,IC,LL))/(SIGNL(1,IC,LL)
-     +               -SIGNL(3,IC,LL)))))*(180/3.1415927)       
+     +               -SIGNL(3,IC,LL)))))*(180/3.1415927)
    11   CONTINUE
-   12 CONTINUE 
+   12 CONTINUE
 *=======================================================================
 *	CALCULATE IF CONVERGENCE IS REACHED !...
 *=======================================================================
       IF(ITER.EQ.ITLAST) THEN
 *-----------------------------------------------------------------------
 *	STRESSES AND STRAINS ARE CALCULATED AT NODES!...
-*-----------------------------------------------------------------------      
+*-----------------------------------------------------------------------
         DO 20 I=1, NODES
 	  KK= KQ(I,LL)
 	  ICON(KK)= ICONT(KK)
@@ -2190,7 +2190,7 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
    30     CONTINUE
           DO 60 N=1, 4
             SIGMA(N,LL)=0.
-            DO 40 K=1, 4	
+            DO 40 K=1, 4
 	      SIGMA(N,LL)= SIGMA(N,LL)+E(5,LL,N,K)*STRAIN(K,LL)
      +	                   -E(5,LL,N,K)*E0(K,LL)
    40       CONTINUE
@@ -2200,20 +2200,20 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
               AVGSTR(N,KK)= AVGSTR(N,KK)+STRAIN(N,LL)
             END IF
    60     CONTINUE
-*-------   
+*-------
 *------- CALCULATE PRINCIPAL STRESSES (2 => theta)...
 *------- (angle measured counter clockwise from r-axis to sigma1 dir.)
 *-------
           SIGMA1=(SIGMA(1,LL)+SIGMA(3,LL))/2+(((((SIGMA(1,LL)
      +           -SIGMA(3,LL))/2)**(2))+SIGMA(4,LL)**2)**(0.5))
           SIGMA3=(SIGMA(1,LL)+SIGMA(3,LL))/2-(((((SIGMA(1,LL)
-     +           -SIGMA(3,LL))/2)**(2))+SIGMA(4,LL)**2)**(0.5))      
+     +           -SIGMA(3,LL))/2)**(2))+SIGMA(4,LL)**2)**(0.5))
           SIGMA2=SIGMA(2,LL)
           ANGLE=(0.5*(ATAN((2*SIGMA(4,LL))/(SIGMA(1,LL)-SIGMA(3,LL)))))
-     +           *(180/3.1415927) 
+     +           *(180/3.1415927)
 *-------------------------------------------------------------------
-*	PRINT ELEMENT STRAINS AND STRESSES... 
-*-------------------------------------------------------------------  
+*	PRINT ELEMENT STRAINS AND STRESSES...
+*-------------------------------------------------------------------
           DO 80 J=1, 20
             IF(LL.EQ.INTELM(J)) THEN
               WRITE(8,65)LL,KK
@@ -2226,16 +2226,16 @@ C	    E2EL(I,LL)= DEVTR*CA*((P0/DEVTR)**CB)
      +                'SIGMA Z:',E12.6,2X,'SIGMA RZ:',E12.6,/)
               WRITE(8,78) SIGMA1,SIGMA2,SIGMA3,ANGLE
    78         FORMAT(/,1X,'SIGMA 1:',E12.6,2X,'SIGMA 2:',E12.6,2X,
-     +                'SIGMA 3:',E12.6,2X,'ROT. ANGLE:',F6.3,/)	  
+     +                'SIGMA 3:',E12.6,2X,'ROT. ANGLE:',F6.3,/)
             END IF
    80     CONTINUE
           IF(NINTEL.EQ.NUMEL) THEN
             WRITE(8,65)LL,KK
             WRITE(8,70) (STRAIN(M,LL),M=1,4)
             WRITE(8,75) (SIGMA(M,LL),M=1,4)
-            WRITE(8,78) SIGMA1,SIGMA2,SIGMA3,ANGLE	  
-          END IF   
+            WRITE(8,78) SIGMA1,SIGMA2,SIGMA3,ANGLE
+          END IF
    20   CONTINUE
-      END IF  
+      END IF
       RETURN
-      END   
+      END
