@@ -7,7 +7,7 @@
 % 
 
 %% Control panel
-READ = false; COMPRESS = true; compress_size = 1024;
+READ = true; COMPRESS = true; compress_size = 1500;
 SEGMENT = true;
 RECONSTRUCT = false;
 
@@ -62,7 +62,8 @@ if READ
             end
 
             % Save compressed image
-            imwrite(img, fullfile(compressFolderName, fnames{i}));
+            [path, name, extension] = fileparts(fnames{i});
+            imwrite(img, fullfile(compressFolderName, strcat(name, '.png'))); % @note: DON'T save as .jpg! This will lead to lossful compression and the segmentation results will be messed up! use PNG
         end
     end
     

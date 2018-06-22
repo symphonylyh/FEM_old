@@ -235,7 +235,7 @@ ballBoundary = bwperim(ballMask, 4);
 mark = imoverlay(mark, rockBoundary, 'red');
 mark = imoverlay(mark, ballBoundary, 'yellow');
 [path, name, extension] = fileparts(filename); % path is to "Compressed folder"
-path = erase(path, '/Compressed');
+path = erase(path, '/Compressed'); % direct to the upper folder
 imwrite(mark, fullfile(path, 'Segmentation/', strcat(name, '.png')));
 imwrite(rockCrop, fullfile(path, 'Segmentation/', strcat('t', name, '_rock', '.png')));
 imwrite(ballCrop, fullfile(path, 'Segmentation/', strcat('t', name, '_ball', '.png')));
