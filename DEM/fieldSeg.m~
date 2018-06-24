@@ -7,9 +7,9 @@
 % 
 
 %% Control panel
-READ = false; COMPRESS = true; compress_size = 1024;
+READ = true; COMPRESS = false; compress_size = 1024; % Rename image file (one-time only), compress image file (if the resolution remains the same, turn off the switch)
 SEGMENT = false;
-RECONSTRUCT = true;
+RECONSTRUCT = false;
 
 % User define folder name here
 inFolderName = './samples/test/'; 
@@ -67,8 +67,38 @@ if READ
         end
     end
     
+    % Weight/Volume information
+    file = fopen(fullfile(inFolderName, 'measure.txt'));
+    title = textscan(fgetl(file), '%d %d', 'Delimiter', ' '); % volume/weight indicator: integer 0 1 
+    volumeFlag = title{1};
+    weightFlag = title{2};
+    header = textscan(fgetl(file), '%d', 'Delimiter', ' '); % number of view repetition
+    repetition = header{1};
+    i = 1; final = [];
+    while feof(file) ~= 1
+        line = textscan(fgetl(file), '%f %f', 'Delimiter', ' ');
+        if volumeFlag && weightFlag % volume and weight
+            final(i, 1) = line{1};
+            final(i, 2) = line{2};
+        elseif volumeFlag % volume only
+            final(i, 1) = line{1};
+            final(i, 2) = 0;
+        else % weight only
+            final(i, 1) = 0;
+            final(i, 2) = line{1};
+        end
+        i = i + 1;
+    end
+    final = repelem(final, repetition, 1); % repeat each elements in a matrix
+    fclose(file);
 end
-
+% Matrix 'final':
+% 1st column -- Measured volume (in cm3)
+% 2nd column -- Measured weight (in g)
+% Note: this matrix is to be used in "Reconstruction" step, the volume and
+% weight information can be updated based on assumption of specific gravity
+% Gs, and more columns such as reconstructed object volume/weight and
+% percent error. In addition, a
 %% SEGMENT: Particle and calibration ball segmentation
 if SEGMENT
     close all;

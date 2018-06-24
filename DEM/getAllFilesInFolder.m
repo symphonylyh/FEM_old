@@ -17,7 +17,7 @@ if length(finfo)>2
 
     for i=1:length(finfo)
         fnameCurr = finfo(i).name;
-        if fnameCurr(1)~='.' && ~strcmp(fnameCurr, 'Raw') && ~strcmp(fnameCurr, 'Compressed') && ~strcmp(fnameCurr, 'Segmentation') && ~strcmp(fnameCurr, 'Reconstruction') % '.' are system file, 'Segmentation' and 'Resizing' is the output folder
+        if fnameCurr(1)~='.' && ~strcmp(fnameCurr, 'measure.txt') && ~strcmp(fnameCurr, 'Raw') && ~strcmp(fnameCurr, 'Compressed') && ~strcmp(fnameCurr, 'Segmentation') && ~strcmp(fnameCurr, 'Reconstruction') % '.' are system file, 'Segmentation' and 'Resizing' is the output folder
             % Extract the filename
             fname{j} = fnameCurr;
             j=j+1;
