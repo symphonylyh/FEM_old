@@ -236,16 +236,9 @@ mark = imoverlay(mark, rockBoundary, 'red');
 mark = imoverlay(mark, ballBoundary, 'yellow');
 [path, name, extension] = fileparts(filename); % path is to "Compressed folder"
 path = erase(path, '/Compressed'); % direct to the upper folder
-
-if debug_mode
-    imwrite(mark, fullfile(path, 'Segmentation/Debug/', strcat(name, '.png')));
-    imwrite(rockCrop, fullfile(path, 'Segmentation/Debug/', strcat('t', name, '_rock', '.png')));
-    imwrite(ballCrop, fullfile(path, 'Segmentation/Debug', strcat('t', name, '_ball', '.png')));
-else
-    imwrite(mark, fullfile(path, 'Segmentation/', strcat(name, '.png')));
-    imwrite(rockCrop, fullfile(path, 'Segmentation/', strcat('t', name, '_rock', '.png')));
-    imwrite(ballCrop, fullfile(path, 'Segmentation/', strcat('t', name, '_ball', '.png')));
-end
+imwrite(mark, fullfile(path, 'Segmentation/', strcat(name, '.png')));
+imwrite(rockCrop, fullfile(path, 'Segmentation/', strcat('t', name, '_rock', '.png')));
+imwrite(ballCrop, fullfile(path, 'Segmentation/', strcat('t', name, '_ball', '.png')));
 
 % Visualize result
 if PLOT

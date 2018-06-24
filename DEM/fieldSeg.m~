@@ -67,8 +67,6 @@ if READ
         end
     end
     
-    % Weight/Volume information
-    
 end
 
 %% SEGMENT: Particle and calibration ball segmentation
