@@ -1,4 +1,4 @@
-function [voxel, sphericity] = reconstruct3D(views, D)
+function [voxel, sphericity] = reconstruct3D(views, D, debug_mode)
 % 3D reconstruction based on three near-orthogonal views.
 %
 % Input:
@@ -11,7 +11,7 @@ function [voxel, sphericity] = reconstruct3D(views, D)
 
 close all;
 
-PLOT = false;
+PLOT = debug_mode;
 
 % Normalize/Scale with respect to the *top* view based on the diameter ratio of calibration ball
 views{2} = imresize(views{2}, D(1) / D(2));

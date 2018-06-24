@@ -7,15 +7,15 @@
 % 
 
 %% Control panel
-READ = true; COMPRESS = false; compress_size = 1024; % Rename image file (one-time only), compress image file (if the resolution remains the same, turn off the switch)
+READ = false; COMPRESS = false; compress_size = 1024; % Rename image file (one-time only), compress image file (if the resolution remains the same, turn off the switch)
 SEGMENT = false;
-RECONSTRUCT = false;
+RECONSTRUCT = true;
 
 % User define folder name here
 inFolderName = './samples/test/'; 
 
-%% READ: Read image files and weight summary
-if READ   
+%% READ: Read image files
+if READ  
     % Create output folder for raw images
     rawFolderName = strcat(inFolderName, 'Raw/');
     if ~exist(rawFolderName, 'dir')
@@ -67,40 +67,7 @@ if READ
         end
     end
     
-    % Weight/Volume information
-    file = fopen(fullfile(inFolderName, 'measure.txt'));
-    title = textscan(fgetl(file), '%d %d', 'Delimiter', ' '); % volume/weight indicator: integer 0 1 
-    volumeFlag = title{1};
-    weightFlag = title{2};
-    header = textscan(fgetl(file), '%d', 'Delimiter', ' '); % number of view repetition
-    repetition = header{1};
-    i = 1; final = [];
-    while feof(file) ~= 1
-        line = textscan(fgetl(file), '%f %f', 'Delimiter', ' ');
-        if volumeFlag && weightFlag % volume and weight
-            final(i, 1) = line{1};
-            final(i, 2) = line{2};
-        elseif volumeFlag % volume only
-            final(i, 1) = line{1};
-            final(i, 2) = 0;
-        else % weight only
-            final(i, 1) = 0;
-            final(i, 2) = line{1};
-        end
-        i = i + 1;
-    end
-    final_full = repelem(final, repetition, 1); % repeat each elements in a matrix
-    fclose(file);
 end
-% Matrix 'final_full':
-% 1st column -- Measured volume (in cm3)
-% 2nd column -- Measured weight (in g)
-% Note: this matrix is to be used in "Reconstruction" step, the volume and
-% weight information can be updated based on assumption of specific gravity
-% Gs, and more columns such as reconstructed object volume/weight and
-% percent error. In addition, another matrix showing the statistics such
-% as mean value and standard deviation should be constructed per object, on
-% the basis of Matrix 'final'.
 
 %% SEGMENT: Particle and calibration ball segmentation
 if SEGMENT
@@ -117,7 +84,7 @@ if SEGMENT
     end
     
     % Group segmentation or single segmentation based on user's option
-    DEBUG = true; object = 1; view = 2; % designate the object & view (1-top;2-front;3-side) to debug
+    DEBUG = false; object = 1; view = 2; % designate the object & view (1-top;2-front;3-side) to debug
     if DEBUG
         % Create debug folder or clear existing folder
         debugFolderName = strcat(segFolderName, 'Debug/');
@@ -160,6 +127,36 @@ end
 %% RECONSTRUCT: 3D reconstruction and volume estimation
 if RECONSTRUCT
     close all;
+    
+    % Read measured weight/volume information
+    file = fopen(fullfile(inFolderName, 'measure.txt'));
+    line1 = textscan(fgetl(file), '%d %d', 'Delimiter', ' '); % volume/weight indicator: integer 0 1 
+    volumeFlag = line1{1};
+    weightFlag = line1{2};
+    line2 = textscan(fgetl(file), '%d', 'Delimiter', ' '); % number of view repetition
+    repetition = line2{1};
+    i = 1; final = [];
+    while feof(file) ~= 1
+        line = textscan(fgetl(file), '%f %f', 'Delimiter', ' ');
+        if volumeFlag && weightFlag % volume and weight
+            final(i, 1) = line{1};
+            final(i, 2) = line{2};
+        elseif volumeFlag % volume only
+            final(i, 1) = line{1};
+            final(i, 2) = 0;
+        else % weight only
+            final(i, 1) = 0;
+            final(i, 2) = line{1};
+        end
+        i = i + 1;
+    end
+    final_full = repelem(final, repetition, 1); % repeat each elements in a matrix
+    fclose(file);
+    % Matrix 'final':
+    % 1st column -- Measured volume (in cm3)
+    % 2nd column -- Measured weight (in g)
+    % Matrix 'final_full': the replicated 'final' based on object
+    % repetition
 
     % Locate input files
     segFolderName = strcat(inFolderName, 'Segmentation/');
@@ -173,7 +170,7 @@ if RECONSTRUCT
     end
     
     % Group reconstruction or single reconstruction based on user's option
-    DEBUG = true; object = 1; % designate the object to debug
+    DEBUG = false; object = 1; % designate the object to debug
     if DEBUG
         % Create debug folder or clear existing folder
         debugFolderName = strcat(reconFolderName, 'Debug/');
@@ -187,12 +184,30 @@ if RECONSTRUCT
         for view = 1 : 3
             rocks{view} = imread(fullfile(segFolderName, strcat('timg', sprintf('%04d', object), '_', num2str(view - 1), '_rock.png')));
             balls{view} = imread(fullfile(segFolderName, strcat('timg', sprintf('%04d', object), '_', num2str(view - 1), '_ball.png')));
-            D(view) = info(2 * object, view);
-            %D(view) = min(size(balls{view}));
+            D(view) = info(2 * object, view); % D(view) = min(size(balls{view}));
             R(view) = info(2 * object - 1, view);
         end
-        rockVoxel = reconstruct3D(rocks, D);
-        ballVoxel = reconstruct3D(balls, D);
+        rockVoxel = reconstruct3D(rocks, D, DEBUG);
+        ballVoxel = reconstruct3D(balls, D, DEBUG);
+        rockVolume =  0.8 * rockVoxel / ballVoxel * 8 * (2 - sqrt(2)) * 0.5^3 * 16.3871; % the orthogonal intersection volume of a sphere
+        
+        % Plot volume comparsion
+        figure; hold on;
+        range = 2000;
+        xlim([0 range]), ylim([0 range]), pbaspect([1 1 1]);
+        handle = zeros(4, 1);
+        handle(1) = plot(final_full(object,1), rockVolume, '*r');  % data point
+        refLine = linspace(0, range, 6); 
+        percent10Error = refLine .* 0.1;
+        percent20Error = refLine .* 0.2;
+        handle(2) = plot(refLine, refLine, '-k', 'LineWidth', 1); % 45 deg reference line
+        handle(3) = plot(refLine, refLine + percent10Error, '--g', 'LineWidth', 1); % 10% error range line
+        plot(refLine, refLine - percent10Error, '--g', 'LineWidth', 1);
+        handle(4) = plot(refLine, refLine + percent20Error, '--b', 'LineWidth', 1); % 20% error range line
+        plot(refLine, refLine - percent20Error, '--b', 'LineWidth', 1);
+        legend(handle, 'Reconstructed Volume', 'Reference Line', '10% Eror', '20% Error', 'Location', 'NorthWest');
+        title('Volume Comparsion'), xlabel('Actual Volume (in cm3)'), ylabel('Reconstructed Volume (in cm3)');
+        % saveas(gcf, fullfile(debugFolderName, 'comparison_volume.png'));
     else
         % Calculate the benchmarked dimensions (x,y,z) from the least squares 
         % solution of the linear system
@@ -205,53 +220,93 @@ if RECONSTRUCT
             for j = 1 : 3
                 rocks{j} = imread(fullfile(segFolderName, strcat('timg', sprintf('%04d', i), '_', num2str(j - 1), '_rock.png')));
                 balls{j} = imread(fullfile(segFolderName, strcat('timg', sprintf('%04d', i), '_', num2str(j - 1), '_ball.png')));
-                D(j) = info(2 * i, j);
-                %D(j) = min(size(balls{j}));
+                D(j) = info(2 * i, j); % D(j) = min(size(balls{j})); % options: use equivalent diameter, or the minimum diameter
                 R(j) = info(2 * i - 1, j);
             end
-            rockVoxel = reconstruct3D(rocks, D);
-            %holeRatio = 1 - mean(R);
-            holeRatio = 1 / (5 * mean(R));
-            %rockVoxel = rockVoxel * holeRatio;
-            [ballVoxel, sphericity] = reconstruct3D(balls, D);
-    %         rockVolume = rockVoxel / (4 / 3 * 3.1415926 * (D(1)/2)^3) * 0.523599 * 16.3871;
+            rockVoxel = reconstruct3D(rocks, D, DEBUG);
+            [ballVoxel, sphericity] = reconstruct3D(balls, D, DEBUG);
+            % Options for the calibration ball volume: 
+            % 1. Actual 1 in. ball volume is 4/3*PI*R^3 = 0.523599 in3
+            % use the ball diameter in top view to compute volume from the
+            % volume equation
+            % 2. Assume the reconstructed body is exactly the 1 in. ball
+            % volume            
+            % 3. Theoretical 3D reconstructed ball is not a sphere, but a
+            % intersected body with volume V = 8(2 - sqrt(2))R^3
+            % use the reconstructed ball voxel to compute the rock volume
+            % Note: an overall calibration factor is needed b/c the
+            % reconstructed volume is consistently greater than the actual,
+            % by default 0.8
+            % Ref: http://xuxzmail.blog.163.com/blog/static/25131916200974113416209/
+            
+            % rockVolume = 0.8 * rockVoxel / (4 / 3 * 3.1415926 * (D(1)/2)^3) * 0.523599 * 16.3871;
+            % rockVolume = 0.8 * rockVoxel / ballVoxel * 0.523599 * 16.3871; % calibration ball is V = 4/3 * PI * R3 = 0.523599 in3; 1 in3 = 16.3871 cm3
             rockVolume =  0.8 * rockVoxel / ballVoxel * 8 * (2 - sqrt(2)) * 0.5^3 * 16.3871; % the orthogonal intersection volume of a sphere
-            % rockVolume = rockVoxel / ballVoxel * 0.523599 * 16.3871; % calibration ball is V = 4/3 * PI * R3 = 0.523599 in3; 1 in3 = 16.3871 cm3
-            rockWeight = rockVolume * 2.65; % typically rock density 2.65g/cm3
+            Gs = 2.65; % typical specific gravity of rock = 2.65g/cm3
+            rockWeight = rockVolume * Gs; 
             volumes(i, 1) = rockVolume;
             weights(i, 1) = rockWeight;
-            sphere(i,1) = sphericity;
+            % sphere(i,1) = sphericity; % not used
+            
+            % Volume correction based on hole ratio (not used for now)
+            % holeRatio = 1 - mean(R);
+            % rockVoxel = rockVoxel * holeRatio; 
+
             % Save the 3D voxel array to disk
             % save(fullfile(reconFolderName, 'volume.mhat'), 'volume');     
         end
-
-        % weights(:, 2) = [3175.15; 2487.7; 2463.9; 2955.1; 2235.8; 1712.5]; % old measure
-        % weights(:, 2) = [3214.9; 2487.7; 2463.9; 2955.1; 2235.8; 1712.5]; % new measure
-        % volumes(:, 2) = [1254.8; 916.4; 947.8; 1149.6; 871.7; 636.3]; % submerge measure
-        % weights(:, 2) = [2235.8; 2235.8; 2235.8; 2235.8; 2235.8; 2235.8; 2487.7; 2487.7; 2487.7; 2487.7; 2487.7; 2487.7; 2955.1; 2955.1; 2955.1; 2955.1; 2955.1; 2955.1];
-        volumes(:, 2) = [871.7; 871.7; 871.7; 871.7; 871.7; 871.7; 916.4;916.4; 916.4; 916.4; 916.4; 916.4; 1149.6; 1149.6; 1149.6; 1149.6;1149.6; 1149.6]; % May 30th
-        %volumes(:, 2) = [636.3;636.3;636.3;636.3;636.3;636.3;947.8;947.8;947.8;947.8;947.8;947.8;1254.8;1254.8;1254.8;1254.8;1254.8;1254.8]; % June 6th
-        error = (volumes(:,1) - volumes(:,2)) ./ volumes(:,2) * 100; % percentage
-        % error = (weights(:,1) - weights(:,2)) ./ weights(:,2) * 100;
-        figure; hold on;
-        % plot(weights(:,2), weights(:,1), '*r'), xlim([0 4000]), ylim([0 4000]);
-        plot(volumes(:,2), volumes(:,1), '*r'), xlim([0 2000]), ylim([0 2000]);
-        text(volumes(:,2), volumes(:,1)- 500, num2str([1:18]'));
-        % average
-    %     plot(volumes(1,2), mean(volumes(1:6,1)), 'ob');
-    %     plot(volumes(7,2), mean(volumes(7:12,1)), 'ob');
-    %     plot(volumes(13,2), mean(volumes(13:18,1)), 'ob');
-        xlabel('Actual Volume (in cm3)'), ylabel('Reconstructed Volume (in cm3)');
-        rangeLine = 0:500:2000;
-        plot(rangeLine, rangeLine, '-k', 'LineWidth', 1);
-        percent10Error = rangeLine .* 0.1;
-        percent20Error = rangeLine .* 0.2;
-        plot(rangeLine, rangeLine + percent10Error, '--b', 'LineWidth', 1);
-        plot(rangeLine, rangeLine + percent20Error, '--g', 'LineWidth', 1);
-        plot(rangeLine, rangeLine - percent10Error, '--b', 'LineWidth', 1);
-        plot(rangeLine, rangeLine - percent20Error, '--g', 'LineWidth', 1);
-        legend('Data points', 'Reference Line', '10% Eror', '20% Error', 'Location', 'NorthWest');
-        saveas(gcf, './plot1.png');
+        
+        % For full results
+        error_volume = (volumes - final_full(:, 1)) ./ final_full(:, 1) * 100;
+        error_weight = (weights - final_full(:, 2)) ./ final_full(:, 2) * 100;
+        final_full = [final_full(:, 1) volumes error_volume final_full(:, 2) weights error_weight];
+        
+        % For average results
+        volumes = reshape(volumes, repetition, []); % reshape the matrix
+        mean_volume = mean(volumes, 1)'; % take the mean every n repetitons
+        error_volume = (mean_volume - final(:, 1)) ./ final(:, 1) * 100;
+        weights = reshape(weights, repetition, []);
+        mean_weight = mean(weights, 1)';
+        error_weight = (mean_weight - final(:, 2)) ./ final(:, 2) * 100;
+        final = [final(:, 1) mean_volume error_volume final(:, 2) mean_weight error_weight];
+        
+        % Plot volume comparsion
+        figure(1); hold on;
+        range = 2000;
+        xlim([0 range]), ylim([0 range]), pbaspect([1 1 1]); 
+        handle = zeros(5, 1);
+        handle(1) = plot(final_full(:,1), final_full(:,2), '*r'); % data point
+        handle(2) = plot(final(:, 1), final(:, 2), 'ob'); % average value
+        refLine = linspace(0, range, 6); 
+        percent10Error = refLine .* 0.1;
+        percent20Error = refLine .* 0.2;
+        handle(3) = plot(refLine, refLine, '-k', 'LineWidth', 1); % 45 deg reference line
+        handle(4) = plot(refLine, refLine + percent10Error, '--g', 'LineWidth', 1); % 10% error range line
+        plot(refLine, refLine - percent10Error, '--g', 'LineWidth', 1);
+        handle(5) = plot(refLine, refLine + percent20Error, '--b', 'LineWidth', 1); % 20% error range line
+        plot(refLine, refLine - percent20Error, '--b', 'LineWidth', 1);
+        title('Volume Comparsion'), xlabel('Actual Volume (in cm3)'), ylabel('Reconstructed Volume (in cm3)');
+        legend(handle, 'Reconstructed Volume', 'Average Volume', 'Reference Line', '10% Eror', '20% Error', 'Location', 'NorthWest');
+        % saveas(gcf, fullfile(reconFolderName, 'comparison_volume.png'));
+        
+        % Plot weight comparison
+        figure(2); hold on;
+        range = 4000;
+        xlim([0 range]), ylim([0 range]), pbaspect([1 1 1]);
+        handle = zeros(5, 1);
+        handle(1) = plot(final_full(:,4), final_full(:,5), '*r'); % data point
+        handle(2) = plot(final(:, 4), final(:, 5), 'ob'); % average value
+        refLine = linspace(0, range, 6);
+        percent10Error = refLine .* 0.1;
+        percent20Error = refLine .* 0.2;
+        handle(3) = plot(refLine, refLine, '-k', 'LineWidth', 1); % 45 deg reference line
+        handle(4) = plot(refLine, refLine + percent10Error, '--g', 'LineWidth', 1); % 10% error range line
+        plot(refLine, refLine - percent10Error, '--g', 'LineWidth', 1);
+        handle(5) = plot(refLine, refLine + percent20Error, '--b', 'LineWidth', 1); % 20% error range line
+        plot(refLine, refLine - percent20Error, '--b', 'LineWidth', 1);
+        title('Weight Comparsion'), xlabel('Actual Weight (in g)'), ylabel('Reconstructed Weight (in g)');
+        legend(handle, 'Reconstructed Weight', 'Average Weight', 'Reference Line', '10% Eror', '20% Error', 'Location', 'NorthWest');
+        % saveas(gcf, fullfile(reconFolderName, 'comparison_weight.png'));
     end
     
 end
