@@ -7,12 +7,12 @@
 % 
 
 %% Control panel
-READ = false; COMPRESS = false; compress_size = 1024; % Rename image file (one-time only), compress image file (if the resolution remains the same, turn off the switch)
-SEGMENT = false;
-RECONSTRUCT = true;
+READ = false; COMPRESS = true; compress_size = 1024; % Rename image file (one-time only), compress image file (if the resolution remains the same, turn off the switch)
+SEGMENT = true;
+RECONSTRUCT = false;
 
 % User define folder name here
-inFolderName = './samples/test/'; 
+inFolderName = './samples/Jun_25_2018/'; 
 
 %% READ: Read image files
 if READ  
@@ -84,7 +84,7 @@ if SEGMENT
     end
     
     % Group segmentation or single segmentation based on user's option
-    DEBUG = false; object = 1; view = 2; % designate the object & view (1-top;2-front;3-side) to debug
+    DEBUG = true; object = 1; view = 1; % designate the object & view (1-top;2-front;3-side) to debug
     if DEBUG
         % Create debug folder or clear existing folder
         debugFolderName = strcat(segFolderName, 'Debug/');

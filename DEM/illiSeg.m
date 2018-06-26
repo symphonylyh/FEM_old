@@ -2,7 +2,7 @@ function results = illiSeg(filename, debug_mode)
 
 %% Control panel
 close all;
-PLOT = false; % show procedural figures
+PLOT = true; % show procedural figures
 PRINT = false; % save figures
 BOUNDARY_ENHANCE = true; % enhance boundary information
 HOLE_DETECTION = false; % detect holes on rock surface
@@ -129,7 +129,7 @@ if BOUNDARY_ENHANCE
 end
 
 % Binarize the distance map
-bw = ~imbinarize(dist, 0.2); % old: bw = ~imbinarize(dist);
+bw = ~imbinarize(dist, 0.15); % old: bw = ~imbinarize(dist); the threshold can be adjusted 0.15, 0.2 or other number
 bw(shadow) = 0; % can be omitted, this is used to ensure shadow edge is not recognized as objecct boundary
 
 if PLOT
@@ -137,11 +137,11 @@ if PLOT
 end
 
 % Morphological operations on binary image
-bw = imdilate(bw, strel('disk', 2 * sigma)); % obtain a closed boundary
+bw = imdilate(bw, strel('disk', 2 * sigma)); % obtain a closed boundary, old: 2 * sigma
 bw = imfill(bw, 4, 'holes'); % fill holes inside a connected region, 8-connected is more strict and fill fewer holes
 bw = imerode(bw, strel('disk', 2 * sigma)); % imdilate's correspondence
-bw = imopen(bw, strel('disk', 2* sigma)); % open: open holes (or remove objects), erode + dilate
-bw = bwareaopen(bw, ceil(h/100) * ceil(w/100)); % remove small object
+bw = imopen(bw, strel('disk', 2 * sigma)); % open: open holes (or remove objects), erode + dilate, old: 2 * sigma
+bw = bwareaopen(bw, ceil(h/100) * ceil(w/100)); % remove small object, old: ceil(h/100) * ceil(w/100)
 bw = imclearborder(bw, 8); % clear meaningless regions that are connected to image border
 
 % only for now
