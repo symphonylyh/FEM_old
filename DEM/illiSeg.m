@@ -2,7 +2,7 @@ function results = illiSeg(filename, debug_mode)
 
 %% Control panel
 close all;
-PLOT = true; % show procedural figures
+PLOT = debug_mode; % show procedural figures
 PRINT = false; % save figures
 BOUNDARY_ENHANCE = true; % enhance boundary information
 HOLE_DETECTION = false; % detect holes on rock surface
@@ -17,6 +17,73 @@ sigma = floor(max(h,w) / 500); % estimate filter size based on image size
 % prominent edges when suppressing noises. Later in the gradient map, the
 % extraction of boundary becomes eaiser.
 rgb = imguidedfilter(img, 'NeighborhoodSize', 2 * sigma + 1); 
+
+%% Color Segmentation in HSV color space (for calibration ball)
+% Note: 
+% Works fine for June 29th images when the ball is facing direct, strong
+% sunlight so it is very close to pure white. However, for indoor lighting
+% and complex scenes this does not work perfectly. 
+% Default param: S < 0.5 & V > 0.5
+% For indoor: S < 0.2 & V > 0.8 or ~imbinarize(S) & imbinarize(V)
+% bwareaopen() should use 4-connector!
+
+% CIE Lab color space does not perfectly handle shadow & highlight area
+% (b/c the color difference will converge to the two Lab poles for the
+% brightest and darkest region.
+% In HSV space, the white color is ~0 in Saturation channel & ~1 in Value
+% (Illuminance) channel. With this information and the prior that the
+% calibration ball is white, we can segment the calibration ball from the
+% regional properties with ~0 eccentricity (circular shape).
+
+% Convert to HSV color space
+hsv = rgb2hsv(rgb);
+H = hsv(:,:,1);
+S = hsv(:,:,2);
+V = hsv(:,:,3);
+
+% figure(1);
+% [ha, pos] = tight_subplot(1,4,[.01 .01],[.01 .01],[.01 .01]);
+% axes(ha(1)), imshow(img), title('Original Image');
+% axes(ha(2)), imshow(H), title('H Channel');
+% axes(ha(3)), imshow(S), title('S Channel');
+% axes(ha(4)), imshow(V), title('V Channel');
+
+% Select white region
+mask = S < 0.5 & V > 0.5;
+mask = imopen(mask, strel('disk', sigma)); % remove noises
+mask = bwareaopen(mask, ceil(h/50) * ceil(w/50), 4); % remove small objects 
+% figure(2), imshow(mask);
+
+% Segment ball region based on eccentricity
+[Label,N] = bwlabel(mask, 4); 
+stats = regionprops(Label, 'Eccentricity', 'BoundingBox'); 
+eccen = [stats.Eccentricity];
+box = [stats.BoundingBox];
+[eccen, ind] = sort(eccen, 'ascend');
+ballIdx = ind(1);
+ballMask = ismember(Label, ballIdx);
+ballCrop = imcrop(ballMask,box(4*(ballIdx-1)+1:4*(ballIdx-1)+4));
+% figure(3),imshow(img), hold on, visboundaries(ballMask, 'Color', 'r');
+
+% Get the perimeter of each object and burn it onto the raw image
+ballBoundary = bwperim(ballMask, 4);
+mark = imoverlay(img, ballBoundary, 'yellow');
+[path, name, extension] = fileparts(filename); % path is to "Compressed folder"
+path = erase(path, '/Compressed'); % direct to the upper folder
+
+if debug_mode
+%     imwrite(mark, fullfile(path, 'Segmentation/Debug/', strcat(name, '.png')));
+%     imwrite(ballCrop, fullfile(path, 'Segmentation/Debug', strcat('t', name, '_ball', '.png')));
+else
+    imwrite(mark, fullfile(path, 'Segmentation/', strcat(name, '.png')));
+    imwrite(ballCrop, fullfile(path, 'Segmentation/', strcat('t', name, '_ball', '.png')));
+end
+
+results = [0;0];
+return;
+
+
+
 
 %% Color segmentation in CIE L*a*b* color space
 % Advantages: be able to work independently of luminance. In HSV space, it
@@ -57,6 +124,19 @@ L = mat2gray(L);
 a = mat2gray(a);
 b = mat2gray(b);
 
+figure(2);
+[ha, pos] = tight_subplot(1,4,[.01 .01],[.01 .01],[.01 .01]);
+axes(ha(1)), imshow(img), title('Original Image');
+axes(ha(2)), imshow(L), title('L Channel');
+axes(ha(3)), imshow(a), title('a Channel');
+axes(ha(4)), imshow(b), title('b Channel');
+
+% [LMag, LDir] = imgradient(L);
+% shadow = ~imbinarize(L, 0.4);
+% LMag2 = LMag;
+% LMag2(shadow) = 0;
+% imshowpair(LMag, LMag2, 'montage');
+
 if PLOT
     a_plot = a;
     b_plot = b;
@@ -66,15 +146,30 @@ end
 % the object from the background
 [Acounts, Avalues] = imhist(a);
 Adistribution = cumsum(Acounts);
-Apeaks = findchangepts(Adistribution, 'MaxNumChanges', 10);
+Apeaks = findchangepts(Adistribution, 'MaxNumChanges', 20); % old: 10
 A = Avalues(Apeaks(10));
     
 [Bcounts, Bvalues] = imhist(b);
 Bdistribution = cumsum(Bcounts);
-Bpeaks = findchangepts(Bdistribution, 'MaxNumChanges', 10);
+Bpeaks = findchangepts(Bdistribution, 'MaxNumChanges', 20);
 B = Bvalues(Bpeaks(10));
 
-dist = abs((a - A)/5).^2 + abs((b - B)/2).^2; % normalize w.r.t. the different ranges in a & b space % this approach is still problematic, can also try: max(abs((a - A)/5).^2, abs((b - B)/2).^2)
+% figure(1);
+% subplot(2,3,1), imshow(a_plot), title('a Channel');
+% subplot(2,3,2), bar(Avalues, Acounts), title('Pixel histogram of a channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Pixel Count', 'FontSize', 10);
+% subplot(2,3,3), plot(Avalues, Adistribution, '-r'), y1 = get(gca, 'ylim'); hold on, plot([A A], y1, '--b'), title('Pixel cdf of a channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Cumulative sum', 'FontSize', 10);
+% 
+% subplot(2,3,4), imshow(b_plot), title('b Channel');
+% subplot(2,3,5), bar(Bvalues, Bcounts), title('Pixel histogram of b channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Pixel Count', 'FontSize', 10);  
+% subplot(2,3,6), plot(Bvalues, Bdistribution, '-r'), y2 = get(gca, 'ylim'); hold on, plot([B B], y2, '--b'), title('Pixel cdf of b channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Cumulative sum', 'FontSize', 10);
+% tightfig;
+    
+highlight = imbinarize(L, 0.95); % choose the top 5% brightness as highlight
+a(highlight) = 1;
+b(highlight) = 1;
+
+dist = abs(b - B).^2;% old : abs((a - A)/5).^2 + abs((b - B)/2).^2; % normalize w.r.t. the different ranges in a & b space % this approach is still problematic, can also try: max(abs((a - A)/5).^2, abs((b - B)/2).^2)
+%dist = abs((a - A)/5).^2 + abs((b - B)/2).^2;
 dist = mat2gray(dist); % scale to [0,1]
 
 if PLOT
@@ -85,8 +180,21 @@ end
 % ball, i.e., specular reflection) and enhance that portion in a and b
 % channels (because the most illuminant part is suppressed in a and b)
 highlight = imbinarize(L, 0.95); % choose the top 5% brightness as highlight
-shadow = ~imbinarize(L, 0.3); % choose the bottom 30% brightness as shadow
+%shadow = ~imbinarize(L_new, 0.3); % choose the bottom 30% brightness as shadow
 
+shadow = L < 0.3 & b < 0.3;%~imbinarize(L, 0.3); % choose the bottom 30% brightness as shadow
+shadow_new = imguidedfilter(shadow, 'NeighborhoodSize', 2 * sigma + 1);
+% figure(1), imshowpair(L, b, 'montage');
+% figure(2), imshowpair(shadow, shadow_new, 'montage');
+mask = b .* shadow_new;
+%figure(3),imshowpair(b, mask, 'montage');
+new_shadow = mask > 0 & (b .* shadow_new) < 0.3;
+new_shadow = imdilate(new_shadow,strel('disk',sigma));
+%figure(4),imshowpair(shadow_new,new_shadow,'montage'); 
+
+%imshowpair(L, shadow, 'montage');
+%shadow = imguidedfilter(shadow, 'NeighborhoodSize', 1); 
+%shadow = imdilate(shadow, strel('disk', 1));
 % Extract the highlight portion and supplement it to a and b channels
 % before doing boundary enhancement
 a(highlight) = A; % to avoid introduce artifact, set to the average object value. 
@@ -114,35 +222,55 @@ if BOUNDARY_ENHANCE
     % ---------------------------------------------------------------------
     
     % Extract object boundary based on gradient information of a & b channels
-    %[LMag, LDir] = imgradient(L); % @note: shouldn't include info from L channel since it will recognize shadow area as boundary
+    [LMag, LDir] = imgradient(L); % @note: shouldn't include info from L channel since it will recognize shadow area as boundary
+     LMag(shadow) = 0;
     [aMag, aDir] = imgradient(a);
     [bMag, bDir] = imgradient(b);
     
     % Overlap the boundary information from multiple channels
     % boundary = aMag+bMag; % @note: previous version by adding. Not reasonable because a and b could cancel instead of complementing each other
-    boundary = max(aMag,bMag);  
+    boundary = max(aMag, bMag);
+    %boundary = max(LMag, max(aMag,bMag)); % old: max(aMag,bMag); 
     boundary = imguidedfilter(boundary, 'NeighborhoodSize', 2 * sigma + 1); % this step is important! Guided filter is powerful...it's like double-enhancing the boundary
     boundaryMask = imbinarize(boundary);
-        
+    
+    % new
+    %boundaryMask = imfill(boundaryMask, 4, 'holes');
+    %boundaryMask = imerode(boundaryMask, strel('disk', 1));
+    boundaryMask(new_shadow) = 0;
+    
     % Enhance the boundary pixels in the distance map 
-    dist(boundaryMask) = 0; 
+    dist(boundaryMask) = 1; 
 end
 
+% new
+dist_erode = imerode(dist, strel('disk', 2 * sigma)); % erosion is essentially a local-minima convolution kernal, it assign the minimum pixel in the window to the center pixel. Dilation is local-maxima opeartor. This is true for both grayscale and binary image. 
+dist_reconstruct = imreconstruct(dist_erode, dist); % image reconstruction is like given a seed location, and dilate many times until it is similar to the target, imreconstruct(seed, target). usually seed is got by erosion (by focusing on the highlight part), and target is usually just the original image. The result is a smoothed/denoised shape-preserving image.
+dist_dilate = imdilate(dist_reconstruct, strel('disk', 2 * sigma));
+dist_reconstruct = imreconstruct(imcomplement(dist_dilate), imcomplement(dist_reconstruct)); % imreconstruct works on light pixels, so should use complement image
+dist_reconstruct = imcomplement(dist_reconstruct);
+
 % Binarize the distance map
-bw = ~imbinarize(dist, 0.15); % old: bw = ~imbinarize(dist); the threshold can be adjusted 0.15, 0.2 or other number
+bw = imbinarize(dist, 0.1); % old: bw = ~imbinarize(dist); the threshold can be adjusted 0.15, 0.2 or other number
+% bw_old = bw;
 bw(shadow) = 0; % can be omitted, this is used to ensure shadow edge is not recognized as objecct boundary
+
+% figure(1), imshow(shadow);
+% figure(2),imshowpair(bw_old, bw, 'montage');
 
 if PLOT
     bw_plot = bw;
 end
 
 % Morphological operations on binary image
-bw = imdilate(bw, strel('disk', 2 * sigma)); % obtain a closed boundary, old: 2 * sigma
+bw = imdilate(bw, strel('disk', 2 *sigma)); % obtain a closed boundary, old: 2 * sigma
 bw = imfill(bw, 4, 'holes'); % fill holes inside a connected region, 8-connected is more strict and fill fewer holes
 bw = imerode(bw, strel('disk', 2 * sigma)); % imdilate's correspondence
 bw = imopen(bw, strel('disk', 2 * sigma)); % open: open holes (or remove objects), erode + dilate, old: 2 * sigma
 bw = bwareaopen(bw, ceil(h/100) * ceil(w/100)); % remove small object, old: ceil(h/100) * ceil(w/100)
 bw = imclearborder(bw, 8); % clear meaningless regions that are connected to image border
+
+
 
 % only for now
 % imshow(img);
@@ -200,6 +328,12 @@ if PLOT
     if PRINT
         print('threshold image.png', '-r300', '-dpng');
     end
+    
+    figure(fig); fig = fig + 1;
+    imshow(img);
+    bd = bwperim(bw);
+    hold on;
+    visboundaries(bd, 'LineWidth', 1);
 end
 
 %% Obtain region properties and geometric features
@@ -249,12 +383,12 @@ end
 
 % Visualize result
 if PLOT
-    figure(fig); fig = fig + 1;
-    imshow(rockCrop), title('Cropped Object');
-    if PRINT
-        imwrite(rockCrop, 'timg100001.png'); % format of E-UIAIA input: timgx000N.png. x: front(0)/top(1)/side(2), N: image No.
-    end
-    
+%     figure(fig); fig = fig + 1;
+%     imshow(rockCrop), title('Cropped Object');
+%     if PRINT
+%         imwrite(rockCrop, 'timg100001.png'); % format of E-UIAIA input: timgx000N.png. x: front(0)/top(1)/side(2), N: image No.
+%     end
+%     
     figure(fig); fig = fig + 1;
     imshow(img);% , title('Boundary Detection');
     hold on;

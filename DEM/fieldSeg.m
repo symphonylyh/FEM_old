@@ -12,7 +12,7 @@ SEGMENT = true;
 RECONSTRUCT = false;
 
 % User define folder name here
-inFolderName = './samples/Jun_25_2018/'; 
+inFolderName = './samples/Jun_29_2018/'; 
 
 %% READ: Read image files
 if READ  
@@ -77,6 +77,9 @@ if SEGMENT
     compressFolderName = strcat(inFolderName, 'Compressed/');
     fnames = getAllFilesInFolder(compressFolderName);
     
+%     rawFolderName = strcat(inFolderName, 'Raw/');
+%     fnames = getAllFilesInFolder(rawFolderName);
+    
     % Create output folder
     segFolderName = strcat(inFolderName, 'Segmentation/');
     if ~exist(segFolderName, 'dir')
@@ -84,7 +87,7 @@ if SEGMENT
     end
     
     % Group segmentation or single segmentation based on user's option
-    DEBUG = true; object = 1; view = 1; % designate the object & view (1-top;2-front;3-side) to debug
+    DEBUG = false; object = 3; view = 3; % designate the object & view (1-top;2-front;3-side) to debug
     if DEBUG
         % Create debug folder or clear existing folder
         debugFolderName = strcat(segFolderName, 'Debug/');
@@ -94,7 +97,7 @@ if SEGMENT
             % Clear existing files in debug folder
             delete(strcat(debugFolderName, '*'));
         end
-        % Debug individual image
+        % Debug individual image (either illiSeg or illiSeg_old)
         result = illiSeg(fullfile(compressFolderName, fnames{(object - 1) * 3 + view}), DEBUG);
     else
         summary = [];
@@ -170,7 +173,7 @@ if RECONSTRUCT
     end
     
     % Group reconstruction or single reconstruction based on user's option
-    DEBUG = false; object = 1; % designate the object to debug
+    DEBUG = true; object = 1; % designate the object to debug
     if DEBUG
         % Create debug folder or clear existing folder
         debugFolderName = strcat(reconFolderName, 'Debug/');
@@ -188,8 +191,8 @@ if RECONSTRUCT
             R(view) = info(2 * object - 1, view);
         end
         rockVoxel = reconstruct3D(rocks, D, DEBUG);
-        ballVoxel = reconstruct3D(balls, D, DEBUG);
-        rockVolume =  0.8 * rockVoxel / ballVoxel * 8 * (2 - sqrt(2)) * 0.5^3 * 16.3871; % the orthogonal intersection volume of a sphere
+        %ballVoxel = reconstruct3D(balls, D, DEBUG);
+        %rockVolume =  0.8 * rockVoxel / ballVoxel * 8 * (2 - sqrt(2)) * 0.5^3 * 16.3871; % the orthogonal intersection volume of a sphere
         
         % Plot volume comparsion
         figure; hold on;
