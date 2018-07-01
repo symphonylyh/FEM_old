@@ -87,7 +87,7 @@ if SEGMENT
     end
     
     % Group segmentation or single segmentation based on user's option
-    DEBUG = false; object = 3; view = 3; % designate the object & view (1-top;2-front;3-side) to debug
+    DEBUG = true; object = 2; view = 3; % designate the object & view (1-top;2-front;3-side) to debug
     if DEBUG
         % Create debug folder or clear existing folder
         debugFolderName = strcat(segFolderName, 'Debug/');

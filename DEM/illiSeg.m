@@ -34,25 +34,26 @@ rgb = imguidedfilter(img, 'NeighborhoodSize', 2 * sigma + 1);
 % (Illuminance) channel. With this information and the prior that the
 % calibration ball is white, we can segment the calibration ball from the
 % regional properties with ~0 eccentricity (circular shape).
-
+NEW = false;
+if NEW
 % Convert to HSV color space
 hsv = rgb2hsv(rgb);
 H = hsv(:,:,1);
 S = hsv(:,:,2);
 V = hsv(:,:,3);
 
-% figure(1);
-% [ha, pos] = tight_subplot(1,4,[.01 .01],[.01 .01],[.01 .01]);
-% axes(ha(1)), imshow(img), title('Original Image');
-% axes(ha(2)), imshow(H), title('H Channel');
-% axes(ha(3)), imshow(S), title('S Channel');
-% axes(ha(4)), imshow(V), title('V Channel');
+figure(1);
+[ha, pos] = tight_subplot(1,4,[.01 .01],[.01 .01],[.01 .01]);
+axes(ha(1)), imshow(img), title('Original Image');
+axes(ha(2)), imshow(H), title('H Channel');
+axes(ha(3)), imshow(S), title('S Channel');
+axes(ha(4)), imshow(V), title('V Channel');
 
 % Select white region
 mask = S < 0.5 & V > 0.5;
 mask = imopen(mask, strel('disk', sigma)); % remove noises
 mask = bwareaopen(mask, ceil(h/50) * ceil(w/50), 4); % remove small objects 
-% figure(2), imshow(mask);
+figure(2), imshow(mask);
 
 % Segment ball region based on eccentricity
 [Label,N] = bwlabel(mask, 4); 
@@ -63,7 +64,7 @@ box = [stats.BoundingBox];
 ballIdx = ind(1);
 ballMask = ismember(Label, ballIdx);
 ballCrop = imcrop(ballMask,box(4*(ballIdx-1)+1:4*(ballIdx-1)+4));
-% figure(3),imshow(img), hold on, visboundaries(ballMask, 'Color', 'r');
+figure(3),imshow(img), hold on, visboundaries(ballMask, 'Color', 'r');
 
 % Get the perimeter of each object and burn it onto the raw image
 ballBoundary = bwperim(ballMask, 4);
@@ -82,7 +83,7 @@ end
 results = [0;0];
 return;
 
-
+end
 
 
 %% Color segmentation in CIE L*a*b* color space
@@ -123,13 +124,18 @@ return;
 L = mat2gray(L);
 a = mat2gray(a);
 b = mat2gray(b);
+% 
+% figure(1);
+% subplot(1,3,1), imshow(imgradient(L));
+% subplot(1,3,2), imshow(imgradient(a));
+% subplot(1,3,3), imshow(imgradient(b));
 
-figure(2);
-[ha, pos] = tight_subplot(1,4,[.01 .01],[.01 .01],[.01 .01]);
-axes(ha(1)), imshow(img), title('Original Image');
-axes(ha(2)), imshow(L), title('L Channel');
-axes(ha(3)), imshow(a), title('a Channel');
-axes(ha(4)), imshow(b), title('b Channel');
+% figure(2);
+% [ha, pos] = tight_subplot(1,4,[.01 .01],[.01 .01],[.01 .01]);
+% axes(ha(1)), imshow(img), title('Original Image');
+% axes(ha(2)), imshow(L), title('L Channel');
+% axes(ha(3)), imshow(a), title('a Channel');
+% axes(ha(4)), imshow(b), title('b Channel');
 
 % [LMag, LDir] = imgradient(L);
 % shadow = ~imbinarize(L, 0.4);
@@ -147,7 +153,7 @@ end
 [Acounts, Avalues] = imhist(a);
 Adistribution = cumsum(Acounts);
 Apeaks = findchangepts(Adistribution, 'MaxNumChanges', 20); % old: 10
-A = Avalues(Apeaks(10));
+A = Avalues(Apeaks(1));
     
 [Bcounts, Bvalues] = imhist(b);
 Bdistribution = cumsum(Bcounts);
@@ -165,12 +171,29 @@ B = Bvalues(Bpeaks(10));
 % tightfig;
     
 highlight = imbinarize(L, 0.95); % choose the top 5% brightness as highlight
-a(highlight) = 1;
-b(highlight) = 1;
+% a(highlight) = 1;
+% b(highlight) = 1;
 
-dist = abs(b - B).^2;% old : abs((a - A)/5).^2 + abs((b - B)/2).^2; % normalize w.r.t. the different ranges in a & b space % this approach is still problematic, can also try: max(abs((a - A)/5).^2, abs((b - B)/2).^2)
-%dist = abs((a - A)/5).^2 + abs((b - B)/2).^2;
-dist = mat2gray(dist); % scale to [0,1]
+test_a = mat2gray(abs(a - A)).^0.5;
+%figure(2), imshowpair(a, test_a, 'montage');
+
+test_b = mat2gray(max(b - B, 0).^2); % zero-pass filter
+% test_b = mat2gray(abs(b - B).^2);
+
+test_b = test_b > 0.1;
+figure(1), imshowpair(a, test_a, 'montage');
+figure(2), imshowpair(b, test_b, 'montage');
+
+dist = mat2gray(test_a + test_b);
+%figure(3), imshowpair(test_b, dist, 'montage');
+
+%bw = imbinarize(dist);
+%figure(4), imshow(bw);
+
+% dist = abs(b - B).^2;% old : abs((a - A)/5).^2 + abs((b - B)/2).^2; % normalize w.r.t. the different ranges in a & b space % this approach is still problematic, can also try: max(abs((a - A)/5).^2, abs((b - B)/2).^2)
+% dist = mat2gray(1 - abs(a - A).^2) + mat2gray(abs(b - B).^2);
+% %dist = abs((a - A)/5).^2 + abs((b - B)/2).^2;
+% dist = mat2gray(dist); % scale to [0,1]
 
 if PLOT
     dist_plot = dist;
@@ -251,7 +274,7 @@ dist_reconstruct = imreconstruct(imcomplement(dist_dilate), imcomplement(dist_re
 dist_reconstruct = imcomplement(dist_reconstruct);
 
 % Binarize the distance map
-bw = imbinarize(dist, 0.1); % old: bw = ~imbinarize(dist); the threshold can be adjusted 0.15, 0.2 or other number
+bw = imbinarize(dist); % old: bw = ~imbinarize(dist); the threshold can be adjusted 0.15, 0.2 or other number
 % bw_old = bw;
 bw(shadow) = 0; % can be omitted, this is used to ensure shadow edge is not recognized as objecct boundary
 
@@ -329,11 +352,11 @@ if PLOT
         print('threshold image.png', '-r300', '-dpng');
     end
     
-    figure(fig); fig = fig + 1;
-    imshow(img);
-    bd = bwperim(bw);
-    hold on;
-    visboundaries(bd, 'LineWidth', 1);
+%     figure(fig); fig = fig + 1;
+%     imshow(img);
+%     bd = bwperim(bw);
+%     hold on;
+%     visboundaries(bd, 'LineWidth', 1);
 end
 
 %% Obtain region properties and geometric features
@@ -389,14 +412,14 @@ if PLOT
 %         imwrite(rockCrop, 'timg100001.png'); % format of E-UIAIA input: timgx000N.png. x: front(0)/top(1)/side(2), N: image No.
 %     end
 %     
-    figure(fig); fig = fig + 1;
-    imshow(img);% , title('Boundary Detection');
-    hold on;
-    visboundaries(rockMask, 'Color', 'red', 'LineStyle', '-', 'LineWidth', 1, 'EnhanceVisibility', false); 
-    visboundaries(ballMask, 'Color', 'yellow', 'LineStyle', '-', 'LineWidth', 1, 'EnhanceVisibility', false);
-    if PRINT
-        print('final result.png', '-r300', '-dpng');
-    end
+%     figure(fig); fig = fig + 1;
+%     imshow(img);% , title('Boundary Detection');
+%     hold on;
+%     visboundaries(rockMask, 'Color', 'red', 'LineStyle', '-', 'LineWidth', 1, 'EnhanceVisibility', false); 
+%     visboundaries(ballMask, 'Color', 'yellow', 'LineStyle', '-', 'LineWidth', 1, 'EnhanceVisibility', false);
+%     if PRINT
+%         print('final result.png', '-r300', '-dpng');
+%     end
 end
 
 if HOLE_DETECTION
