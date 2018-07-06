@@ -8,7 +8,7 @@
  */
 
 /*
- * main enterance point 
+ * main enterance point
  */
 void mexFunction(
     int		  nlhs, 	/* number of expected outputs */
@@ -25,22 +25,22 @@ void mexFunction(
         mexErrMsgIdAndTxt("edison_wraper:main","rgbim must be of type uint8");
     if ( mxGetClassID(prhs[2]) != mxSTRUCT_CLASS )
         mexErrMsgIdAndTxt("edison_wraper:main","parameters argument must be a structure");
-    
-    
+
+
     /* first argument - the image in whatever feature space it is given in */
     float * fimage = (float*)mxGetData(prhs[0]);
-    const int* image_dims = mxGetDimensions(prhs[0]);
+    const size_t* image_dims = mxGetDimensions(prhs[0]);
     int image_ndim = mxGetNumberOfDimensions(prhs[0]);
     unsigned int w = image_dims[1];
     unsigned int h = image_dims[2];
     unsigned int N = image_dims[0];
     int ii;
-    
+
     unsigned char * rgbim = (unsigned char*)mxGetData(prhs[1]);
-    const int * rgb_dims = mxGetDimensions(prhs[1]);
+    const size_t * rgb_dims = mxGetDimensions(prhs[1]);
     if ( rgb_dims[1] != w || rgb_dims[2] != h )
         mexErrMsgIdAndTxt("edison_wraper:main","size of fim and rgbim do not match");
-    
+
     /* second input - parameters structure */
     //   'steps'       - What steps the algorithm should perform:
     //               1 - only mean shift filtering
@@ -48,11 +48,11 @@ void mexFunction(
     //               3 - full segmentation process [default]
     int steps;
     GetScalar(mxGetField(prhs[2], 0, "steps"), steps);
-    
+
     //   'synergistic' - perform synergistic segmentation [true]|false
     bool syn;
     GetScalar(mxGetField(prhs[2], 0, "synergistic"), syn);
-    
+
     //   'SpatialBandWidth' - segmentation spatial radius (integer) [7]
     unsigned int spBW;
     GetScalar(mxGetField(prhs[2], 0, "SpatialBandWidth"), spBW);
@@ -64,7 +64,7 @@ void mexFunction(
     //   'MinimumRegionArea'- minimum segment area (integer) [20]
     unsigned int minArea;
     GetScalar(mxGetField(prhs[2], 0, "MinimumRegionArea"), minArea);
-    
+
     //   'SpeedUp'          - algorithm speed up {0,1,2} [1]
     int SpeedUp;
     enum SpeedUpLevel sul;
@@ -82,28 +82,28 @@ void mexFunction(
         default:
             mexErrMsgIdAndTxt("edison_wraper:main","wrong speedup value");
     }
-    
+
     //   'GradientWindowRadius' - synergistic parameters (integer) [2]
     unsigned int grWin;
     GetScalar(mxGetField(prhs[2], 0, "GradientWindowRadius"), grWin);
-    
+
     //   'MixtureParameter' - synergistic parameter (float 0,1) [.3]
     float aij;
     GetScalar(mxGetField(prhs[2], 0, "MixtureParameter"), aij);
-    
+
     //   'EdgeStrengthThreshold'- synergistic parameter (float 0,1) [.3]
     float edgeThr;
     GetScalar(mxGetField(prhs[2], 0, "EdgeStrengthThreshold"), edgeThr);
-    
+
     msImageProcessor ms;
     ms.DefineLInput(fimage, h, w, N); // image array should be after permute
     if (ms.ErrorStatus)
         mexErrMsgIdAndTxt("edison_wraper:edison","Mean shift define latice input: %s", ms.ErrorMessage);
-    
+
     kernelType k[2] = {DefualtKernelType, DefualtKernelType};
-    int P[2] = {DefualtSpatialDimensionality, N};
+    int P[2] = {DefualtSpatialDimensionality, static_cast<int>(N)};
     float tempH[2] = {1.0, 1.0};
-    ms.DefineKernel(k, tempH, P, 2); 
+    ms.DefineKernel(k, tempH, P, 2);
     if (ms.ErrorStatus)
         mexErrMsgIdAndTxt("edison_wraper:edison","Mean shift define kernel: %s", ms.ErrorMessage);
 
@@ -113,21 +113,21 @@ void mexFunction(
     float * grad = NULL;
     mxArray * mxwght = NULL;
     float * wght = NULL;
-    
+
     if (syn) {
         /* perform synergistic segmentation */
-        int maps_dim[2] = {w*h, 1};
+        int maps_dim[2] = {static_cast<int>(w*h), 1};
         /* allcate memory for confidence and gradient maps */
         mxconf = mxCreateNumericArray(2, maps_dim, mxSINGLE_CLASS, mxREAL);
         conf = (float*)mxGetData(mxconf);
         mxgrad = mxCreateNumericArray(2, maps_dim, mxSINGLE_CLASS, mxREAL);
         grad = (float*)mxGetData(mxgrad);
-        
+
         BgImage rgbIm;
         rgbIm.SetImage(rgbim, w, h, rgb_dims[0] == 3);
         BgEdgeDetect edgeDetector(grWin);
         edgeDetector.ComputeEdgeInfo(&rgbIm, conf, grad);
-        
+
         mxwght = mxCreateNumericArray(2, maps_dim, mxSINGLE_CLASS, mxREAL);
         wght = (float*)mxGetData(mxgrad);
         
@@ -148,14 +148,14 @@ void mexFunction(
         if (ms.ErrorStatus)
             mexErrMsgIdAndTxt("edison_wraper:edison","Mean shift fuse: %s", ms.ErrorMessage);
     }
-    
+
     if ( nlhs >= 1 ) {
         // first output - the feture space raw image
         plhs[0] = mxCreateNumericArray(image_ndim, image_dims, mxSINGLE_CLASS, mxREAL);
         fimage = (float*)mxGetData(plhs[0]);
         ms.GetRawData(fimage);
     }
-    
+
     int* labels;
     float* modes;
     int* count;
@@ -180,7 +180,7 @@ void mexFunction(
             fimage[ii] = modes[ii];
     }
     delete [] modes;
-    
+
     if ( nlhs >= 4 ) {
         // fourth output - region sizes (# of pixels)
         arr_dims[0] = 1;
@@ -189,23 +189,23 @@ void mexFunction(
         int * pc = (int*)mxGetData(plhs[3]);
         for (ii=0;ii<RegionCount; ii++)
             pc[ii] = count[ii];
-    }   
+    }
     delete [] count;
-    
+
     if ( !syn )
         return;
-    
+
     if ( nlhs >= 5)
         // fifth output - gradient map
         plhs[4] = mxgrad;
     else
         mxDestroyArray(mxgrad);
-    
+
     if ( nlhs >= 6)
         plhs[5] = mxconf;
     else
         mxDestroyArray(mxconf);
-   
+
 }
 
 template<class T>
@@ -245,16 +245,15 @@ void GetScalar(const mxArray* x, T& scalar)
         case mxUINT32_CLASS:
             scalar = *(unsigned int*)p;
             break;
-#ifdef A64BITS            
+#ifdef A64BITS
         case mxINT64_CLASS:
             scalar = *(int64_T*)p;
             break;
         case mxUINT64_CLASS:
             scalar = *(uint64_T*)p;
             break;
-#endif /* 64 bits machines */            
+#endif /* 64 bits machines */
         default:
             mexErrMsgIdAndTxt("GraphCut:GetScalar","unsupported data type");
     }
 }
-

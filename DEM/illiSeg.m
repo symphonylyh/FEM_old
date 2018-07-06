@@ -2,9 +2,10 @@ function results = illiSeg(filename, debug_mode)
 
 %% Control panel
 close all;
-PLOT = debug_mode; % show procedural figures
-PRINT = false; % save figures
 BOUNDARY_ENHANCE = true; % enhance boundary information
+PLOT = debug_mode; % show procedural figures
+PLOT = false;
+PRINT = false; % save figures
 HOLE_DETECTION = false; % detect holes on rock surface
 
 %% Filter the image to remove noises
@@ -17,6 +18,88 @@ sigma = floor(max(h,w) / 500); % estimate filter size based on image size
 % prominent edges when suppressing noises. Later in the gradient map, the
 % extraction of boundary becomes eaiser.
 rgb = imguidedfilter(img, 'NeighborhoodSize', 2 * sigma + 1); 
+
+% Convert to CIE Lab space
+[L,a,b] = rgb2lab(rgb);
+
+% Scale to [0,1]
+L = mat2gray(L);
+a = mat2gray(a);
+b = mat2gray(b);
+
+% figure(1);
+% [ha, pos] = tight_subplot(1,4,[.01 .01],[.01 .01],[.01 .01]);
+% axes(ha(1)), imshow(img), title('Original Image');
+% axes(ha(2)), imshow(L), title('L Channel');
+% axes(ha(3)), imshow(a), title('a Channel');
+% axes(ha(4)), imshow(b), title('b Channel');
+
+%% Object Boundary Detection
+% Color-based segmentation is prone to lose information on weak object
+% boundaries, thus the segmented objects are not intact. To overcome this
+% effect, an extra boundary detection step is added.
+if BOUNDARY_ENHANCE
+% Idea: 
+% A sharp boundary of object is required for the segmentation, so we
+% should have boundary enhancement step. However, this is a color
+% segmentation task rather than a mere boundary sharpening one, in which we
+% also rely on the face information (i.e., the facet of the object
+% because we are using the color information of it). If we just enhance
+% the boundary by adding it to the original image, accordingly the facet
+% information will be suppressed. There is certainly a trade-off between 
+% the sharpening of object boundary and the brightening of the object face.
+% In our segmentation task, unluckily, we need both because neither is 
+% 100% reliable when we are in a complex natural lighting condition. 
+% The face may be incomplete due to the highlights and shadows on the 
+% irregular shape, while the boundary may not always be intact/closed
+% even after the sharpening.
+% The approach is: 
+% 1) Threshold the boundary gradient image into a binary mask
+% 2) Only enhance the boudnary mask area in the target image
+% 3) Threshold the enhanced image
+% ---------------------------------------------------------------------
+
+% Extract object boundary based on gradient information of a & b channels
+[LMag, ~] = imgradient(L);
+[aMag, ~] = imgradient(a);
+[bMag, ~] = imgradient(b);
+
+% Accumulate boundary information from multiple channels
+boundary = max(LMag, max(aMag,bMag)); % old: max(aMag,bMag); 
+%boundary = imguidedfilter(boundary, 'NeighborhoodSize', 2 * sigma + 1); % this step is important! Guided filter is powerful...it's like double-enhancing the boundary
+boundary = imadjust(boundary, [0 1], [0 1], 1.5); % gamma correction of gamma = 1.5 > 1 can suppress the noises and enhance weak boundaries
+
+% Merge boundary clues into object face information
+boundaryMask = imbinarize(boundary);
+%boundaryMask = imclose(boundaryMask, strel('disk', 1));
+%boundaryMask = imfill(boundaryMask, 4, 'holes');
+
+% In b channel, the shadow is suppressed. The object is bright, the shadow
+% and background are both gray. So first extract the non-shadow mask as a 
+% restriction for the detected boundary mask.
+bMask = b > 0.3 & L > 0.3; % should use information from L and b channel to narrow down the real boundary
+bMask = imerode(bMask, strel('disk', 1)); % erode the non-shadow mask to strengthen the restriction
+boundaryMask = boundaryMask & bMask;
+figure(1), imshowpair(boundary, boundaryMask, 'montage');
+figure(2), imshowpair(b, bMask, 'montage');
+
+% Detect shadow area from L channel and subtract from the above mask
+% Note: the detected shadow area could include the dark face of the obejct
+% as well, which we don't want to subtract. Use hints from b channel to
+% avoid the over-subtraction.
+shadow = L < 0.5 & b < 0.3; 
+shadowColor = cat(3, ones(size(shadow)), ones(size(shadow)), zeros(size(shadow))); % yellow [255 255 0]
+shadowAlpha = zeros(size(shadow));
+shadowAlpha(shadow) = 0.5;
+figure(2), imshow(rgb), hold on;
+h = imshow(shadowColor);
+set(h, 'AlphaData', shadowAlpha);
+
+boundaryMask(new_shadow) = 0;
+
+% Enhance the boundary pixels in the distance map 
+dist(boundaryMask) = 1; 
+end
 
 %% Color Segmentation in HSV color space (for calibration ball)
 % Note: 
@@ -117,31 +200,6 @@ end
 % This distance will make the foreground object prominent.
 % -------------------------------------------------------------------------
 
-% Convert to CIE Lab space
-[L,a,b] = rgb2lab(rgb);
-
-% Scale to [0,1]
-L = mat2gray(L);
-a = mat2gray(a);
-b = mat2gray(b);
-% 
-% figure(1);
-% subplot(1,3,1), imshow(imgradient(L));
-% subplot(1,3,2), imshow(imgradient(a));
-% subplot(1,3,3), imshow(imgradient(b));
-
-% figure(2);
-% [ha, pos] = tight_subplot(1,4,[.01 .01],[.01 .01],[.01 .01]);
-% axes(ha(1)), imshow(img), title('Original Image');
-% axes(ha(2)), imshow(L), title('L Channel');
-% axes(ha(3)), imshow(a), title('a Channel');
-% axes(ha(4)), imshow(b), title('b Channel');
-
-% [LMag, LDir] = imgradient(L);
-% shadow = ~imbinarize(L, 0.4);
-% LMag2 = LMag;
-% LMag2(shadow) = 0;
-% imshowpair(LMag, LMag2, 'montage');
 
 if PLOT
     a_plot = a;
@@ -180,15 +238,15 @@ test_a = mat2gray(abs(a - A)).^0.5;
 test_b = mat2gray(max(b - B, 0).^2); % zero-pass filter
 % test_b = mat2gray(abs(b - B).^2);
 
-test_b = test_b > 0.1;
+%test_b = test_b > 0.1;
 figure(1), imshowpair(a, test_a, 'montage');
 figure(2), imshowpair(b, test_b, 'montage');
 
-dist = mat2gray(test_a + test_b);
+dist = test_b; % mat2gray(test_a + test_b);
 %figure(3), imshowpair(test_b, dist, 'montage');
 
-%bw = imbinarize(dist);
-%figure(4), imshow(bw);
+% bw = imbinarize(dist, 0.1);
+% figure(4), imshow(bw);
 
 % dist = abs(b - B).^2;% old : abs((a - A)/5).^2 + abs((b - B)/2).^2; % normalize w.r.t. the different ranges in a & b space % this approach is still problematic, can also try: max(abs((a - A)/5).^2, abs((b - B)/2).^2)
 % dist = mat2gray(1 - abs(a - A).^2) + mat2gray(abs(b - B).^2);
@@ -222,49 +280,6 @@ new_shadow = imdilate(new_shadow,strel('disk',sigma));
 % before doing boundary enhancement
 a(highlight) = A; % to avoid introduce artifact, set to the average object value. 
 b(highlight) = B;
-
-if BOUNDARY_ENHANCE
-    % Idea: 
-    % A sharp boundary of object is required for the segmentation, so we
-    % should have boundary enhancement step. However, this is a color
-    % segmentation task rather than a mere boundary sharpening one, in which we
-    % also rely on the face information (i.e., the facet of the object
-    % because we are using the color information of it). If we just enhance
-    % the boundary by adding it to the original image, accordingly the facet
-    % information will be suppressed. There is certainly a trade-off between 
-    % the sharpening of object boundary and the brightening of the object face.
-    % In our segmentation task, unluckily, we need both because neither is 
-    % 100% reliable when we are in a complex natural lighting condition. 
-    % The face may be incomplete due to the highlights and shadows on the 
-    % irregular shape, while the boundary may not always be intact/closed
-    % even after the sharpening.
-    % The approach is: 
-    % 1) Threshold the boundary gradient image into a binary mask
-    % 2) Only enhance the boudnary mask area in the target image
-    % 3) Threshold the enhanced image
-    % ---------------------------------------------------------------------
-    
-    % Extract object boundary based on gradient information of a & b channels
-    [LMag, LDir] = imgradient(L); % @note: shouldn't include info from L channel since it will recognize shadow area as boundary
-     LMag(shadow) = 0;
-    [aMag, aDir] = imgradient(a);
-    [bMag, bDir] = imgradient(b);
-    
-    % Overlap the boundary information from multiple channels
-    % boundary = aMag+bMag; % @note: previous version by adding. Not reasonable because a and b could cancel instead of complementing each other
-    boundary = max(aMag, bMag);
-    %boundary = max(LMag, max(aMag,bMag)); % old: max(aMag,bMag); 
-    boundary = imguidedfilter(boundary, 'NeighborhoodSize', 2 * sigma + 1); % this step is important! Guided filter is powerful...it's like double-enhancing the boundary
-    boundaryMask = imbinarize(boundary);
-    
-    % new
-    %boundaryMask = imfill(boundaryMask, 4, 'holes');
-    %boundaryMask = imerode(boundaryMask, strel('disk', 1));
-    boundaryMask(new_shadow) = 0;
-    
-    % Enhance the boundary pixels in the distance map 
-    dist(boundaryMask) = 1; 
-end
 
 % new
 dist_erode = imerode(dist, strel('disk', 2 * sigma)); % erosion is essentially a local-minima convolution kernal, it assign the minimum pixel in the window to the center pixel. Dilation is local-maxima opeartor. This is true for both grayscale and binary image. 
