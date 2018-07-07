@@ -213,15 +213,18 @@ subplot(2,3,5), bar(Bvalues, Bcounts), title('Pixel histogram of b channel', 'Fo
 subplot(2,3,6), plot(Bvalues, Bdistribution, '-r'), y2 = get(gca, 'ylim'); hold on, plot([B B], y2, '--b'), title('Pixel cdf of b channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Cumulative sum', 'FontSize', 10);
 tightfig;
     
-%highlight = imbinarize(L, 0.95); % choose the top 5% brightness as highlight
+highlight = imbinarize(L, 0.95); % choose the top 5% brightness as highlight
 % a(highlight) = 1;
 % b(highlight) = 1;
 
-%test_a = mat2gray(abs(a - A)).^0.5;
-%test_b = mat2gray(max(b - B, 0).^2); % zero-pass filter
-test_b = mat2gray(abs(b - B).^2);
+test_a = mat2gray(abs(a - A)).^0.5;
+%figure(2), imshowpair(a, test_a, 'montage');
+
+test_b = mat2gray(max(b - B, 0).^2); % zero-pass filter
+% test_b = mat2gray(abs(b - B).^2);
+
 %test_b = test_b > 0.1;
-%figure(1), imshowpair(a, test_a, 'montage');
+figure(1), imshowpair(a, test_a, 'montage');
 figure(2), imshowpair(b, test_b, 'montage');
 
 dist = test_b; % mat2gray(test_a + test_b);
