@@ -64,10 +64,9 @@ boundary = imguidedfilter(boundary, 'NeighborhoodSize', 2 * sigma + 1); % this s
 boundary = imadjust(boundary, [0 1], [0 1], 1.5); % gamma correction of gamma = 1.5 > 1 can suppress the gray noises and enhance weak boundaries. alpha > 1 curve down, alpha < 1 curve up.
 
 % Merge boundary clues into object face information
-T = adaptthresh(boundary, 0.5, 'ForegroundPolarity', 'bright'); 
-boundaryMask = imbinarize(boundary, T); % old: boundaryMask = imbinarize(boundary);
-boundaryMask = imclose(boundaryMask, strel('disk', 1));
-% boundaryMask = imfill(boundaryMask, 4, 'holes');
+boundaryMask = imbinarize(boundary);
+boundaryMask = imdilate(boundaryMask, strel('disk', 1)); % connect discontinuous boundary
+boundaryMask = imfill(boundaryMask, 4, 'holes'); % from line to face
 
 % Idea:
 % The boundary of shadow should be excluded from the above boundary map. So
@@ -75,8 +74,13 @@ boundaryMask = imclose(boundaryMask, strel('disk', 1));
 % in L and b channel So first extract the non-shadow mask as a 
 % restriction for the detected boundary mask.
 objectMask = L > 0.3 & b > 0.3; % observation: the object (or non-shadow) area is brighter in L and b channel
-objectMask = imerode(objectMask, strel('disk', 1)); % erode the non-shadow mask to enhance the restriction, i.e., enlarge the shadow area so the & operation below will eliminate more shadow boundary
-boundaryMask = boundaryMask & objectMask; 
+boundaryMask = boundaryMask & objectMask;
+
+% Clean the mask
+boundaryMask = imerode(boundaryMask, strel('disk', 1)); % imdilate correspondence
+boundaryMask = imopen(boundaryMask, strel('disk', 1)); % erode-dilate, denoise
+boundaryMask = bwareaopen(boundaryMask, ceil(h/50) * ceil(w/50)); % remove small objects
+boundaryMask = imclearborder(boundaryMask, 8);
 
 % Visualization of mask area on an image
 % shadowMask = ~objectMask;
@@ -208,114 +212,53 @@ B = Bvalues(Bpeaks(30)); % Option: 1 if we want to distinguish from background
 % subplot(2,3,6), plot(Bvalues, Bdistribution, '-r'), y2 = get(gca, 'ylim'); hold on, plot([B B], y2, '--b'), title('Pixel cdf of b channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Cumulative sum', 'FontSize', 10);
 % tightfig;
     
-% Outdoor lighting the objects are often lightened up, so no need for this
-% correction
+% Under outdoor lighting the objects are often lightened up, so no need for this
+% correction. The following corrections are mainly for indoor condition
+% when the ball & object are not sufficiently proeminent in a & b channels
+% -------------------------------------------------------------------------
+% Extract the highlight portion (due to the specularity of the calibration
+% ball, i.e., specular reflection) and supplement it to a and b
+% channels (because the most illuminant part is suppressed in a and b)
 % highlight = imbinarize(L, 0.95); % choose the top 5% brightness as highlight
-% a(highlight) = 1;
-% b(highlight) = 1;
+% a(highlight) = A; % to avoid introduce artifact, set to the average object value. 
+% b(highlight) = B;
+% -------------------------------------------------------------------------
 
+% Calculate distance map
 % dist = mat2gray(max(b - B, 0).^2); % zero-pass filter if we choose the background value as the reference above, i.e. B = Bvalues(Bpeaks(1));
-dist = mat2gray(abs(b - B).^1.5); % distance map
+dist = mat2gray(abs(b - B).^1.5); % distance map, don't forget to scale to [0 1]
+% Previous attempts:
+% dist = mat2gray(abs(b - B).^2);
+% dist = mat2gray(abs((a - A)/5).^2 + abs((b - B)/2).^2); % normalize w.r.t. the different ranges in a & b space % this approach is still problematic
+% dist = mat2gray(1 - abs(a - A).^2) + mat2gray(abs(b - B).^2);
 
-% new
+% Reconstructed distance map (suppress texture & enhance contrast)
 dist_erode = imerode(dist, strel('disk', 2 * sigma)); % erosion is essentially a local-minima convolution kernal, it assign the minimum pixel in the window to the center pixel. Dilation is local-maxima opeartor. This is true for both grayscale and binary image. 
 dist_reconstruct = imreconstruct(dist_erode, dist); % image reconstruction is like given a seed location, and dilate many times until it is similar to the target, imreconstruct(seed, target). usually seed is got by erosion (by focusing on the highlight part), and target is usually just the original image. The result is a smoothed/denoised shape-preserving image.
 dist_dilate = imdilate(dist_reconstruct, strel('disk', 2 * sigma));
 dist_reconstruct = imreconstruct(imcomplement(dist_dilate), imcomplement(dist_reconstruct)); % imreconstruct works on light pixels, so should use complement image
 dist_reconstruct = imcomplement(dist_reconstruct);
 
-figure(1), imshowpair(dist, dist_reconstruct, 'montage');
+%figure(1), imshowpair(dist, dist_reconstruct, 'montage');
+
 dist = dist_reconstruct;
-%dist(boundaryMask) = 0; % add the enhance boundary info
+% dist(boundaryMask) = 0; % add the enhance boundary info
 
-figure(2), imshowpair(boundaryMask, dist, 'montage');
+%figure(2), imshowpair(boundaryMask, dist, 'montage');
 
+% Adaptive thresholding the distance map
 T = adaptthresh(dist, 0.3, 'ForegroundPolarity', 'dark'); % Adaptive thresholding is awesome!! 0.1 is sensitivity to distinguish background & foreground old: bw = ~imbinarize(dist, 0.1);
 bw = ~imbinarize(dist, T);
-bw = bw & objectMask; 
+bw = bw & objectMask; % remove over-segmented shadow area
 
-figure(3), imshowpair(dist, bw, 'montage');
+%figure(3), imshowpair(dist, bw, 'montage');
 
-bw1 = bw;
-bw = imfill(bw, 4, 'holes');
-bw = imerode(bw, strel('disk', 2 * sigma));
-bw = imdilate(bw, strel('disk', 2 *sigma));
-
-figure(2), imshowpair(bw1, bw, 'montage');
-% Morphological operations on binary image
-bw = imdilate(bw, strel('disk', 2 *sigma)); % obtain a closed boundary, old: 2 * sigma
+% Morphological operations on binary mask
+bw = imdilate(bw, strel('disk', 2 * sigma)); % obtain a closed boundary
 bw = imfill(bw, 4, 'holes'); % fill holes inside a connected region, 8-connected is more strict and fill fewer holes
 bw = imerode(bw, strel('disk', 2 * sigma)); % imdilate's correspondence
-bw = imopen(bw, strel('disk', 2 * sigma)); % open: open holes (or remove objects), erode + dilate, old: 2 * sigma
-bw = bwareaopen(bw, ceil(h/100) * ceil(w/100)); % remove small object, old: ceil(h/100) * ceil(w/100)
-bw = imclearborder(bw, 8); % clear meaningless regions that are connected to image border
-
-figure(3), imshow(bw);
-% bw = imbinarize(dist, 0.1);
-% figure(4), imshow(bw);
-
-% dist = abs(b - B).^2;% old : abs((a - A)/5).^2 + abs((b - B)/2).^2; % normalize w.r.t. the different ranges in a & b space % this approach is still problematic, can also try: max(abs((a - A)/5).^2, abs((b - B)/2).^2)
-% dist = mat2gray(1 - abs(a - A).^2) + mat2gray(abs(b - B).^2);
-% %dist = abs((a - A)/5).^2 + abs((b - B)/2).^2;
-% dist = mat2gray(dist); % scale to [0,1]
-
-if PLOT
-    dist_plot = dist;
-end
-
-% Extract the highlight portion (due to the specularity of the calibration
-% ball, i.e., specular reflection) and enhance that portion in a and b
-% channels (because the most illuminant part is suppressed in a and b)
-highlight = imbinarize(L, 0.95); % choose the top 5% brightness as highlight
-%shadow = ~imbinarize(L_new, 0.3); % choose the bottom 30% brightness as shadow
-
-shadow = L < 0.3 & b < 0.3;%~imbinarize(L, 0.3); % choose the bottom 30% brightness as shadow
-shadow_new = imguidedfilter(shadow, 'NeighborhoodSize', 2 * sigma + 1);
-% figure(1), imshowpair(L, b, 'montage');
-% figure(2), imshowpair(shadow, shadow_new, 'montage');
-mask = b .* shadow_new;
-%figure(3),imshowpair(b, mask, 'montage');
-new_shadow = mask > 0 & (b .* shadow_new) < 0.3;
-new_shadow = imdilate(new_shadow,strel('disk',sigma));
-%figure(4),imshowpair(shadow_new,new_shadow,'montage'); 
-
-%imshowpair(L, shadow, 'montage');
-%shadow = imguidedfilter(shadow, 'NeighborhoodSize', 1); 
-%shadow = imdilate(shadow, strel('disk', 1));
-% Extract the highlight portion and supplement it to a and b channels
-% before doing boundary enhancement
-a(highlight) = A; % to avoid introduce artifact, set to the average object value. 
-b(highlight) = B;
-
-% new
-dist_erode = imerode(dist, strel('disk', 2 * sigma)); % erosion is essentially a local-minima convolution kernal, it assign the minimum pixel in the window to the center pixel. Dilation is local-maxima opeartor. This is true for both grayscale and binary image. 
-dist_reconstruct = imreconstruct(dist_erode, dist); % image reconstruction is like given a seed location, and dilate many times until it is similar to the target, imreconstruct(seed, target). usually seed is got by erosion (by focusing on the highlight part), and target is usually just the original image. The result is a smoothed/denoised shape-preserving image.
-dist_dilate = imdilate(dist_reconstruct, strel('disk', 2 * sigma));
-dist_reconstruct = imreconstruct(imcomplement(dist_dilate), imcomplement(dist_reconstruct)); % imreconstruct works on light pixels, so should use complement image
-dist_reconstruct = imcomplement(dist_reconstruct);
-
-
-% Enhance the boundary pixels in the distance map 
-dist(boundaryMask) = 1; 
-
-% Binarize the distance map
-bw = imbinarize(dist); % old: bw = ~imbinarize(dist); the threshold can be adjusted 0.15, 0.2 or other number
-% bw_old = bw;
-bw(shadow) = 0; % can be omitted, this is used to ensure shadow edge is not recognized as objecct boundary
-
-% figure(1), imshow(shadow);
-% figure(2),imshowpair(bw_old, bw, 'montage');
-
-if PLOT
-    bw_plot = bw;
-end
-
-% Morphological operations on binary image
-bw = imdilate(bw, strel('disk', 2 *sigma)); % obtain a closed boundary, old: 2 * sigma
-bw = imfill(bw, 4, 'holes'); % fill holes inside a connected region, 8-connected is more strict and fill fewer holes
-bw = imerode(bw, strel('disk', 2 * sigma)); % imdilate's correspondence
-bw = imopen(bw, strel('disk', 2 * sigma)); % open: open holes (or remove objects), erode + dilate, old: 2 * sigma
-bw = bwareaopen(bw, ceil(h/100) * ceil(w/100)); % remove small object, old: ceil(h/100) * ceil(w/100)
+bw = imopen(bw, strel('disk', 2 * sigma)); % open: open holes (or remove objects), erode + dilate
+bw = bwareaopen(bw, ceil(h/50) * ceil(w/50)); % remove small object
 bw = imclearborder(bw, 8); % clear meaningless regions that are connected to image border
 
 % only for now
