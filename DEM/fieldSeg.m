@@ -12,7 +12,7 @@ SEGMENT = true;
 RECONSTRUCT = false;
 
 % User define folder name here
-inFolderName = './samples/Jun_29_2018/'; 
+inFolderName = './samples/Jun_30_2018/'; 
 
 %% READ: Read image files
 if READ  
@@ -87,7 +87,7 @@ if SEGMENT
     end
     
     % Group segmentation or single segmentation based on user's option
-    DEBUG = true; object = 1; view = 3; % designate the object & view (1-top;2-front;3-side) to debug
+    DEBUG = true; object = 1; view = 1; % designate the object & view (1-top;2-front;3-side) to debug
     if DEBUG
         % Create debug folder or clear existing folder
         debugFolderName = strcat(segFolderName, 'Debug/');

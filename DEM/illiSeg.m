@@ -2,7 +2,7 @@ function results = illiSeg(filename, debug_mode)
 
 %% Control panel
 close all;
-BOUNDARY_ENHANCE = false; % enhance boundary information
+BOUNDARY_ENHANCE = true; % enhance boundary information
 PLOT = debug_mode; % show procedural figures
 PRINT = false; % save figures
 HOLE_DETECTION = false; % detect holes on rock surface
@@ -60,14 +60,14 @@ if BOUNDARY_ENHANCE
 
 % Accumulate boundary information from multiple channels
 boundary = max(LMag, max(aMag,bMag)); % gather boundary information from all channels. old: max(aMag,bMag); 
+boundary = imguidedfilter(boundary, 'NeighborhoodSize', 2 * sigma + 1); % this step is important! Guided filter is powerful...it's like double-enhancing the boundary
 boundary = imadjust(boundary, [0 1], [0 1], 1.5); % gamma correction of gamma = 1.5 > 1 can suppress the gray noises and enhance weak boundaries. alpha > 1 curve down, alpha < 1 curve up.
-% boundary = imguidedfilter(boundary, 'NeighborhoodSize', 2 * sigma + 1); % this step is important! Guided filter is powerful...it's like double-enhancing the boundary
 
 % Merge boundary clues into object face information
-boundaryMask = imbinarize(boundary);
+T = adaptthresh(boundary, 0.5, 'ForegroundPolarity', 'bright'); 
+boundaryMask = imbinarize(boundary, T); % old: boundaryMask = imbinarize(boundary);
 boundaryMask = imclose(boundaryMask, strel('disk', 1));
-boundaryMask = imfill(boundaryMask, 4, 'holes');
-% imshowpair(boundary, boundaryMask, 'montage');
+% boundaryMask = imfill(boundaryMask, 4, 'holes');
 
 % Idea:
 % The boundary of shadow should be excluded from the above boundary map. So
@@ -76,7 +76,7 @@ boundaryMask = imfill(boundaryMask, 4, 'holes');
 % restriction for the detected boundary mask.
 objectMask = L > 0.3 & b > 0.3; % observation: the object (or non-shadow) area is brighter in L and b channel
 objectMask = imerode(objectMask, strel('disk', 1)); % erode the non-shadow mask to enhance the restriction, i.e., enlarge the shadow area so the & operation below will eliminate more shadow boundary
-boundaryMask = boundaryMask & objectMask; % boundary mask should at the same time be in the non-shadow area (exclude strong shadow area)
+boundaryMask = boundaryMask & objectMask; 
 
 % Visualization of mask area on an image
 % shadowMask = ~objectMask;
@@ -186,47 +186,71 @@ end
 % This distance will make the foreground object prominent.
 % -------------------------------------------------------------------------
 
-if PLOT
-    a_plot = a;
-    b_plot = b;
-end
-
 % Calculate Euclidean distance from the average "tone", this step segments
 % the object from the background
 [Acounts, Avalues] = imhist(a);
 Adistribution = cumsum(Acounts);
-Apeaks = findchangepts(Adistribution, 'MaxNumChanges', 20); % old: 10
+Apeaks = findchangepts(Adistribution, 'MaxNumChanges', 20); 
 A = Avalues(Apeaks(20));
     
 [Bcounts, Bvalues] = imhist(b);
 Bdistribution = cumsum(Bcounts);
-Bpeaks = findchangepts(Bdistribution, 'MaxNumChanges', 20);
-B = Bvalues(Bpeaks(20));
+Bpeaks = findchangepts(Bdistribution, 'MaxNumChanges', 30);
+B = Bvalues(Bpeaks(30)); % Option: 1 if we want to distinguish from background
 
-figure(1);
-subplot(2,3,1), imshow(a_plot), title('a Channel');
-subplot(2,3,2), bar(Avalues, Acounts), title('Pixel histogram of a channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Pixel Count', 'FontSize', 10);
-subplot(2,3,3), plot(Avalues, Adistribution, '-r'), y1 = get(gca, 'ylim'); hold on, plot([A A], y1, '--b'), title('Pixel cdf of a channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Cumulative sum', 'FontSize', 10);
-
-subplot(2,3,4), imshow(b_plot), title('b Channel');
-subplot(2,3,5), bar(Bvalues, Bcounts), title('Pixel histogram of b channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Pixel Count', 'FontSize', 10);  
-subplot(2,3,6), plot(Bvalues, Bdistribution, '-r'), y2 = get(gca, 'ylim'); hold on, plot([B B], y2, '--b'), title('Pixel cdf of b channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Cumulative sum', 'FontSize', 10);
-tightfig;
+% figure(1);
+% subplot(2,3,1), imshow(a_plot), title('a Channel');
+% subplot(2,3,2), bar(Avalues, Acounts), title('Pixel histogram of a channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Pixel Count', 'FontSize', 10);
+% subplot(2,3,3), plot(Avalues, Adistribution, '-r'), y1 = get(gca, 'ylim'); hold on, plot([A A], y1, '--b'), title('Pixel cdf of a channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Cumulative sum', 'FontSize', 10);
+% 
+% subplot(2,3,4), imshow(b_plot), title('b Channel');
+% subplot(2,3,5), bar(Bvalues, Bcounts), title('Pixel histogram of b channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Pixel Count', 'FontSize', 10);  
+% subplot(2,3,6), plot(Bvalues, Bdistribution, '-r'), y2 = get(gca, 'ylim'); hold on, plot([B B], y2, '--b'), title('Pixel cdf of b channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Cumulative sum', 'FontSize', 10);
+% tightfig;
     
-%highlight = imbinarize(L, 0.95); % choose the top 5% brightness as highlight
+% Outdoor lighting the objects are often lightened up, so no need for this
+% correction
+% highlight = imbinarize(L, 0.95); % choose the top 5% brightness as highlight
 % a(highlight) = 1;
 % b(highlight) = 1;
 
-%test_a = mat2gray(abs(a - A)).^0.5;
-%test_b = mat2gray(max(b - B, 0).^2); % zero-pass filter
-test_b = mat2gray(abs(b - B).^2);
-%test_b = test_b > 0.1;
-%figure(1), imshowpair(a, test_a, 'montage');
-figure(2), imshowpair(b, test_b, 'montage');
+% dist = mat2gray(max(b - B, 0).^2); % zero-pass filter if we choose the background value as the reference above, i.e. B = Bvalues(Bpeaks(1));
+dist = mat2gray(abs(b - B).^1.5); % distance map
 
-dist = test_b; % mat2gray(test_a + test_b);
-%figure(3), imshowpair(test_b, dist, 'montage');
+% new
+dist_erode = imerode(dist, strel('disk', 2 * sigma)); % erosion is essentially a local-minima convolution kernal, it assign the minimum pixel in the window to the center pixel. Dilation is local-maxima opeartor. This is true for both grayscale and binary image. 
+dist_reconstruct = imreconstruct(dist_erode, dist); % image reconstruction is like given a seed location, and dilate many times until it is similar to the target, imreconstruct(seed, target). usually seed is got by erosion (by focusing on the highlight part), and target is usually just the original image. The result is a smoothed/denoised shape-preserving image.
+dist_dilate = imdilate(dist_reconstruct, strel('disk', 2 * sigma));
+dist_reconstruct = imreconstruct(imcomplement(dist_dilate), imcomplement(dist_reconstruct)); % imreconstruct works on light pixels, so should use complement image
+dist_reconstruct = imcomplement(dist_reconstruct);
 
+figure(1), imshowpair(dist, dist_reconstruct, 'montage');
+dist = dist_reconstruct;
+%dist(boundaryMask) = 0; % add the enhance boundary info
+
+figure(2), imshowpair(boundaryMask, dist, 'montage');
+
+T = adaptthresh(dist, 0.3, 'ForegroundPolarity', 'dark'); % Adaptive thresholding is awesome!! 0.1 is sensitivity to distinguish background & foreground old: bw = ~imbinarize(dist, 0.1);
+bw = ~imbinarize(dist, T);
+bw = bw & objectMask; 
+
+figure(3), imshowpair(dist, bw, 'montage');
+
+bw1 = bw;
+bw = imfill(bw, 4, 'holes');
+bw = imerode(bw, strel('disk', 2 * sigma));
+bw = imdilate(bw, strel('disk', 2 *sigma));
+
+figure(2), imshowpair(bw1, bw, 'montage');
+% Morphological operations on binary image
+bw = imdilate(bw, strel('disk', 2 *sigma)); % obtain a closed boundary, old: 2 * sigma
+bw = imfill(bw, 4, 'holes'); % fill holes inside a connected region, 8-connected is more strict and fill fewer holes
+bw = imerode(bw, strel('disk', 2 * sigma)); % imdilate's correspondence
+bw = imopen(bw, strel('disk', 2 * sigma)); % open: open holes (or remove objects), erode + dilate, old: 2 * sigma
+bw = bwareaopen(bw, ceil(h/100) * ceil(w/100)); % remove small object, old: ceil(h/100) * ceil(w/100)
+bw = imclearborder(bw, 8); % clear meaningless regions that are connected to image border
+
+figure(3), imshow(bw);
 % bw = imbinarize(dist, 0.1);
 % figure(4), imshow(bw);
 
