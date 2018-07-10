@@ -104,6 +104,7 @@ if SEGMENT
         for i = 1 : length(fnames)
             illiSeg(fullfile(compressFolderName, fnames{i}), DEBUG);
         end
+        
         % For images organized in sequence: 
 %         summary = [];
 %         for object = 1 : length(fnames) / 3
