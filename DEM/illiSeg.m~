@@ -251,9 +251,6 @@ T = adaptthresh(dist, 0.3, 'ForegroundPolarity', 'dark'); % Adaptive thresholdin
 bw = ~imbinarize(dist, T);
 bw = bw & objectMask; % remove over-segmented shadow area
 
-if PLOT
-    bw_plot = bw;
-end
 %figure(3), imshowpair(dist, bw, 'montage');
 
 % Morphological operations on binary mask
@@ -289,7 +286,7 @@ ballIdx = index(2);
 i = 2;
 sphericity = allMinAxis(index(i)) * allMaxAxis(index(i)) / allDiameter(index(i))^2; % min * max / avg^2, should be close to 1 for a circle
 sphericity = abs(sphericity - 1);
-while sphericity > 0.05 % or: allEccen(index(i)) > 0.5
+while sphericity > 0.1% or: allEccen(index(i)) > 0.5
     i = i + 1;
     sphericity = abs(allMinAxis(index(i)) * allMaxAxis(index(i)) / allDiameter(index(i))^2 - 1);
 end
