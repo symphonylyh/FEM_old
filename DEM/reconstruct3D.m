@@ -12,6 +12,7 @@ function [voxel, sphericity] = reconstruct3D(views, D, debug_mode)
 close all;
 
 PLOT = debug_mode;
+PLOT = false;
 
 % Normalize/Scale with respect to the *top* view based on the diameter ratio of calibration ball
 views{2} = imresize(views{2}, D(1) / D(2));

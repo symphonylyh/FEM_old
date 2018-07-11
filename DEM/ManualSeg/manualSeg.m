@@ -1,6 +1,26 @@
 close all;
 
-inFolderName = './samples/';
+inFolderName = './test/';
+
+% Name change
+% fnames = getAllFilesInFolder(inFolderName);
+% newFolderName = strcat(inFolderName, 'New/');
+% if ~exist(newFolderName, 'dir')
+%     mkdir(newFolderName);
+% end
+% 
+% for i = 1 : 120
+%     newFileName = strcat('img', sprintf('%04d', i), '_', num2str(2), '.png');
+%     movefile(fullfile(inFolderName, fnames{i}), fullfile(newFolderName, newFileName));    
+% end
+% 
+% for i = 121:360
+%     [path, name, extension] = fileparts(fnames{i}); 
+%     temp = strsplit(name, '_');
+%     extend = strsplit(temp{3}, '.');
+%     newFileName = strcat(temp{1}, '_', num2str(2), '_', extend{1}, '.png');
+%     movefile(fullfile(inFolderName, fnames{i}), fullfile(newFolderName, newFileName));   
+% end
 
 %% Read and compress images
 % Create output folder for raw images
@@ -17,7 +37,7 @@ if ~exist(rawFolderName, 'dir')
     % Get the file extension
     [path, name, extension] = fileparts(fnames{1}); 
     for i = 1 : length(fnames)
-        newFileName = strcat('img', sprintf('%04d', i), '_', num2str(1), extension);
+        newFileName = strcat('img', sprintf('%04d', i), '_', num2str(2), extension);
 
         % Rename files and put them under "Raw" folder
         movefile(fullfile(inFolderName, fnames{i}), fullfile(rawFolderName, newFileName));     

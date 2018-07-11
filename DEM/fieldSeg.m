@@ -8,8 +8,8 @@
 
 %% Control panel
 READ = false; COMPRESS = true; compress_size = 1024; % Rename image file (one-time only), compress image file (if the resolution remains the same, turn off the switch)
-SEGMENT = true;
-RECONSTRUCT = false;
+SEGMENT = false;
+RECONSTRUCT = true;
 
 % User define folder name here
 inFolderName = './samples/Jun_30_2018/'; 
@@ -20,25 +20,28 @@ if READ
     rawFolderName = strcat(inFolderName, 'Raw/');
     if ~exist(rawFolderName, 'dir')
         mkdir(rawFolderName);
+    end   
+    
+    % Specify the working folder and get all image files in it
+    fnames = getAllFilesInFolder(inFolderName); % getAllFilesInFolder.m can be customed to filter out some file types
+%     if (mod(length(fnames),3) ~= 0) % check if the images are correctly taken 3 views of each particle
+%         error("Images are not paired in triplet...Please check if some views are missing!");
+%     end
+
+    % Format arbitrary image file names to img000N_X and move to Raw folder
+    % where N = image No. and X = 0(top)/1(front)/2(side) 
+    % Note: raw images should be taken in sequence front-->side-->top!
+    % The filename formatting should only be done once for a folder
+    % Get the file extension
+    [path, name, extension] = fileparts(fnames{1}); 
+    for i = 1 : length(fnames)
+        % newFileName = strcat('img', sprintf('%04d', ceil(i / 3)), '_', num2str(mod(i, 3)), extension); % for triplet images
+        % For individual set
+        view = 0; % 0(top)/1(front)/2(side) 
+        newFileName = strcat('img', sprintf('%04d', i), '_', num2str(view), extension);
         
-        % Specify the working folder and get all image files in it
-        fnames = getAllFilesInFolder(inFolderName); % getAllFilesInFolder.m can be customed to filter out some file types
-        if (mod(length(fnames),3) ~= 0) % check if the images are correctly taken 3 views of each particle
-            error("Images are not paired in triplet...Please check if some views are missing!");
-        end
-
-        % Format arbitrary image file names to img000N_X and move to Raw folder
-        % where N = image No. and X = 0(top)/1(front)/2(side) 
-        % Note: raw images should be taken in sequence front-->side-->top!
-        % The filename formatting should only be done once for a folder
-        % Get the file extension
-        [path, name, extension] = fileparts(fnames{1}); 
-        for i = 1 : length(fnames)
-            newFileName = strcat('img', sprintf('%04d', ceil(i / 3)), '_', num2str(mod(i, 3)), extension);
-
-            % Rename files and put them under "Raw" folder
-            movefile(fullfile(inFolderName, fnames{i}), fullfile(rawFolderName, newFileName));     
-        end
+        % Rename files and put them under "Raw" folder
+        movefile(fullfile(inFolderName, fnames{i}), fullfile(rawFolderName, newFileName));     
     end
     
     % Avoid having too large image file and long running time, pre-processing the files
@@ -87,7 +90,7 @@ if SEGMENT
     end
     
     % Group segmentation or single segmentation based on user's option
-    DEBUG = false; object = 1; view = 3; % designate the object & view (1-top;2-front;3-side) to debug
+    DEBUG = true; object = 27; view = 2; % designate the object & view (1-top;2-front;3-side) to debug
     if DEBUG
         % Create debug folder or clear existing folder
         debugFolderName = strcat(segFolderName, 'Debug/');
@@ -95,17 +98,21 @@ if SEGMENT
             mkdir(debugFolderName);
         else
             % Clear existing files in debug folder
-            delete(strcat(debugFolderName, '*'));
+            % delete(strcat(debugFolderName, '*'));
         end
         % Debug individual image (either illiSeg or illiSeg_old)
-        result = illiSeg(fullfile(compressFolderName, fnames{(object - 1) * 3 + view}), DEBUG);
+        % For images organized in triplet sequence: 
+        % result = illiSeg(fullfile(compressFolderName, fnames{(object - 1) * 3 + view}), DEBUG);
+        
+        % For batch processing of each view (phone) images separately:
+        result = illiSeg(fullfile(compressFolderName, strcat('img', sprintf('%04d', object), '_', num2str(view - 1), '.png')), DEBUG);
     else
         % For batch processing of each view (phone) images separately:
         for i = 1 : length(fnames)
             illiSeg(fullfile(compressFolderName, fnames{i}), DEBUG);
         end
         
-        % For images organized in sequence: 
+        % For images organized in triplet sequence: 
 %         summary = [];
 %         for object = 1 : length(fnames) / 3
 %             results = [];
@@ -161,6 +168,7 @@ if RECONSTRUCT
     end
     final_full = repelem(final, repetition, 1); % repeat each elements in a matrix
     fclose(file);
+    
     % Matrix 'final':
     % 1st column -- Measured volume (in cm3)
     % 2nd column -- Measured weight (in g)
@@ -169,8 +177,8 @@ if RECONSTRUCT
 
     % Locate input files
     segFolderName = strcat(inFolderName, 'Segmentation/');
-    S = load(fullfile(segFolderName, 'summary.mat'), '-mat');
-    info = S.summary;
+%     S = load(fullfile(segFolderName, 'summary.mat'), '-mat');
+%     info = S.summary;
     
     % Create output folder
     reconFolderName = strcat(inFolderName, 'Reconstruction/');
@@ -179,7 +187,7 @@ if RECONSTRUCT
     end
     
     % Group reconstruction or single reconstruction based on user's option
-    DEBUG = true; object = 1; % designate the object to debug
+    DEBUG = false; object = 2; % designate the object to debug
     if DEBUG
         % Create debug folder or clear existing folder
         debugFolderName = strcat(reconFolderName, 'Debug/');
@@ -193,12 +201,13 @@ if RECONSTRUCT
         for view = 1 : 3
             rocks{view} = imread(fullfile(segFolderName, strcat('timg', sprintf('%04d', object), '_', num2str(view - 1), '_rock.png')));
             balls{view} = imread(fullfile(segFolderName, strcat('timg', sprintf('%04d', object), '_', num2str(view - 1), '_ball.png')));
-            D(view) = info(2 * object, view); % D(view) = min(size(balls{view}));
-            R(view) = info(2 * object - 1, view);
+            % D(view) = info(2 * object, view); 
+            D(view) = min(size(balls{view})); % based on minimum dimension
+            %R(view) = info(2 * object - 1, view);
         end
         rockVoxel = reconstruct3D(rocks, D, DEBUG);
-        %ballVoxel = reconstruct3D(balls, D, DEBUG);
-        %rockVolume =  0.8 * rockVoxel / ballVoxel * 8 * (2 - sqrt(2)) * 0.5^3 * 16.3871; % the orthogonal intersection volume of a sphere
+        ballVoxel = reconstruct3D(balls, D, DEBUG);
+        rockVolume = rockVoxel / ballVoxel * 8 * (2 - sqrt(2)) * 0.75^3 * 16.3871; % the orthogonal intersection volume of a sphere
         
         % Plot volume comparsion
         figure; hold on;
@@ -220,7 +229,7 @@ if RECONSTRUCT
     else
         % Calculate the benchmarked dimensions (x,y,z) from the least squares 
         % solution of the linear system
-        nums = size(info,1) / 2; % number of particles
+        nums = size(final_full, 1); % size(info,1) / 2; % number of particles
         weights = [];
         volumes = [];
         for i = 1 : nums
@@ -229,8 +238,9 @@ if RECONSTRUCT
             for j = 1 : 3
                 rocks{j} = imread(fullfile(segFolderName, strcat('timg', sprintf('%04d', i), '_', num2str(j - 1), '_rock.png')));
                 balls{j} = imread(fullfile(segFolderName, strcat('timg', sprintf('%04d', i), '_', num2str(j - 1), '_ball.png')));
-                D(j) = info(2 * i, j); % D(j) = min(size(balls{j})); % options: use equivalent diameter, or the minimum diameter
-                R(j) = info(2 * i - 1, j);
+                % D(j) = info(2 * i, j); 
+                D(j) = min(size(balls{j})); % options: use equivalent diameter, or the minimum diameter
+                % R(j) = info(2 * i - 1, j);
             end
             rockVoxel = reconstruct3D(rocks, D, DEBUG);
             [ballVoxel, sphericity] = reconstruct3D(balls, D, DEBUG);
@@ -250,7 +260,7 @@ if RECONSTRUCT
             
             % rockVolume = 0.8 * rockVoxel / (4 / 3 * 3.1415926 * (D(1)/2)^3) * 0.523599 * 16.3871;
             % rockVolume = 0.8 * rockVoxel / ballVoxel * 0.523599 * 16.3871; % calibration ball is V = 4/3 * PI * R3 = 0.523599 in3; 1 in3 = 16.3871 cm3
-            rockVolume =  0.8 * rockVoxel / ballVoxel * 8 * (2 - sqrt(2)) * 0.5^3 * 16.3871; % the orthogonal intersection volume of a sphere
+            rockVolume =  rockVoxel / ballVoxel * 8 * (2 - sqrt(2)) * 0.75^3 * 16.3871; % the orthogonal intersection volume of a sphere
             Gs = 2.65; % typical specific gravity of rock = 2.65g/cm3
             rockWeight = rockVolume * Gs; 
             volumes(i, 1) = rockVolume;
@@ -259,12 +269,12 @@ if RECONSTRUCT
             
             % Volume correction based on hole ratio (not used for now)
             % holeRatio = 1 - mean(R);
-            % rockVoxel = rockVoxel * holeRatio; 
-
-            % Save the 3D voxel array to disk
-            % save(fullfile(reconFolderName, 'volume.mhat'), 'volume');     
+            % rockVoxel = rockVoxel * holeRatio;     
         end
         
+        % Save the 3D voxel array to disk
+        save(fullfile(reconFolderName, 'volume.mhat'), 'volumes'); 
+            
         % For full results
         error_volume = (volumes - final_full(:, 1)) ./ final_full(:, 1) * 100;
         error_weight = (weights - final_full(:, 2)) ./ final_full(:, 2) * 100;
@@ -299,23 +309,23 @@ if RECONSTRUCT
         % saveas(gcf, fullfile(reconFolderName, 'comparison_volume.png'));
         
         % Plot weight comparison
-        figure(2); hold on;
-        range = 4000;
-        xlim([0 range]), ylim([0 range]), pbaspect([1 1 1]);
-        handle = zeros(5, 1);
-        handle(1) = plot(final_full(:,4), final_full(:,5), '*r'); % data point
-        handle(2) = plot(final(:, 4), final(:, 5), 'ob'); % average value
-        refLine = linspace(0, range, 6);
-        percent10Error = refLine .* 0.1;
-        percent20Error = refLine .* 0.2;
-        handle(3) = plot(refLine, refLine, '-k', 'LineWidth', 1); % 45 deg reference line
-        handle(4) = plot(refLine, refLine + percent10Error, '--g', 'LineWidth', 1); % 10% error range line
-        plot(refLine, refLine - percent10Error, '--g', 'LineWidth', 1);
-        handle(5) = plot(refLine, refLine + percent20Error, '--b', 'LineWidth', 1); % 20% error range line
-        plot(refLine, refLine - percent20Error, '--b', 'LineWidth', 1);
-        title('Weight Comparsion'), xlabel('Actual Weight (in g)'), ylabel('Reconstructed Weight (in g)');
-        legend(handle, 'Reconstructed Weight', 'Average Weight', 'Reference Line', '10% Eror', '20% Error', 'Location', 'NorthWest');
-        % saveas(gcf, fullfile(reconFolderName, 'comparison_weight.png'));
+%         figure(2); hold on;
+%         range = 4000;
+%         xlim([0 range]), ylim([0 range]), pbaspect([1 1 1]);
+%         handle = zeros(5, 1);
+%         handle(1) = plot(final_full(:,4), final_full(:,5), '*r'); % data point
+%         handle(2) = plot(final(:, 4), final(:, 5), 'ob'); % average value
+%         refLine = linspace(0, range, 6);
+%         percent10Error = refLine .* 0.1;
+%         percent20Error = refLine .* 0.2;
+%         handle(3) = plot(refLine, refLine, '-k', 'LineWidth', 1); % 45 deg reference line
+%         handle(4) = plot(refLine, refLine + percent10Error, '--g', 'LineWidth', 1); % 10% error range line
+%         plot(refLine, refLine - percent10Error, '--g', 'LineWidth', 1);
+%         handle(5) = plot(refLine, refLine + percent20Error, '--b', 'LineWidth', 1); % 20% error range line
+%         plot(refLine, refLine - percent20Error, '--b', 'LineWidth', 1);
+%         title('Weight Comparsion'), xlabel('Actual Weight (in g)'), ylabel('Reconstructed Weight (in g)');
+%         legend(handle, 'Reconstructed Weight', 'Average Weight', 'Reference Line', '10% Eror', '20% Error', 'Location', 'NorthWest');
+%         % saveas(gcf, fullfile(reconFolderName, 'comparison_weight.png'));
     end
     
 end

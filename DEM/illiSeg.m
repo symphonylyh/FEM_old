@@ -4,6 +4,7 @@ function results = illiSeg(filename, debug_mode)
 close all;
 BOUNDARY_ENHANCE = true; % enhance boundary information
 PLOT = debug_mode; % show procedural figures
+PLOT = false;
 PRINT = false; % save figures
 HOLE_DETECTION = false; % detect holes on rock surface
 
@@ -79,7 +80,7 @@ boundaryMask = boundaryMask & objectMask;
 % Clean the mask
 boundaryMask = imerode(boundaryMask, strel('disk', 1)); % imdilate correspondence
 boundaryMask = imopen(boundaryMask, strel('disk', 1)); % erode-dilate, denoise
-boundaryMask = bwareaopen(boundaryMask, ceil(h/50) * ceil(w/50)); % remove small objects
+boundaryMask = bwareaopen(boundaryMask, ceil(h/50) * ceil(w/50), 4); % remove small objects, by default 8-connectivity thus a small diamond won't be removed. change to 4
 boundaryMask = imclearborder(boundaryMask, 8);
 
 % Visualization of mask area on an image
@@ -199,8 +200,8 @@ A = Avalues(Apeaks(20));
     
 [Bcounts, Bvalues] = imhist(b);
 Bdistribution = cumsum(Bcounts);
-Bpeaks = findchangepts(Bdistribution, 'MaxNumChanges', 30);
-B = Bvalues(Bpeaks(30)); % Option: 1 if we want to distinguish from background
+Bpeaks = findchangepts(Bdistribution, 'MaxNumChanges', 40);
+B = Bvalues(Bpeaks(40)); % Option: 1 if we want to distinguish from background
 
 % figure(1);
 % subplot(2,3,1), imshow(a_plot), title('a Channel');
@@ -242,14 +243,17 @@ dist_reconstruct = imcomplement(dist_reconstruct);
 %figure(1), imshowpair(dist, dist_reconstruct, 'montage');
 
 dist = dist_reconstruct;
-% dist(boundaryMask) = 0; % add the enhance boundary info
+boundaryAdd = boundaryMask & dist < 0.25;
+bd = bwperim(boundaryAdd);
+dist(bd) = 0; % add the enhance boundary info. Try to think a way that can select information from both boundaryMask and dist
 
 %figure(2), imshowpair(boundaryMask, dist, 'montage');
 
 % Adaptive thresholding the distance map
 T = adaptthresh(dist, 0.3, 'ForegroundPolarity', 'dark'); % Adaptive thresholding is awesome!! 0.1 is sensitivity to distinguish background & foreground old: bw = ~imbinarize(dist, 0.1);
-bw = ~imbinarize(dist, T);
-bw = bw & objectMask; % remove over-segmented shadow area
+bw = ~imbinarize(dist, T); % adaptive threshold
+% bw = ~imbinarize(dist, 0.35); % manually set threshold for individual images, usually 0.25 or 0.3
+% bw = bw & objectMask; % remove over-segmented shadow area
 
 if PLOT
     bw_plot = bw;
@@ -261,11 +265,12 @@ bw = imdilate(bw, strel('disk', 2 * sigma)); % obtain a closed boundary
 bw = imfill(bw, 4, 'holes'); % fill holes inside a connected region, 8-connected is more strict and fill fewer holes
 bw = imerode(bw, strel('disk', 2 * sigma)); % imdilate's correspondence
 bw = imopen(bw, strel('disk', 2 * sigma)); % open: open holes (or remove objects), erode + dilate
-bw = bwareaopen(bw, ceil(h/50) * ceil(w/50)); % remove small object
+bw = bwareaopen(bw, ceil(h/50) * ceil(w/50), 4); % remove small object
 bw = imclearborder(bw, 8); % clear meaningless regions that are connected to image border
 
 %% Obtain region properties and geometric features
 
+% From distance map
 [Label,N] = bwlabel(bw, 4); % N is the number of regions
 stats = regionprops(Label, 'all'); 
 allArea = [stats.Area];
@@ -275,6 +280,15 @@ allMinAxis = [stats.MinorAxisLength];
 allMaxAxis = [stats.MajorAxisLength];
 allDiameter = [stats.EquivDiameter];
 
+% From boundary mask (mainly to find the ball)
+[Label_b, N_b] = bwlabel(boundaryMask, 4);
+stats_b = regionprops(Label_b, 'all');
+allArea_b = [stats_b.Area];
+allBoundingBox_b = [stats_b.BoundingBox];
+allMinAxis_b = [stats_b.MinorAxisLength];
+allMaxAxis_b = [stats_b.MajorAxisLength];
+allDiameter_b = [stats_b.EquivDiameter];
+
 if N < 2
     error('Segmentation failed...');
 end
@@ -282,28 +296,30 @@ end
 % Recognize rock by area
 [~, index] = sort(allArea, 'descend'); % sort by the region area in descending order to distinguish ball and rock. can also use circular Hough transform to recognize ball 
 rockIdx = index(1);
-ballIdx = index(2);
-
-% Recognize ball by both area and eccentricity
-% [~, index] = sort(allEccen, 'ascend'); % for circle, eccentricity = 0
-i = 2;
-sphericity = allMinAxis(index(i)) * allMaxAxis(index(i)) / allDiameter(index(i))^2; % min * max / avg^2, should be close to 1 for a circle
-sphericity = abs(sphericity - 1);
-while sphericity > 0.05 % or: allEccen(index(i)) > 0.5
-    i = i + 1;
-    sphericity = abs(allMinAxis(index(i)) * allMaxAxis(index(i)) / allDiameter(index(i))^2 - 1);
-end
-ballIdx = index(i); % ball is the largest possible area with <= 0.1 eccentricity
-
 rockArea = allArea(rockIdx);
-ballArea = allArea(ballIdx);
-ballDiameter = allDiameter(ballIdx);
-
-% Get the mask of each object, and crop the object
-rockMask = ismember(Label, rockIdx);
-ballMask = ismember(Label, ballIdx);
+rockMask = ismember(Label, rockIdx); % Get the mask of each object, and crop the object
 rockCrop = imcrop(rockMask,allBoundingBox(4*(rockIdx-1)+1:4*(rockIdx-1)+4));
-ballCrop = imcrop(ballMask,allBoundingBox(4*(ballIdx-1)+1:4*(ballIdx-1)+4));
+
+% Recognize ball by eccentricity (choose from distance map/boundary mask, whichever is better)
+% [~, index] = sort(allEccen, 'ascend'); % for circle, eccentricity = 0
+sphericity = (allMaxAxis - allMinAxis) ./ allDiameter; % (max - min) / avg, should be close to 0 for a circle
+[~, ind] = sort(sphericity, 'ascend');
+sphericity_b = (allMaxAxis_b - allMinAxis_b) ./ allDiameter_b; 
+[~, ind_b] = sort(sphericity_b, 'ascend');
+
+if allArea_b(ind_b(1)) < allArea(ind(1)) % if boundary mask result is better
+    ballIdx = ind_b(1); 
+    ballArea = allArea_b(ballIdx);
+    ballDiameter = allDiameter_b(ballIdx);
+    ballMask = ismember(Label_b, ballIdx);
+    ballCrop = imcrop(ballMask,allBoundingBox_b(4*(ballIdx-1)+1:4*(ballIdx-1)+4));
+else
+    ballIdx = ind(1); 
+    ballArea = allArea(ballIdx);
+    ballDiameter = allDiameter(ballIdx);
+    ballMask = ismember(Label, ballIdx);
+    ballCrop = imcrop(ballMask,allBoundingBox(4*(ballIdx-1)+1:4*(ballIdx-1)+4));
+end
 
 % Get the perimeter of each object and burn it onto the raw image
 mark = img;
