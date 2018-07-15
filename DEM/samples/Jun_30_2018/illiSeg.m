@@ -77,10 +77,6 @@ objectMask = L > 0.3 & b > 0.3; % observation: the object (or non-shadow) area i
 boundaryMask = boundaryMask & objectMask;
 
 % Clean the mask
-% boundaryMask = imdilate(boundaryMask, strel('disk', 4)); 
-% boundaryMask = imfill(boundaryMask, 4, 'holes');
-% boundaryMask = imerode(boundaryMask, strel('disk', 4));
-
 boundaryMask = imerode(boundaryMask, strel('disk', 1)); % imdilate correspondence
 boundaryMask = imopen(boundaryMask, strel('disk', 1)); % erode-dilate, denoise
 boundaryMask = bwareaopen(boundaryMask, ceil(h/50) * ceil(w/50), 4); % remove small objects, by default 8-connectivity thus a small diamond won't be removed. change to 4
@@ -246,16 +242,16 @@ dist_reconstruct = imcomplement(dist_reconstruct);
 %figure(1), imshowpair(dist, dist_reconstruct, 'montage');
 
 dist = dist_reconstruct;
-boundaryAdd = boundaryMask & dist < 0.25; 
+boundaryAdd = boundaryMask & dist < 0.25;
 bd = bwperim(boundaryAdd);
 dist(bd) = 0; % add the enhance boundary info. Try to think a way that can select information from both boundaryMask and dist
 
 %figure(2), imshowpair(boundaryMask, dist, 'montage');
 
 % Adaptive thresholding the distance map
-T = adaptthresh(dist, 0.4, 'ForegroundPolarity', 'dark'); % Adaptive thresholding is awesome!! 0.1 is sensitivity to distinguish background & foreground old: bw = ~imbinarize(dist, 0.1);
+T = adaptthresh(dist, 0.3, 'ForegroundPolarity', 'dark'); % Adaptive thresholding is awesome!! 0.1 is sensitivity to distinguish background & foreground old: bw = ~imbinarize(dist, 0.1);
 bw = ~imbinarize(dist, T); % adaptive threshold
-% bw = ~imbinarize(dist, 0.32); % manually set threshold for individual images, usually 0.25 or 0.3
+% bw = ~imbinarize(dist, 0.3); % manually set threshold for individual images, usually 0.25 or 0.3
 % bw = bw & objectMask; % remove over-segmented shadow area
 
 if PLOT
@@ -264,77 +260,76 @@ end
 %figure(3), imshowpair(dist, bw, 'montage');
 
 % Morphological operations on binary mask
-bw = imerode(bw, strel('disk', 6 * sigma)); % imdilate's correspondence
-bw = imdilate(bw, strel('disk', 6 * sigma)); % obtain a closed boundary
+bw = imdilate(bw, strel('disk', 2 * sigma)); % obtain a closed boundary
 bw = imfill(bw, 4, 'holes'); % fill holes inside a connected region, 8-connected is more strict and fill fewer holes
-%bw = imerode(bw, strel('disk', 2 * sigma)); % imdilate's correspondence
+bw = imerode(bw, strel('disk', 2 * sigma)); % imdilate's correspondence
 bw = imopen(bw, strel('disk', 2 * sigma)); % open: open holes (or remove objects), erode + dilate
 bw = bwareaopen(bw, ceil(h/50) * ceil(w/50), 4); % remove small object
 bw = imclearborder(bw, 8); % clear meaningless regions that are connected to image border
 
 % Visualize result
-% if PLOT
-%     % Figure 1, Original image and Lab channels
-%     fig = 1; % start figure No.
-%     figure(fig); fig = fig + 1;
-%     [ha, pos] = tight_subplot(1,4,[.01 .01],[.01 .01],[.01 .01]);
-%     axes(ha(1)), imshow(img), title('Original Image');
-%     axes(ha(2)), imshow(L), title('L Channel');
-%     axes(ha(3)), imshow(a), title('a Channel');
-%     axes(ha(4)), imshow(b), title('b Channel');
-%     if PRINT
-%         print('color space.png', '-r300', '-dpng');
-%     end
-%     
-%     % Figure 2, boundary map and mask
-%     if BOUNDARY_ENHANCE
-%         figure(fig); fig = fig + 1;
-%         [ha, pos] = tight_subplot(1,2,[.01 .01],[.01 .01],[.01 .01]);
-%         axes(ha(1)), imshow(boundary), title('Object Boundary');
-%         axes(ha(2)), imshow(boundaryMask), title('Boundary Mask');
-%         if PRINT
-%             print('boundary mask.png', '-r300', '-dpng');
-%         end
-%     end
-%     
-%     % Figure 3, pixel distribution in a and b channels
-%     figure(fig); fig = fig + 1;
-%     subplot(2,3,1), imshow(a), title('a Channel');
-%     subplot(2,3,2), bar(Avalues, Acounts), title('Pixel histogram of a channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Pixel Count', 'FontSize', 10);
-%     subplot(2,3,3), plot(Avalues, Adistribution, '-r'), y1 = get(gca, 'ylim'); hold on, plot([A A], y1, '--b'), title('Pixel cdf of a channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Cumulative sum', 'FontSize', 10);
-% 
-%     subplot(2,3,4), imshow(b), title('b Channel');
-%     subplot(2,3,5), bar(Bvalues, Bcounts), title('Pixel histogram of b channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Pixel Count', 'FontSize', 10);  
-%     subplot(2,3,6), plot(Bvalues, Bdistribution, '-r'), y2 = get(gca, 'ylim'); hold on, plot([B B], y2, '--b'), title('Pixel cdf of b channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Cumulative sum', 'FontSize', 10);
-%     tightfig;
-%     if PRINT
-%         print('histogram.png', '-r300', '-dpng');
-%     end
-%     
-%     % Figure 4, distance map
-%     figure(fig); fig = fig + 1;
-%     [ha, pos] = tight_subplot(1,2,[.01 .01],[.01 .01],[.01 .01]);
-%     axes(ha(1)), imshow(dist), title('Distance Map, Original');
-%     axes(ha(2)), imshow(dist), title('Distance Map, Boundary Enhanced');
-%     if PRINT
-%         print('distance map.png', '-r300', '-dpng');
-%     end
-%     
-%     % Figure 5, object mask
-%     figure(fig); fig = fig + 1;
-%     [ha, pos] = tight_subplot(1,2,[.01 .01],[.01 .01],[.01 .01]);
-%     axes(ha(1)), imshow(bw_plot), title('Thresholded Image, Original');
-%     axes(ha(2)), imshow(bw), title('Thresholded Image, Clean');
-%     if PRINT
-%         print('threshold image.png', '-r300', '-dpng');
-%     end
-%     
-% %     figure(fig); fig = fig + 1;
-% %     imshow(img);
-% %     bd = bwperim(bw);
-% %     hold on;
-% %     visboundaries(bd, 'LineWidth', 1);
-% end
+if PLOT
+    % Figure 1, Original image and Lab channels
+    fig = 1; % start figure No.
+    figure(fig); fig = fig + 1;
+    [ha, pos] = tight_subplot(1,4,[.01 .01],[.01 .01],[.01 .01]);
+    axes(ha(1)), imshow(img), title('Original Image');
+    axes(ha(2)), imshow(L), title('L Channel');
+    axes(ha(3)), imshow(a), title('a Channel');
+    axes(ha(4)), imshow(b), title('b Channel');
+    if PRINT
+        print('color space.png', '-r300', '-dpng');
+    end
+    
+    % Figure 2, boundary map and mask
+    if BOUNDARY_ENHANCE
+        figure(fig); fig = fig + 1;
+        [ha, pos] = tight_subplot(1,2,[.01 .01],[.01 .01],[.01 .01]);
+        axes(ha(1)), imshow(boundary), title('Object Boundary');
+        axes(ha(2)), imshow(boundaryMask), title('Boundary Mask');
+        if PRINT
+            print('boundary mask.png', '-r300', '-dpng');
+        end
+    end
+    
+    % Figure 3, pixel distribution in a and b channels
+    figure(fig); fig = fig + 1;
+    subplot(2,3,1), imshow(a), title('a Channel');
+    subplot(2,3,2), bar(Avalues, Acounts), title('Pixel histogram of a channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Pixel Count', 'FontSize', 10);
+    subplot(2,3,3), plot(Avalues, Adistribution, '-r'), y1 = get(gca, 'ylim'); hold on, plot([A A], y1, '--b'), title('Pixel cdf of a channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Cumulative sum', 'FontSize', 10);
+
+    subplot(2,3,4), imshow(b), title('b Channel');
+    subplot(2,3,5), bar(Bvalues, Bcounts), title('Pixel histogram of b channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Pixel Count', 'FontSize', 10);  
+    subplot(2,3,6), plot(Bvalues, Bdistribution, '-r'), y2 = get(gca, 'ylim'); hold on, plot([B B], y2, '--b'), title('Pixel cdf of b channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Cumulative sum', 'FontSize', 10);
+    tightfig;
+    if PRINT
+        print('histogram.png', '-r300', '-dpng');
+    end
+    
+    % Figure 4, distance map
+    figure(fig); fig = fig + 1;
+    [ha, pos] = tight_subplot(1,2,[.01 .01],[.01 .01],[.01 .01]);
+    axes(ha(1)), imshow(dist), title('Distance Map, Original');
+    axes(ha(2)), imshow(dist), title('Distance Map, Boundary Enhanced');
+    if PRINT
+        print('distance map.png', '-r300', '-dpng');
+    end
+    
+    % Figure 5, object mask
+    figure(fig); fig = fig + 1;
+    [ha, pos] = tight_subplot(1,2,[.01 .01],[.01 .01],[.01 .01]);
+    axes(ha(1)), imshow(bw_plot), title('Thresholded Image, Original');
+    axes(ha(2)), imshow(bw), title('Thresholded Image, Clean');
+    if PRINT
+        print('threshold image.png', '-r300', '-dpng');
+    end
+    
+    figure(fig); fig = fig + 1;
+    imshow(img);
+    bd = bwperim(bw);
+    hold on;
+    visboundaries(bd, 'LineWidth', 1);
+end
 
 %% Obtain region properties and geometric features
 
@@ -357,9 +352,9 @@ allMinAxis_b = [stats_b.MinorAxisLength];
 allMaxAxis_b = [stats_b.MajorAxisLength];
 allDiameter_b = [stats_b.EquivDiameter];
 
-% if N < 2
-%     error('Segmentation failed...');
-% end
+if N < 2
+    error('Segmentation failed...');
+end
 
 % Recognize rock by area
 [~, index] = sort(allArea, 'descend'); % sort by the region area in descending order to distinguish ball and rock. can also use circular Hough transform to recognize ball 
@@ -370,53 +365,52 @@ rockCrop = imcrop(rockMask,allBoundingBox(4*(rockIdx-1)+1:4*(rockIdx-1)+4));
 
 % Recognize ball by eccentricity (choose from distance map/boundary mask, whichever is better)
 % [~, index] = sort(allEccen, 'ascend'); % for circle, eccentricity = 0
-% sphericity = (allMaxAxis - allMinAxis) ./ allDiameter; % (max - min) / avg, should be close to 0 for a circle
-% [~, ind] = sort(sphericity, 'ascend');
-% sphericity_b = (allMaxAxis_b - allMinAxis_b) ./ allDiameter_b; 
-% [~, ind_b] = sort(sphericity_b, 'ascend');
-% 
-% if allArea_b(ind_b(1)) < allArea(ind(1)) % if boundary mask result is better
-%     ballIdx = ind_b(1); 
-%     ballArea = allArea_b(ballIdx);
-%     ballDiameter = allDiameter_b(ballIdx);
-%     ballMask = ismember(Label_b, ballIdx);
-%     ballCrop = imcrop(ballMask,allBoundingBox_b(4*(ballIdx-1)+1:4*(ballIdx-1)+4));
-% else
-%     ballIdx = ind(1); 
-%     ballArea = allArea(ballIdx);
-%     ballDiameter = allDiameter(ballIdx);
-%     ballMask = ismember(Label, ballIdx);
-%     ballCrop = imcrop(ballMask,allBoundingBox(4*(ballIdx-1)+1:4*(ballIdx-1)+4));
-% end
+sphericity = (allMaxAxis - allMinAxis) ./ allDiameter; % (max - min) / avg, should be close to 0 for a circle
+[~, ind] = sort(sphericity, 'ascend');
+sphericity_b = (allMaxAxis_b - allMinAxis_b) ./ allDiameter_b; 
+[~, ind_b] = sort(sphericity_b, 'ascend');
+
+if allArea_b(ind_b(1)) < allArea(ind(1)) % if boundary mask result is better
+    ballIdx = ind_b(1); 
+    ballArea = allArea_b(ballIdx);
+    ballDiameter = allDiameter_b(ballIdx);
+    ballMask = ismember(Label_b, ballIdx);
+    ballCrop = imcrop(ballMask,allBoundingBox_b(4*(ballIdx-1)+1:4*(ballIdx-1)+4));
+else
+    ballIdx = ind(1); 
+    ballArea = allArea(ballIdx);
+    ballDiameter = allDiameter(ballIdx);
+    ballMask = ismember(Label, ballIdx);
+    ballCrop = imcrop(ballMask,allBoundingBox(4*(ballIdx-1)+1:4*(ballIdx-1)+4));
+end
 
 % Get the perimeter of each object and burn it onto the raw image
 mark = img;
 rockBoundary = bwperim(rockMask, 4); 
-%ballBoundary = bwperim(ballMask, 4);
+ballBoundary = bwperim(ballMask, 4);
 mark = imoverlay(mark, rockBoundary, 'red');
-%mark = imoverlay(mark, ballBoundary, 'yellow');
+mark = imoverlay(mark, ballBoundary, 'yellow');
 [path, name, extension] = fileparts(filename); % path is to "Compressed folder"
 path = erase(path, '/Compressed'); % direct to the upper folder
 
 if debug_mode
     imwrite(mark, fullfile(path, 'Segmentation/Debug/', strcat(name, '.png')));
     imwrite(rockCrop, fullfile(path, 'Segmentation/Debug/', strcat('t', name, '_rock', '.png')));
-    %imwrite(ballCrop, fullfile(path, 'Segmentation/Debug', strcat('t', name, '_ball', '.png')));
+    imwrite(ballCrop, fullfile(path, 'Segmentation/Debug', strcat('t', name, '_ball', '.png')));
 else
     imwrite(mark, fullfile(path, 'Segmentation/', strcat(name, '.png')));
     imwrite(rockCrop, fullfile(path, 'Segmentation/', strcat('t', name, '_rock', '.png')));
-    %imwrite(ballCrop, fullfile(path, 'Segmentation/', strcat('t', name, '_ball', '.png')));
+    imwrite(ballCrop, fullfile(path, 'Segmentation/', strcat('t', name, '_ball', '.png')));
 end
 
 % Visualize result
 if PLOT
-    fig = 1;
     % Figure 6, final result
     figure(fig); fig = fig + 1;
     imshow(img);
     hold on;
     visboundaries(rockMask, 'Color', 'red', 'LineStyle', '-', 'LineWidth', 1, 'EnhanceVisibility', false); 
-    %visboundaries(ballMask, 'Color', 'yellow', 'LineStyle', '-', 'LineWidth', 1, 'EnhanceVisibility', false);
+    visboundaries(ballMask, 'Color', 'yellow', 'LineStyle', '-', 'LineWidth', 1, 'EnhanceVisibility', false);
     if PRINT
         print('final result.png', '-r300', '-dpng');
     end
@@ -446,7 +440,7 @@ if HOLE_DETECTION
 %     imshowpair(rgb, rock, 'montage');
     holeRatio = holeArea / rockArea;
 end
-holeRatio = 1; ballDiameter = 1;
+holeRatio = 1;
 results = [holeRatio; ballDiameter]; % hole ratio of the particle & equivalent diameter of calibration ball
 
 end % end of function

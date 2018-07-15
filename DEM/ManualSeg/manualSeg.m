@@ -37,7 +37,9 @@ if ~exist(rawFolderName, 'dir')
     % Get the file extension
     [path, name, extension] = fileparts(fnames{1}); 
     for i = 1 : length(fnames)
-        newFileName = strcat('img', sprintf('%04d', i), '_', num2str(2), extension);
+        newFileName = strcat('img', sprintf('%04d', ceil(i / 3)), '_', num2str(mod(i, 3)), extension); % for triplet images
+        % view = 1; % 0(top)/1(front)/2(side) 
+        % newFileName = strcat('img', sprintf('%04d', i), '_', num2str(2), extension); % For individual set
 
         % Rename files and put them under "Raw" folder
         movefile(fullfile(inFolderName, fnames{i}), fullfile(rawFolderName, newFileName));     

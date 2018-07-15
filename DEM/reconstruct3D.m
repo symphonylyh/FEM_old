@@ -12,7 +12,7 @@ function [voxel, sphericity] = reconstruct3D(views, D, debug_mode)
 close all;
 
 PLOT = debug_mode;
-PLOT = false;
+%PLOT = false;
 
 % Normalize/Scale with respect to the *top* view based on the diameter ratio of calibration ball
 views{2} = imresize(views{2}, D(1) / D(2));
@@ -131,6 +131,7 @@ view(3);
         volume = flip(volume, 2);
         volume = permute(volume, [1 3 2]); % exchange y and z
         v = double(volume);
+        v = smooth3(v);
         p = patch( isosurface(v,0) );                 %# create isosurface patch
         isonormals(v, p)                              %# compute and set normals
         set(p, 'FaceColor','r', 'EdgeColor','none')   %# set surface props

@@ -8,35 +8,11 @@
 
 %% Control panel
 READ = false; COMPRESS = true; compress_size = 1024; % Rename image file (one-time only), compress image file (if the resolution remains the same, turn off the switch)
-SEGMENT = false;
-RECONSTRUCT = true;
+SEGMENT = true;
+RECONSTRUCT = false;
 
 % User define folder name here
 inFolderName = './samples/Jul_12_2018/'; 
-
-%% Single ball case
-% img = imread(fullfile(inFolderName, 'IMG_0443.jpg'));
-% % Compress
-% [h,w,d] = size(img);
-% if h > w
-%     img = imresize(img, [compress_size NaN]);
-% else
-%     img = imresize(img, [NaN compress_size]);
-% end
-% % Segmentation
-% imageSegmenter(img); % use active contour
-% pause;
-% imageSegmenter close;
-% % Region property
-% [Label,N] = bwlabel(BW, 4); % N is the number of regions
-% stats = regionprops(Label, 'all'); 
-% allBoundingBox = [stats.BoundingBox];
-% ballCrop = imcrop(BW,allBoundingBox(1:4));
-% 
-% view = 2;
-% for i = 61 : 120
-%     imwrite(ballCrop, fullfile(inFolderName, strcat('timg', sprintf('%04d', i), '_', num2str(view), '_ball', '.png')));
-% end
 
 %% READ: Read image files
 if READ  
@@ -61,7 +37,7 @@ if READ
     for i = 1 : length(fnames)
         % newFileName = strcat('img', sprintf('%04d', ceil(i / 3)), '_', num2str(mod(i, 3)), extension); % for triplet images
         % For individual set
-        view = 1; % 0(top)/1(front)/2(side) 
+        view = 0; % 0(top)/1(front)/2(side) 
         newFileName = strcat('img', sprintf('%04d', i), '_', num2str(view), extension);
         
         % Rename files and put them under "Raw" folder
@@ -114,9 +90,9 @@ if SEGMENT
     end
     
     % Group segmentation or single segmentation based on user's option
-    DEBUG = true; object = 1; view = 2; % designate the object & view (1-top;2-front;3-side) to debug
+    DEBUG = true; object = 3; view = 1; % designate the object & view (1-top;2-front;3-side) to debug
     if DEBUG
-        % Create debug  folder or clear existing folder
+        % Create debug folder or clear existing folder
         debugFolderName = strcat(segFolderName, 'Debug/');
         if ~exist(debugFolderName, 'dir')
             mkdir(debugFolderName);
@@ -130,21 +106,6 @@ if SEGMENT
         
         % For batch processing of each view (phone) images separately:
         result = illiSeg(fullfile(compressFolderName, strcat('img', sprintf('%04d', object), '_', num2str(view - 1), '.png')), DEBUG);
-        
-        % For manually segmentation
-%         img = imread(fullfile(compressFolderName, strcat('img', sprintf('%04d', object), '_', num2str(view - 1), '.png')));
-%         imageSegmenter(img);
-%         pause;
-%         imageSegmenter close;
-%         rockBoundary = bwperim(BW, 4); 
-%         img = imoverlay(img, rockBoundary, 'red');
-%         
-%         [Label,N] = bwlabel(BW, 4); 
-%         stats = regionprops(Label, 'all'); 
-%         allBoundingBox = [stats.BoundingBox];
-%         rockCrop = imcrop(BW,allBoundingBox(1:4));
-%         imwrite(img, fullfile(debugFolderName, strcat('img', sprintf('%04d', object), '_', num2str(view - 1), '.png')));
-%         imwrite(rockCrop, fullfile(debugFolderName, strcat('timg', sprintf('%04d', object), '_', num2str(view - 1), '_rock', '.png')));
     else
         % For batch processing of each view (phone) images separately:
         for i = 1 : length(fnames)
@@ -226,7 +187,7 @@ if RECONSTRUCT
     end
     
     % Group reconstruction or single reconstruction based on user's option
-    DEBUG = true; object = 67; % designate the object to debug
+    DEBUG = false; object = 2; % designate the object to debug
     if DEBUG
         % Create debug folder or clear existing folder
         debugFolderName = strcat(reconFolderName, 'Debug/');
@@ -245,25 +206,25 @@ if RECONSTRUCT
             %R(view) = info(2 * object - 1, view);
         end
         rockVoxel = reconstruct3D(rocks, D, DEBUG);
-        %ballVoxel = reconstruct3D(balls, D, DEBUG);
-        %rockVolume = rockVoxel / ballVoxel * 8 * (2 - sqrt(2)) * 0.75^3 * 16.3871; % the orthogonal intersection volume of a sphere
+        ballVoxel = reconstruct3D(balls, D, DEBUG);
+        rockVolume = rockVoxel / ballVoxel * 8 * (2 - sqrt(2)) * 0.75^3 * 16.3871; % the orthogonal intersection volume of a sphere
         
         % Plot volume comparsion
-%         figure; hold on;
-%         range = 2000;
-%         xlim([0 range]), ylim([0 range]), pbaspect([1 1 1]);
-%         handle = zeros(4, 1);
-%         handle(1) = plot(final_full(object,1), rockVolume, '*r');  % data point
-%         refLine = linspace(0, range, 6); 
-%         percent10Error = refLine .* 0.1;
-%         percent20Error = refLine .* 0.2;
-%         handle(2) = plot(refLine, refLine, '-k', 'LineWidth', 1); % 45 deg reference line
-%         handle(3) = plot(refLine, refLine + percent10Error, '--g', 'LineWidth', 1); % 10% error range line
-%         plot(refLine, refLine - percent10Error, '--g', 'LineWidth', 1);
-%         handle(4) = plot(refLine, refLine + percent20Error, '--b', 'LineWidth', 1); % 20% error range line
-%         plot(refLine, refLine - percent20Error, '--b', 'LineWidth', 1);
-%         legend(handle, 'Reconstructed Volume', 'Reference Line', '10% Eror', '20% Error', 'Location', 'NorthWest');
-%         title('Volume Comparsion'), xlabel('Actual Volume (in cm3)'), ylabel('Reconstructed Volume (in cm3)');
+        figure; hold on;
+        range = 2000;
+        xlim([0 range]), ylim([0 range]), pbaspect([1 1 1]);
+        handle = zeros(4, 1);
+        handle(1) = plot(final_full(object,1), rockVolume, '*r');  % data point
+        refLine = linspace(0, range, 6); 
+        percent10Error = refLine .* 0.1;
+        percent20Error = refLine .* 0.2;
+        handle(2) = plot(refLine, refLine, '-k', 'LineWidth', 1); % 45 deg reference line
+        handle(3) = plot(refLine, refLine + percent10Error, '--g', 'LineWidth', 1); % 10% error range line
+        plot(refLine, refLine - percent10Error, '--g', 'LineWidth', 1);
+        handle(4) = plot(refLine, refLine + percent20Error, '--b', 'LineWidth', 1); % 20% error range line
+        plot(refLine, refLine - percent20Error, '--b', 'LineWidth', 1);
+        legend(handle, 'Reconstructed Volume', 'Reference Line', '10% Eror', '20% Error', 'Location', 'NorthWest');
+        title('Volume Comparsion'), xlabel('Actual Volume (in cm3)'), ylabel('Reconstructed Volume (in cm3)');
         % saveas(gcf, fullfile(debugFolderName, 'comparison_volume.png'));
     else
         % Calculate the benchmarked dimensions (x,y,z) from the least squares 
@@ -299,7 +260,7 @@ if RECONSTRUCT
             
             % rockVolume = 0.8 * rockVoxel / (4 / 3 * 3.1415926 * (D(1)/2)^3) * 0.523599 * 16.3871;
             % rockVolume = 0.8 * rockVoxel / ballVoxel * 0.523599 * 16.3871; % calibration ball is V = 4/3 * PI * R3 = 0.523599 in3; 1 in3 = 16.3871 cm3
-            rockVolume =  0.8 * rockVoxel / ballVoxel * 8 * (2 - sqrt(2)) * 0.75^3 * 16.3871; % the orthogonal intersection volume of a sphere
+            rockVolume =  rockVoxel / ballVoxel * 8 * (2 - sqrt(2)) * 0.75^3 * 16.3871; % the orthogonal intersection volume of a sphere
             Gs = 2.65; % typical specific gravity of rock = 2.65g/cm3
             rockWeight = rockVolume * Gs; 
             volumes(i, 1) = rockVolume;
@@ -313,7 +274,7 @@ if RECONSTRUCT
         
         % Save the 3D voxel array to disk
         save(fullfile(reconFolderName, 'volume.mhat'), 'volumes'); 
-        
+            
         % For full results
         error_volume = (volumes - final_full(:, 1)) ./ final_full(:, 1) * 100;
         error_weight = (weights - final_full(:, 2)) ./ final_full(:, 2) * 100;
@@ -328,35 +289,14 @@ if RECONSTRUCT
         error_weight = (mean_weight - final(:, 2)) ./ final(:, 2) * 100;
         final = [final(:, 1) mean_volume error_volume final(:, 2) mean_weight error_weight];
         
-        csvwrite(fullfile(reconFolderName, 'volumes.csv'), mean_volume);
-        
         % Plot volume comparsion
-%         figure(1); hold on;
-%         range = 2000;
-%         xlim([0 range]), ylim([0 range]), pbaspect([1 1 1]); 
-%         handle = zeros(5, 1);
-%         handle(1) = plot(final_full(:,1), final_full(:,2), '*r'); % data point
-%         handle(2) = plot(final(:, 1), final(:, 2), 'ob'); % average value
-%         refLine = linspace(0, range, 6); 
-%         percent10Error = refLine .* 0.1;
-%         percent20Error = refLine .* 0.2;
-%         handle(3) = plot(refLine, refLine, '-k', 'LineWidth', 1); % 45 deg reference line
-%         handle(4) = plot(refLine, refLine + percent10Error, '--g', 'LineWidth', 1); % 10% error range line
-%         plot(refLine, refLine - percent10Error, '--g', 'LineWidth', 1);
-%         handle(5) = plot(refLine, refLine + percent20Error, '--b', 'LineWidth', 1); % 20% error range line
-%         plot(refLine, refLine - percent20Error, '--b', 'LineWidth', 1);
-%         title('Volume Comparsion'), xlabel('Actual Volume (in cm3)'), ylabel('Reconstructed Volume (in cm3)');
-%         legend(handle, 'Reconstructed Volume', 'Average Volume', 'Reference Line', '10% Eror', '20% Error', 'Location', 'NorthWest');
-        % saveas(gcf, fullfile(reconFolderName, 'comparison_volume.png'));
-        
-        % Plot weight comparison
-        figure(2); hold on;
-        range = 350000;
-        xlim([0 range]), ylim([0 range]), pbaspect([1 1 1]);
+        figure(1); hold on;
+        range = 2000;
+        xlim([0 range]), ylim([0 range]), pbaspect([1 1 1]); 
         handle = zeros(5, 1);
-        handle(1) = plot(final_full(:,4), final_full(:,5), '*r'); % data point
-        handle(2) = plot(final(:, 4), final(:, 5), 'ob'); % average value
-        refLine = linspace(0, range, 6);
+        handle(1) = plot(final_full(:,1), final_full(:,2), '*r'); % data point
+        handle(2) = plot(final(:, 1), final(:, 2), 'ob'); % average value
+        refLine = linspace(0, range, 6); 
         percent10Error = refLine .* 0.1;
         percent20Error = refLine .* 0.2;
         handle(3) = plot(refLine, refLine, '-k', 'LineWidth', 1); % 45 deg reference line
@@ -364,9 +304,28 @@ if RECONSTRUCT
         plot(refLine, refLine - percent10Error, '--g', 'LineWidth', 1);
         handle(5) = plot(refLine, refLine + percent20Error, '--b', 'LineWidth', 1); % 20% error range line
         plot(refLine, refLine - percent20Error, '--b', 'LineWidth', 1);
-        title('Weight Comparsion'), xlabel('Actual Weight (in g)'), ylabel('Reconstructed Weight (in g)');
-        legend(handle, 'Reconstructed Weight', 'Average Weight', 'Reference Line', '10% Eror', '20% Error', 'Location', 'NorthWest');
-        % saveas(gcf, fullfile(reconFolderName, 'comparison_weight.png'));
+        title('Volume Comparsion'), xlabel('Actual Volume (in cm3)'), ylabel('Reconstructed Volume (in cm3)');
+        legend(handle, 'Reconstructed Volume', 'Average Volume', 'Reference Line', '10% Eror', '20% Error', 'Location', 'NorthWest');
+        % saveas(gcf, fullfile(reconFolderName, 'comparison_volume.png'));
+        
+        % Plot weight comparison
+%         figure(2); hold on;
+%         range = 4000;
+%         xlim([0 range]), ylim([0 range]), pbaspect([1 1 1]);
+%         handle = zeros(5, 1);
+%         handle(1) = plot(final_full(:,4), final_full(:,5), '*r'); % data point
+%         handle(2) = plot(final(:, 4), final(:, 5), 'ob'); % average value
+%         refLine = linspace(0, range, 6);
+%         percent10Error = refLine .* 0.1;
+%         percent20Error = refLine .* 0.2;
+%         handle(3) = plot(refLine, refLine, '-k', 'LineWidth', 1); % 45 deg reference line
+%         handle(4) = plot(refLine, refLine + percent10Error, '--g', 'LineWidth', 1); % 10% error range line
+%         plot(refLine, refLine - percent10Error, '--g', 'LineWidth', 1);
+%         handle(5) = plot(refLine, refLine + percent20Error, '--b', 'LineWidth', 1); % 20% error range line
+%         plot(refLine, refLine - percent20Error, '--b', 'LineWidth', 1);
+%         title('Weight Comparsion'), xlabel('Actual Weight (in g)'), ylabel('Reconstructed Weight (in g)');
+%         legend(handle, 'Reconstructed Weight', 'Average Weight', 'Reference Line', '10% Eror', '20% Error', 'Location', 'NorthWest');
+%         % saveas(gcf, fullfile(reconFolderName, 'comparison_weight.png'));
     end
     
 end

@@ -1,3 +1,15 @@
+inFolderName = './change';
+fnames = getAllFilesInFolder(inFolderName);
+newFolderName = strcat(inFolderName, 'new/');
+if ~exist(newFolderName, 'dir')
+    mkdir(newFolderName);
+end 
+
+for i = 1 : length(fnames)
+    [path, name, extension] = fileparts(fnames{i});
+    newFileName = strcat('t', name, extension);
+    movefile(fullfile(inFolderName, fnames{i}), fullfile(newFolderName, newFileName));   
+end
 
 close all;
 PLOT = true;
