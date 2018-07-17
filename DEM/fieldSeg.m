@@ -274,7 +274,7 @@ if RECONSTRUCT
         weights = [];
         volumes = [];
         remove = [];
-        for i = 1 : 1 % nums
+        for i = 1 : nums
             D = []; % diameters of calibration ball
             R = []; % hole ratios of rock
             for j = 1 : 3
@@ -285,9 +285,9 @@ if RECONSTRUCT
                 % R(j) = info(2 * i - 1, j);
             end
             [rockVoxel, sphericity, removal] = reconstruct3D(rocks, D, DEBUG, true);
-            voxel(i) = rockVoxel;
-            remove = cat(1, remove, removal);
-            %[ballVoxel, sphericity] = reconstruct3D(balls, D, DEBUG, false);
+            %voxel(i) = rockVoxel;
+            %remove = cat(1, remove, removal);
+            [ballVoxel, sphericity] = reconstruct3D(balls, D, DEBUG, false);
             % Options for the calibration ball volume: 
             % 1. Actual 1 in. ball volume is 4/3*PI*R^3 = 0.523599 in3
             % use the ball diameter in top view to compute volume from the
@@ -304,11 +304,11 @@ if RECONSTRUCT
             
             % rockVolume = 0.8 * rockVoxel / (4 / 3 * 3.1415926 * (D(1)/2)^3) * 0.523599 * 16.3871;
             %rockVolume = rockVoxel / ballVoxel * 1.76714 * 16.3871; % calibration ball is V = 4/3 * PI * R3 = 0.523599 in3; 1 in3 = 16.3871 cm3
-            %rockVolume =  0.95 * rockVoxel / ballVoxel * 8 * (2 - sqrt(2)) * 0.75^3 * 16.3871; % the orthogonal intersection volume of a sphere
+            rockVolume =  rockVoxel / ballVoxel * 8 * (2 - sqrt(2)) * 0.75^3 * 16.3871; % the orthogonal intersection volume of a sphere
             Gs = 2.66; % typical specific gravity of rock = 2.65g/cm3
-            %rockWeight = rockVolume * Gs; 
-            %volumes(i, 1) = rockVolume;
-            %weights(i, 1) = rockWeight;
+            rockWeight = rockVolume * Gs; 
+            volumes(i, 1) = rockVolume;
+            weights(i, 1) = rockWeight;
             % sphere(i,1) = sphericity; % not used
             
             % Volume correction based on hole ratio (not used for now)
@@ -316,8 +316,8 @@ if RECONSTRUCT
             % rockVoxel = rockVoxel * holeRatio;     
         end
         
-        csvwrite(fullfile(reconFolderName, 'voxel.csv'), voxel);
-        csvwrite(fullfile(reconFolderName, 'removal.csv'), remove);
+%         csvwrite(fullfile(reconFolderName, 'voxel.csv'), voxel);
+%         csvwrite(fullfile(reconFolderName, 'removal.csv'), remove);
         
         % Save the 3D voxel array to disk
         save(fullfile(reconFolderName, 'volume.mhat'), 'volumes'); 
@@ -341,35 +341,16 @@ if RECONSTRUCT
         header = {'Particle No.', 'Measured Volume (cm3)', 'Measured Weight (g)', 'Reconstructed Volume (cm3)', 'Volume1 (cm3)', 'Volume2 (cm3)', 'Volume3 (cm3)'};
         % header = {'Particle No.', 'Measured Volume (cm3)', 'Measured Weight (g)', 'Reconstructed Volume (cm3)', 'Volume1 (cm3)'};
         data = [ (1:size(final,1))' final(:,1) final(:,4) mean_volume volumes' ];
-        %csvwrite_with_headers(fullfile(reconFolderName, 'result.csv'), data, header);
+        csvwrite_with_headers(fullfile(reconFolderName, 'result.csv'), data, header);
         
         % Plot volume comparsion
-        figure(1); hold on;
-        range = 2000;
-        xlim([0 range]), ylim([0 range]), pbaspect([1 1 1]); 
-        handle = zeros(5, 1);
-        handle(1) = plot(final_full(:,1), final_full(:,2), '*r'); % data point
-        handle(2) = plot(final(:, 1), final(:, 2), 'ob'); % average value
-        refLine = linspace(0, range, 6); 
-        percent10Error = refLine .* 0.1;
-        percent20Error = refLine .* 0.2;
-        handle(3) = plot(refLine, refLine, '-k', 'LineWidth', 1); % 45 deg reference line
-        handle(4) = plot(refLine, refLine + percent10Error, '--g', 'LineWidth', 1); % 10% error range line
-        plot(refLine, refLine - percent10Error, '--g', 'LineWidth', 1);
-        handle(5) = plot(refLine, refLine + percent20Error, '--b', 'LineWidth', 1); % 20% error range line
-        plot(refLine, refLine - percent20Error, '--b', 'LineWidth', 1);
-        title('Volume Comparsion'), xlabel('Actual Volume (in cm3)'), ylabel('Reconstructed Volume (in cm3)');
-        legend(handle, 'Reconstructed Volume', 'Average Volume', 'Reference Line', '10% Eror', '20% Error', 'Location', 'NorthWest');
-        % saveas(gcf, fullfile(reconFolderName, 'comparison_volume.png'));
-        
-        % Plot weight comparison
-%         figure(2); hold on;
-%         range = 15000;
-%         xlim([0 range]), ylim([0 range]), pbaspect([1 1 1]);
+%         figure(1); hold on;
+%         range = 2000;
+%         xlim([0 range]), ylim([0 range]), pbaspect([1 1 1]); 
 %         handle = zeros(5, 1);
-%         handle(1) = plot(final_full(:,4), final_full(:,5), '*r'); % data point
-%         handle(2) = plot(final(:, 4), final(:, 5), 'ob'); % average value
-%         refLine = linspace(0, range, 6);
+%         handle(1) = plot(final_full(:,1), final_full(:,2), '*r'); % data point
+%         handle(2) = plot(final(:, 1), final(:, 2), 'ob'); % average value
+%         refLine = linspace(0, range, 6); 
 %         percent10Error = refLine .* 0.1;
 %         percent20Error = refLine .* 0.2;
 %         handle(3) = plot(refLine, refLine, '-k', 'LineWidth', 1); % 45 deg reference line
@@ -377,9 +358,28 @@ if RECONSTRUCT
 %         plot(refLine, refLine - percent10Error, '--g', 'LineWidth', 1);
 %         handle(5) = plot(refLine, refLine + percent20Error, '--b', 'LineWidth', 1); % 20% error range line
 %         plot(refLine, refLine - percent20Error, '--b', 'LineWidth', 1);
-%         title('Weight Comparsion'), xlabel('Actual Weight (in g)'), ylabel('Reconstructed Weight (in g)');
-%         legend(handle, 'Reconstructed Weight', 'Average Weight', 'Reference Line', '10% Eror', '20% Error', 'Location', 'NorthWest');
-%         % saveas(gcf, fullfile(reconFolderName, 'comparison_weight.png'));
+%         title('Volume Comparsion'), xlabel('Actual Volume (in cm3)'), ylabel('Reconstructed Volume (in cm3)');
+%         legend(handle, 'Reconstructed Volume', 'Average Volume', 'Reference Line', '10% Eror', '20% Error', 'Location', 'NorthWest');
+%         % saveas(gcf, fullfile(reconFolderName, 'comparison_volume.png'));
+        
+        % Plot weight comparison
+        figure(2); hold on;
+        range = 15000;
+        xlim([0 range]), ylim([0 range]), pbaspect([1 1 1]);
+        handle = zeros(5, 1);
+        handle(1) = plot(final_full(:,4), final_full(:,5), '*r'); % data point
+        handle(2) = plot(final(:, 4), final(:, 5), 'ob'); % average value
+        refLine = linspace(0, range, 6);
+        percent10Error = refLine .* 0.1;
+        percent20Error = refLine .* 0.2;
+        handle(3) = plot(refLine, refLine, '-k', 'LineWidth', 1); % 45 deg reference line
+        handle(4) = plot(refLine, refLine + percent10Error, '--g', 'LineWidth', 1); % 10% error range line
+        plot(refLine, refLine - percent10Error, '--g', 'LineWidth', 1);
+        handle(5) = plot(refLine, refLine + percent20Error, '--b', 'LineWidth', 1); % 20% error range line
+        plot(refLine, refLine - percent20Error, '--b', 'LineWidth', 1);
+        title('Weight Comparsion'), xlabel('Actual Weight (in g)'), ylabel('Reconstructed Weight (in g)');
+        legend(handle, 'Reconstructed Weight', 'Average Weight', 'Reference Line', '10% Eror', '20% Error', 'Location', 'NorthWest');
+        % saveas(gcf, fullfile(reconFolderName, 'comparison_weight.png'));
     end
     
 end

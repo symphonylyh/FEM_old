@@ -14,6 +14,7 @@ close all;
 PLOT = debug_mode;
 %PLOT = false;
 ROCK = rock_mode;
+ROCK = false;
 
 % Normalize/Scale with respect to the *top* view based on the diameter ratio of calibration ball
 views{2} = imresize(views{2}, D(1) / D(2));
@@ -145,7 +146,7 @@ solidCoord = [x y z];
 % hold on;
 % scatter3(x1, y1, z1, 'MarkerFaceColor',[0.75 0 0]);
 end
-
+removal = 1;
 
 
 % rockVolume = voxel / D(1)^3 * 1^3; % in in^3
