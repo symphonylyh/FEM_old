@@ -1,6 +1,7 @@
 %% File Dependencies: 
 % Core: illiSeg.m, reconstruct3D.m
-% Accessory: rgb2lab.m, tight_subplot.m, getAllFilesInFolder.m
+% Accessory: rgb2lab.m, tight_subplot.m, getAllFilesInFolder.m,
+% csvwrite_with_headers.m
 %
 % Flowchart: 
 % Pair images into triplets, rename and compress the image files --- READ module
@@ -12,7 +13,7 @@ SEGMENT = false;
 RECONSTRUCT = true;
 
 % User define folder name here
-inFolderName = './samples/Jul_12_2018/'; 
+inFolderName = './samples/Jun_30_2018/'; 
 
 %% Single ball case
 % img = imread(fullfile(inFolderName, 'IMG_0443.jpg'));
@@ -185,10 +186,10 @@ if RECONSTRUCT
     
     % Read measured weight/volume information
     file = fopen(fullfile(inFolderName, 'measure.txt'));
-    line1 = textscan(fgetl(file), '%d %d', 'Delimiter', ' '); % volume/weight indicator: integer 0 1 
+    line1 = textscan(fgetl(file), '%d %d', 'Delimiter', ' '); % Line 1: volume & weight indicator: integer 0/1 
+    line2 = textscan(fgetl(file), '%d', 'Delimiter', ' '); % Line 2: number of triplet repetition
     volumeFlag = line1{1};
     weightFlag = line1{2};
-    line2 = textscan(fgetl(file), '%d', 'Delimiter', ' '); % number of view repetition
     repetition = line2{1};
     i = 1; final = [];
     while feof(file) ~= 1
@@ -207,12 +208,13 @@ if RECONSTRUCT
     end
     final_full = repelem(final, repetition, 1); % repeat each elements in a matrix
     fclose(file);
-    
+    % Result:
     % Matrix 'final':
     % 1st column -- Measured volume (in cm3)
     % 2nd column -- Measured weight (in g)
     % Matrix 'final_full': the replicated 'final' based on object
-    % repetition
+    % repetition, if 'final' is nx1 matrix and repetition is 3 for each
+    % triplet, then 'final_full' is 3nx1 matrix
 
     % Locate input files
     segFolderName = strcat(inFolderName, 'Segmentation/');
@@ -298,9 +300,9 @@ if RECONSTRUCT
             % Ref: http://xuxzmail.blog.163.com/blog/static/25131916200974113416209/
             
             % rockVolume = 0.8 * rockVoxel / (4 / 3 * 3.1415926 * (D(1)/2)^3) * 0.523599 * 16.3871;
-            % rockVolume = 0.8 * rockVoxel / ballVoxel * 0.523599 * 16.3871; % calibration ball is V = 4/3 * PI * R3 = 0.523599 in3; 1 in3 = 16.3871 cm3
-            rockVolume =  0.8 * rockVoxel / ballVoxel * 8 * (2 - sqrt(2)) * 0.75^3 * 16.3871; % the orthogonal intersection volume of a sphere
-            Gs = 2.65; % typical specific gravity of rock = 2.65g/cm3
+            rockVolume = rockVoxel / ballVoxel * 1.76714 * 16.3871; % calibration ball is V = 4/3 * PI * R3 = 0.523599 in3; 1 in3 = 16.3871 cm3
+            %rockVolume =  0.95 * rockVoxel / ballVoxel * 8 * (2 - sqrt(2)) * 0.75^3 * 16.3871; % the orthogonal intersection volume of a sphere
+            Gs = 2.66; % typical specific gravity of rock = 2.65g/cm3
             rockWeight = rockVolume * Gs; 
             volumes(i, 1) = rockVolume;
             weights(i, 1) = rockWeight;
@@ -330,33 +332,19 @@ if RECONSTRUCT
         
         csvwrite(fullfile(reconFolderName, 'volumes.csv'), mean_volume);
         
-        % Plot volume comparsion
-%         figure(1); hold on;
-%         range = 2000;
-%         xlim([0 range]), ylim([0 range]), pbaspect([1 1 1]); 
-%         handle = zeros(5, 1);
-%         handle(1) = plot(final_full(:,1), final_full(:,2), '*r'); % data point
-%         handle(2) = plot(final(:, 1), final(:, 2), 'ob'); % average value
-%         refLine = linspace(0, range, 6); 
-%         percent10Error = refLine .* 0.1;
-%         percent20Error = refLine .* 0.2;
-%         handle(3) = plot(refLine, refLine, '-k', 'LineWidth', 1); % 45 deg reference line
-%         handle(4) = plot(refLine, refLine + percent10Error, '--g', 'LineWidth', 1); % 10% error range line
-%         plot(refLine, refLine - percent10Error, '--g', 'LineWidth', 1);
-%         handle(5) = plot(refLine, refLine + percent20Error, '--b', 'LineWidth', 1); % 20% error range line
-%         plot(refLine, refLine - percent20Error, '--b', 'LineWidth', 1);
-%         title('Volume Comparsion'), xlabel('Actual Volume (in cm3)'), ylabel('Reconstructed Volume (in cm3)');
-%         legend(handle, 'Reconstructed Volume', 'Average Volume', 'Reference Line', '10% Eror', '20% Error', 'Location', 'NorthWest');
-        % saveas(gcf, fullfile(reconFolderName, 'comparison_volume.png'));
+        header = {'Particle No.', 'Measured Volume (cm3)', 'Measured Weight (g)', 'Reconstructed Volume (cm3)', 'Volume1 (cm3)', 'Volume2 (cm3)', 'Volume3 (cm3)'};
+        % header = {'Particle No.', 'Measured Volume (cm3)', 'Measured Weight (g)', 'Reconstructed Volume (cm3)', 'Volume1 (cm3)'};
+        data = [ (1:size(final,1))' final(:,1) final(:,4) mean_volume volumes' ];
+        %csvwrite_with_headers(fullfile(reconFolderName, 'result.csv'), data, header);
         
-        % Plot weight comparison
-        figure(2); hold on;
-        range = 350000;
-        xlim([0 range]), ylim([0 range]), pbaspect([1 1 1]);
+        % Plot volume comparsion
+        figure(1); hold on;
+        range = 2000;
+        xlim([0 range]), ylim([0 range]), pbaspect([1 1 1]); 
         handle = zeros(5, 1);
-        handle(1) = plot(final_full(:,4), final_full(:,5), '*r'); % data point
-        handle(2) = plot(final(:, 4), final(:, 5), 'ob'); % average value
-        refLine = linspace(0, range, 6);
+        handle(1) = plot(final_full(:,1), final_full(:,2), '*r'); % data point
+        handle(2) = plot(final(:, 1), final(:, 2), 'ob'); % average value
+        refLine = linspace(0, range, 6); 
         percent10Error = refLine .* 0.1;
         percent20Error = refLine .* 0.2;
         handle(3) = plot(refLine, refLine, '-k', 'LineWidth', 1); % 45 deg reference line
@@ -364,9 +352,28 @@ if RECONSTRUCT
         plot(refLine, refLine - percent10Error, '--g', 'LineWidth', 1);
         handle(5) = plot(refLine, refLine + percent20Error, '--b', 'LineWidth', 1); % 20% error range line
         plot(refLine, refLine - percent20Error, '--b', 'LineWidth', 1);
-        title('Weight Comparsion'), xlabel('Actual Weight (in g)'), ylabel('Reconstructed Weight (in g)');
-        legend(handle, 'Reconstructed Weight', 'Average Weight', 'Reference Line', '10% Eror', '20% Error', 'Location', 'NorthWest');
-        % saveas(gcf, fullfile(reconFolderName, 'comparison_weight.png'));
+        title('Volume Comparsion'), xlabel('Actual Volume (in cm3)'), ylabel('Reconstructed Volume (in cm3)');
+        legend(handle, 'Reconstructed Volume', 'Average Volume', 'Reference Line', '10% Eror', '20% Error', 'Location', 'NorthWest');
+        % saveas(gcf, fullfile(reconFolderName, 'comparison_volume.png'));
+        
+        % Plot weight comparison
+%         figure(2); hold on;
+%         range = 15000;
+%         xlim([0 range]), ylim([0 range]), pbaspect([1 1 1]);
+%         handle = zeros(5, 1);
+%         handle(1) = plot(final_full(:,4), final_full(:,5), '*r'); % data point
+%         handle(2) = plot(final(:, 4), final(:, 5), 'ob'); % average value
+%         refLine = linspace(0, range, 6);
+%         percent10Error = refLine .* 0.1;
+%         percent20Error = refLine .* 0.2;
+%         handle(3) = plot(refLine, refLine, '-k', 'LineWidth', 1); % 45 deg reference line
+%         handle(4) = plot(refLine, refLine + percent10Error, '--g', 'LineWidth', 1); % 10% error range line
+%         plot(refLine, refLine - percent10Error, '--g', 'LineWidth', 1);
+%         handle(5) = plot(refLine, refLine + percent20Error, '--b', 'LineWidth', 1); % 20% error range line
+%         plot(refLine, refLine - percent20Error, '--b', 'LineWidth', 1);
+%         title('Weight Comparsion'), xlabel('Actual Weight (in g)'), ylabel('Reconstructed Weight (in g)');
+%         legend(handle, 'Reconstructed Weight', 'Average Weight', 'Reference Line', '10% Eror', '20% Error', 'Location', 'NorthWest');
+%         % saveas(gcf, fullfile(reconFolderName, 'comparison_weight.png'));
     end
     
 end

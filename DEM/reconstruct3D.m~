@@ -103,6 +103,10 @@ corner = Gx > 0.4 & Gy > 0.4 & Gz > 0.4;
 [x1 y1 z1] = ind2sub(size(corner), find(corner == 1));
 cornerPoints = sum(corner(:));
 
+for i = 1 : cornerPoints
+    corner(x1(i), y1(i), z1(i));
+end
+
 [x y z] = ind2sub(size(volume), find(volume == 1));
 solidCoord = [x y z];
 % scatter3(x, y, z, 'MarkerFaceColor',[0 .75 .75]);
