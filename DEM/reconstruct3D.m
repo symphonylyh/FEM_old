@@ -136,7 +136,7 @@ for i = 1 : cornerPoints
 end
 unique_radius = unique(radius);
 unique_count = arrayfun(@(x)length(find(radius == x)), unique(radius), 'Uniform', false);
-cell2mat(unique_count);
+unique_count = cell2mat(unique_count);
 removal = [unique_radius' unique_count'];
 
 [x y z] = ind2sub(size(volume), find(volume == 1));

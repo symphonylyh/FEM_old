@@ -274,7 +274,7 @@ if RECONSTRUCT
         weights = [];
         volumes = [];
         remove = [];
-        for i = 1 : 3 % nums
+        for i = 1 : 1 % nums
             D = []; % diameters of calibration ball
             R = []; % hole ratios of rock
             for j = 1 : 3
@@ -284,7 +284,7 @@ if RECONSTRUCT
                 D(j) = min(size(balls{j})); % options: use equivalent diameter, or the minimum diameter
                 % R(j) = info(2 * i - 1, j);
             end
-            [rockVoxel, removal] = reconstruct3D(rocks, D, DEBUG, true);
+            [rockVoxel, sphericity, removal] = reconstruct3D(rocks, D, DEBUG, true);
             voxel(i) = rockVoxel;
             remove = cat(1, remove, removal);
             %[ballVoxel, sphericity] = reconstruct3D(balls, D, DEBUG, false);
