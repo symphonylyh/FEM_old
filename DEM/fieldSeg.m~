@@ -228,7 +228,7 @@ if RECONSTRUCT
     end
     
     % Group reconstruction or single reconstruction based on user's option
-    DEBUG = false; object = 104; % designate the object to debug
+    DEBUG = true; object = 104; % designate the object to debug
     if DEBUG
         % Create debug folder or clear existing folder
         debugFolderName = strcat(reconFolderName, 'Debug/');
@@ -273,8 +273,7 @@ if RECONSTRUCT
         nums = size(final_full, 1); % size(info,1) / 2; % number of particles
         weights = [];
         volumes = [];
-        remove = [];
-        for i = 1 : 3 % nums
+        for i = 1 : nums
             D = []; % diameters of calibration ball
             R = []; % hole ratios of rock
             for j = 1 : 3
@@ -284,10 +283,8 @@ if RECONSTRUCT
                 D(j) = min(size(balls{j})); % options: use equivalent diameter, or the minimum diameter
                 % R(j) = info(2 * i - 1, j);
             end
-            [rockVoxel, removal] = reconstruct3D(rocks, D, DEBUG, true);
-            voxel(i) = rockVoxel;
-            remove = cat(1, remove, removal);
-            %[ballVoxel, sphericity] = reconstruct3D(balls, D, DEBUG, false);
+            [rockVoxel, remo = reconstruct3D(rocks, D, DEBUG, true);
+            [ballVoxel, sphericity] = reconstruct3D(balls, D, DEBUG, false);
             % Options for the calibration ball volume: 
             % 1. Actual 1 in. ball volume is 4/3*PI*R^3 = 0.523599 in3
             % use the ball diameter in top view to compute volume from the
@@ -303,21 +300,18 @@ if RECONSTRUCT
             % Ref: http://xuxzmail.blog.163.com/blog/static/25131916200974113416209/
             
             % rockVolume = 0.8 * rockVoxel / (4 / 3 * 3.1415926 * (D(1)/2)^3) * 0.523599 * 16.3871;
-            %rockVolume = rockVoxel / ballVoxel * 1.76714 * 16.3871; % calibration ball is V = 4/3 * PI * R3 = 0.523599 in3; 1 in3 = 16.3871 cm3
+            rockVolume = rockVoxel / ballVoxel * 1.76714 * 16.3871; % calibration ball is V = 4/3 * PI * R3 = 0.523599 in3; 1 in3 = 16.3871 cm3
             %rockVolume =  0.95 * rockVoxel / ballVoxel * 8 * (2 - sqrt(2)) * 0.75^3 * 16.3871; % the orthogonal intersection volume of a sphere
             Gs = 2.66; % typical specific gravity of rock = 2.65g/cm3
-            %rockWeight = rockVolume * Gs; 
-            %volumes(i, 1) = rockVolume;
-            %weights(i, 1) = rockWeight;
+            rockWeight = rockVolume * Gs; 
+            volumes(i, 1) = rockVolume;
+            weights(i, 1) = rockWeight;
             % sphere(i,1) = sphericity; % not used
             
             % Volume correction based on hole ratio (not used for now)
             % holeRatio = 1 - mean(R);
             % rockVoxel = rockVoxel * holeRatio;     
         end
-        
-        csvwrite(fullfile(reconFolderName, 'voxel.csv'), voxel);
-        csvwrite(fullfile(reconFolderName, 'removal.csv'), remove);
         
         % Save the 3D voxel array to disk
         save(fullfile(reconFolderName, 'volume.mhat'), 'volumes'); 

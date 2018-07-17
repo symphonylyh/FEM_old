@@ -1,4 +1,4 @@
-function [voxel, sphericity] = reconstruct3D(views, D, debug_mode)
+function [voxel, sphericity, removal] = reconstruct3D(views, D, debug_mode, rock_mode)
 % 3D reconstruction based on three near-orthogonal views.
 %
 % Input:
@@ -13,6 +13,7 @@ close all;
 
 PLOT = debug_mode;
 %PLOT = false;
+ROCK = rock_mode;
 
 % Normalize/Scale with respect to the *top* view based on the diameter ratio of calibration ball
 views{2} = imresize(views{2}, D(1) / D(2));
@@ -95,20 +96,55 @@ volume = top_extrude & front_extrude & side_extrude;
 
 voxel = sum(volume(:));
 
+if ROCK
 [Gx, Gy, Gz] = imgradientxyz(volume);
 Gx = mat2gray(abs(Gx));
 Gy = mat2gray(abs(Gy));
 Gz = mat2gray(abs(Gz));
-corner = Gx > 0.4 & Gy > 0.4 & Gz > 0.4;
+corner = Gx > 0.5 & Gy > 0.5 & Gz > 0.5 & volume == 1;
 [x1 y1 z1] = ind2sub(size(corner), find(corner == 1));
 cornerPoints = sum(corner(:));
+
+side_recon = logical(squeeze(sum(volume,1)));
+top_recon = logical(squeeze(sum(volume,2)));
+front_recon = logical(squeeze(sum(volume,3)));
+
+%r = floor((voxel/50000)^ 1/3);
+r = 2;
+count = 100; % removable point
+radius = [];
+for i = 1 : cornerPoints
+    check = 0;
+    volume_ = volume;
+    r = 2;
+    while check == 0
+        volume_(max(x1(i)-r,1):min(x1(i)+r, size(volume_,1)), max(y1(i)-r,1):min(y1(i)+r, size(volume_,2)), max(z1(i)-r,1):min(z1(i)+r, size(volume_,3))) = 0;
+        side_remove = logical(squeeze(sum(volume_, 1)));
+        top_remove = logical(squeeze(sum(volume_, 2)));
+        front_remove = logical(squeeze(sum(volume_,3)));
+        side_check = (side_remove ~= side_recon);
+        top_check = (top_remove ~= top_recon);
+        front_check = (front_remove ~= front_recon);
+        check = sum(side_check(:)) + sum(top_check(:)) + sum(front_check(:));
+        r = 2 * r;
+    end
+    radius(i) = r / 2; % maximum removable volume
+    
+%     if check == 0
+%         count = count + 1;
+%     end    
+end
+unique_radius = unique(radius);
+unique_count = arrayfun(@(x)length(find(radius == x)), unique(radius), 'Uniform', false);
+cell2mat(unique_count);
+removal = [unique_radius' unique_count'];
 
 [x y z] = ind2sub(size(volume), find(volume == 1));
 solidCoord = [x y z];
 % scatter3(x, y, z, 'MarkerFaceColor',[0 .75 .75]);
 % hold on;
 % scatter3(x1, y1, z1, 'MarkerFaceColor',[0.75 0 0]);
-
+end
 
 
 
