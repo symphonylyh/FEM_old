@@ -7,13 +7,11 @@
 % Pair images into triplets, rename and compress the image files --- READ module
 % 
 % Test
-TEST = false;
-if TEST
 close all;
 sz = [5 5 5];
 x0 = sz(1); y0 = sz(2); z0 = sz(3);
 t = zeros(sz);
-PYRAMID = 5;
+PYRAMID = 6;
 if PYRAMID == 1
 p1 = [x0 0 0]; p2 = [0 y0 0]; p3 = [0 0 z0];
 normal = cross(p2 - p1, p3 - p1);
@@ -120,7 +118,7 @@ end
 end
 
 if PYRAMID == 8
-p1 = [0 0 z0]; p2 = [x0 y0 z0]; p3 = [0 y0 0];
+p1 = [x0 0 z0]; p2 = [x0 y0 0]; p3 = [0 y0 z0];
 normal = cross(p2 - p1, p3 - p1);
 d = dot(normal,p1);
 for x = 1:sz(1)
@@ -132,14 +130,39 @@ for x = 1:sz(1)
         end
     end
 end
-end 
+end
+
+% t = double(t);
+% p = patch( isosurface(t,0) );                 
+% isonormals(t, p)                              
+% set(p, 'FaceColor','r', 'EdgeColor','none')
+% daspect([1 1 1])                              
+% view(-37.5, 30), axis vis3d tight, box on, grid on    
+% set(gca, 'CameraUpVector', [0 1 0])
+% set(gca, 'CameraUpVectorMode', 'manual')
+% rotate3d on
+% camproj perspective                           %# use perspective projection
+% camlight('left'), lighting phong, alpha(1)  
 
 [x1 y1 z1] = ind2sub(size(t), find(t == 1));
 scatter3(x1, y1, z1);
 set(gca,'xlim',[0 sz(1)], 'ylim',[0 sz(2)], 'zlim',[0 sz(3)]);
 xlabel('x'), ylabel('y'), zlabel('z')
 
-end
+% sz = [5 5 5];
+% t = zeros(sz);
+% for x = 1:sz(1)
+%     for y = 1:sz(2)
+%         for z = 1:sz(3)
+%             if (x)/(2*sz(1)) + (y)/(2*sz(2)) + (z)/(2*sz(3)) >= 1 %(x-1)/sz(1) + (y-1)/sz(2) + (z-1)/sz(3) <= 1
+%                 t(x,y,z) = 1;
+%             end
+%         end
+%     end
+% end
+% [x1 y1 z1] = ind2sub(size(t), find(t == 1));
+% scatter3(x1, y1, z1);
+% set(gca,'xlim',[0 sz(1)], 'ylim',[0 sz(2)], 'zlim',[0 sz(3)]);
 
 %% Control panel
 READ = false; COMPRESS = true; compress_size = 1024; % Rename image file (one-time only), compress image file (if the resolution remains the same, turn off the switch)

@@ -105,6 +105,10 @@ corner = Gx > 0.5 & Gy > 0.5 & Gz > 0.5 & volume == 1;
 [x1 y1 z1] = ind2sub(size(corner), find(corner == 1));
 cornerPoints = sum(corner(:));
 
+% Only show one corner point
+% corner = false(size(corner));
+% corner(x1(1), y1(1), z1(1)) = true;
+
 side_recon = logical(squeeze(sum(volume,1)));
 top_recon = logical(squeeze(sum(volume,2)));
 front_recon = logical(squeeze(sum(volume,3)));
@@ -114,7 +118,8 @@ volume_ = volume;
 r = 2;
 count = 100; % removable point
 radius = [];
-for i = 1 : cornerPoints
+tic
+for i = 1 : 50 %cornerPoints
     check = 0;
     %volume_ = volume;
     r = 2;
@@ -125,7 +130,128 @@ for i = 1 : cornerPoints
         cube_centroid = size(dig) / 2;
         dig_centroid = centerOfMass(single(dig));
         dig_direction = dig_centroid - cube_centroid;
-        volume_(max(x1(i)-r,1):min(x1(i)+r, size(volume_,1)), max(y1(i)-r,1):min(y1(i)+r, size(volume_,2)), max(z1(i)-r,1):min(z1(i)+r, size(volume_,3))) = 0;
+        v = dig_direction;
+        sz = size(dig);
+        t = zeros(sz);
+        x0 = sz(1); y0 = sz(2); z0 = sz(3);
+        
+        if v(1) < 0 && v(2) < 0 && v(3) < 0 % pyramid 1 - - -
+            p1 = [x0 0 0]; p2 = [0 y0 0]; p3 = [0 0 z0];
+            normal = cross(p2 - p1, p3 - p1);
+            d = dot(normal,p1);
+            for x = 1:sz(1)
+                for y = 1:sz(2)
+                    for z = 1:sz(3)
+                        if dot(normal,[x-1 y-1 z-1]) <= d
+                            t(x,y,z) = 1;
+                        end
+                    end
+                end
+            end
+        
+        elseif v(1) > 0 && v(2) < 0 && v(3) < 0 % pyramid 2 + - -
+            p1 = [0 0 0]; p2 = [x0 0 z0]; p3 = [x0 y0 0];
+            normal = cross(p2 - p1, p3 - p1);
+            d = dot(normal,p1);
+            for x = 1:sz(1)
+                for y = 1:sz(2)
+                    for z = 1:sz(3)
+                        if dot(normal,[x-1 y-1 z-1]) <= d
+                            t(x,y,z) = 1;
+                        end
+                    end
+                end
+            end
+        
+        elseif v(1) > 0 && v(2) < 0 && v(3) > 0 % pyramid 3 + - +
+            p1 = [x0 0 0]; p2 = [0 0 z0]; p3 = [x0 y0 z0];
+            normal = cross(p2 - p1, p3 - p1);
+            d = dot(normal,p1);
+            for x = 1:sz(1)
+                for y = 1:sz(2)
+                    for z = 1:sz(3)
+                        if dot(normal,[x y z]) <= d
+                            t(x,y,z) = 1;
+                        end
+                    end
+                end
+            end
+        
+        elseif v(1) < 0 && v(2) < 0 && v(3) > 0 % pyramid 4 - - +
+            p1 = [x0 0 z0]; p2 = [0 0 0]; p3 = [0 y0 z0];
+            normal = cross(p2 - p1, p3 - p1);
+            d = dot(normal,p1);
+            for x = 1:sz(1)
+                for y = 1:sz(2)
+                    for z = 1:sz(3)
+                        if dot(normal,[x-1 y-1 z-1]) <= d
+                            t(x,y,z) = 1;
+                        end
+                    end
+                end
+            end
+        
+        elseif v(1) < 0 && v(2) > 0 && v(3) < 0 % pyramid 5 - + -
+            p1 = [0 0 0]; p2 = [x0 y0 0]; p3 = [0 y0 z0];
+            normal = cross(p2 - p1, p3 - p1);
+            d = dot(normal,p1);
+            for x = 1:sz(1)
+                for y = 1:sz(2)
+                    for z = 1:sz(3)
+                        if dot(normal,[x-1 y-1 z-1]) <= d
+                            t(x,y,z) = 1;
+                        end
+                    end
+                end
+            end
+        
+        elseif v(1) > 0 && v(2) > 0 && v(3) < 0 % pyramid 6 + + -
+            p1 = [x0 y0 z0]; p2 = [0 y0 0]; p3 = [x0 0 0];
+            normal = cross(p2 - p1, p3 - p1);
+            d = dot(normal,p1);
+            for x = 1:sz(1)
+                for y = 1:sz(2)
+                    for z = 1:sz(3)
+                        if dot(normal,[x y z]) <= d
+                            t(x,y,z) = 1;
+                        end
+                    end
+                end
+            end
+        
+        elseif v(1) > 0 && v(2) > 0 && v(3) > 0 % pyramid 7 + + +
+            p1 = [x0 0 z0]; p2 = [x0 y0 0]; p3 = [0 y0 z0];
+            normal = cross(p2 - p1, p3 - p1);
+            d = dot(normal,p1);
+            for x = 1:sz(1)
+                for y = 1:sz(2)
+                    for z = 1:sz(3)
+                        if dot(normal,[x y z]) >= d
+                            t(x,y,z) = 1;
+                        end
+                    end
+                end
+            end
+        
+        elseif v(1) < 0 && v(2) > 0 && v(3) > 0 % pyramid 8 - + +
+            p1 = [0 0 z0]; p2 = [x0 y0 z0]; p3 = [0 y0 0];
+            normal = cross(p2 - p1, p3 - p1);
+            d = dot(normal,p1);
+            for x = 1:sz(1)
+                for y = 1:sz(2)
+                    for z = 1:sz(3)
+                        if dot(normal,[x y z]) >= d
+                            t(x,y,z) = 1;
+                        end
+                    end
+                end
+            end
+        end
+        
+%         figure, VoxelPlotter(t, 1);
+%         figure, VoxelPlotter(dig, 1);
+%         figure, VoxelPlotter(logical(t) & dig, 1);
+        volume_(max(x1(i)-r,1):min(x1(i)+r, size(volume_,1)), max(y1(i)-r,1):min(y1(i)+r, size(volume_,2)), max(z1(i)-r,1):min(z1(i)+r, size(volume_,3))) = logical(t) & dig; % 0;
         side_remove = logical(squeeze(sum(volume_, 1)));
         top_remove = logical(squeeze(sum(volume_, 2)));
         front_remove = logical(squeeze(sum(volume_,3)));
@@ -143,6 +269,7 @@ for i = 1 : cornerPoints
 %         count = count + 1;
 %     end    
 end
+toc
 digVoxelSum = sum(digVoxel);
 digRatio = digVoxelSum/voxel;
 

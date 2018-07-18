@@ -20,9 +20,6 @@ for i=1:gridesize
     end
 end
 
-S = load('volumes.mhat', '-mat');
-VoxelMat = S.volume;
-
 [vol_handle]=VoxelPlotter(VoxelMat,1); 
 %visual effects (I recommend using the FigureRotator function from MATLAB
 %Centeral
