@@ -6,7 +6,18 @@
 % Flowchart: 
 % Pair images into triplets, rename and compress the image files --- READ module
 % 
+sz = [5 5 5];
+x = 1:sz(1);
+y = 1:sz(2);
+z = 1:sz(3);
+[X,Y,Z] = meshgrid(x,y,z);
 
+x = linspace(-8,8,200);
+y = linspace(-8,8,200);
+[X,Y] = meshgrid(x,y);
+Z = (4-abs(X)) + (4-abs(Y));
+Z(Z < 0) = NaN;
+surf(X,Y,Z)
 %% Control panel
 READ = false; COMPRESS = true; compress_size = 1024; % Rename image file (one-time only), compress image file (if the resolution remains the same, turn off the switch)
 SEGMENT = false;
@@ -228,7 +239,7 @@ if RECONSTRUCT
     end
     
     % Group reconstruction or single reconstruction based on user's option
-    DEBUG = false; object = 104; % designate the object to debug
+    DEBUG = true; object = 104; % designate the object to debug
     if DEBUG
         % Create debug folder or clear existing folder
         debugFolderName = strcat(reconFolderName, 'Debug/');

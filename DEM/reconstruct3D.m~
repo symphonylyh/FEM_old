@@ -110,21 +110,15 @@ top_recon = logical(squeeze(sum(volume,2)));
 front_recon = logical(squeeze(sum(volume,3)));
 
 %r = floor((voxel/50000)^ 1/3);
-volume_ = volume;
 r = 2;
 count = 100; % removable point
 radius = [];
 for i = 1 : cornerPoints
     check = 0;
-    %volume_ = volume;
+    volume_ = volume;
     r = 2;
-    volume_dig = volume;
     while check == 0
-        volume_old = volume_;
-        dig = volume_dig(max(x1(i)-r,1):min(x1(i)+r, size(volume_dig,1)), max(y1(i)-r,1):min(y1(i)+r, size(volume_dig,2)), max(z1(i)-r,1):min(z1(i)+r, size(volume_dig,3)));
-        cube_centroid = size(dig) / 2;
-        dig_centroid = centerOfMass(single(dig));
-        dig_direction = dig_centroid - cube_centroid;
+        dig = volume_(max(x1(i)-r,1):min(x1(i)+r, size(volume_,1)), max(y1(i)-r,1):min(y1(i)+r, size(volume_,2)), max(z1(i)-r,1):min(z1(i)+r, size(volume_,3)));
         volume_(max(x1(i)-r,1):min(x1(i)+r, size(volume_,1)), max(y1(i)-r,1):min(y1(i)+r, size(volume_,2)), max(z1(i)-r,1):min(z1(i)+r, size(volume_,3))) = 0;
         side_remove = logical(squeeze(sum(volume_, 1)));
         top_remove = logical(squeeze(sum(volume_, 2)));
@@ -135,7 +129,6 @@ for i = 1 : cornerPoints
         check = sum(side_check(:)) + sum(top_check(:)) + sum(front_check(:));
         r = 2 * r;
     end
-    volume_ = volume_old;
     radius(i) = r / 2; % maximum removable volume
     digVoxel(i) = sum(dig(:));
     
@@ -143,9 +136,6 @@ for i = 1 : cornerPoints
 %         count = count + 1;
 %     end    
 end
-digVoxelSum = sum(digVoxel);
-digRatio = digVoxelSum/voxel;
-
 unique_radius = unique(radius);
 unique_count = arrayfun(@(x)length(find(radius == x)), unique(radius), 'Uniform', false);
 unique_count = cell2mat(unique_count);
@@ -159,7 +149,6 @@ solidCoord = [x y z];
 end
 removal = 1;
 
-volume = volume_;
 
 % rockVolume = voxel / D(1)^3 * 1^3; % in in^3
 % rockWeight = rockVolume * 16.3871 * 2.65; % 1 in3 = 16.3871 cm3; typically rock density 2.65g/cm3
