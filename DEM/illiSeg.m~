@@ -4,7 +4,7 @@ function results = illiSeg(filename, debug_mode)
 close all;
 BOUNDARY_ENHANCE = true; % enhance boundary information
 PLOT = debug_mode; % show procedural figures
-PRINT = true; % save figures
+PRINT = false; % save figures
 HOLE_DETECTION = false; % detect holes on rock surface
 
 %% Filter the image to remove noises and convert to CIE Lab color space
@@ -255,7 +255,7 @@ dist(bd) = 0; % add the enhance boundary info. Try to think a way that can selec
 % Adaptive thresholding the distance map
 T = adaptthresh(dist, 0.4, 'ForegroundPolarity', 'dark'); % Adaptive thresholding is awesome!! 0.1 is sensitivity to distinguish background & foreground old: bw = ~imbinarize(dist, 0.1);
 bw = ~imbinarize(dist, T); % adaptive threshold
-bw = ~imbinarize(dist, 0.32); % manually set threshold for individual images, usually 0.25 or 0.3
+% bw = ~imbinarize(dist, 0.32); % manually set threshold for individual images, usually 0.25 or 0.3
 % bw = bw & objectMask; % remove over-segmented shadow area
 
 if PLOT
@@ -273,68 +273,68 @@ bw = bwareaopen(bw, ceil(h/50) * ceil(w/50), 4); % remove small object
 bw = imclearborder(bw, 8); % clear meaningless regions that are connected to image border
 
 % Visualize result
-if PLOT
-    % Figure 1, Original image and Lab channels
-    fig = 1; % start figure No.
-    figure(fig); fig = fig + 1;
-    [ha, pos] = tight_subplot(1,4,[.01 .01],[.01 .01],[.01 .01]);
-    axes(ha(1)), imshow(img), title('Original Image');
-    axes(ha(2)), imshow(L), title('L Channel');
-    axes(ha(3)), imshow(a), title('a Channel');
-    axes(ha(4)), imshow(b), title('b Channel');
-    if PRINT
-        print('./Plot/color space.png', '-r300', '-dpng');
-    end
-    
-    % Figure 2, boundary map and mask
-    if BOUNDARY_ENHANCE
-        figure(fig); fig = fig + 1;
-        [ha, pos] = tight_subplot(1,2,[.01 .01],[.01 .01],[.01 .01]);
-        axes(ha(1)), imshow(boundary), title('Object Boundary');
-        axes(ha(2)), imshow(boundaryMask), title('Boundary Mask');
-        if PRINT
-            print('./Plot/boundary mask.png', '-r300', '-dpng');
-        end
-    end
-    
-    % Figure 3, pixel distribution in a and b channels
-    figure(fig); fig = fig + 1;
-    subplot(2,3,1), imshow(a), title('a Channel');
-    subplot(2,3,2), bar(Avalues, Acounts), title('Pixel histogram of a channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Pixel Count', 'FontSize', 10);
-    subplot(2,3,3), plot(Avalues, Adistribution, '-r'), y1 = get(gca, 'ylim'); hold on, plot([A A], y1, '--b'), title('Pixel cdf of a channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Cumulative sum', 'FontSize', 10);
-
-    subplot(2,3,4), imshow(b), title('b Channel');
-    subplot(2,3,5), bar(Bvalues, Bcounts), title('Pixel histogram of b channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Pixel Count', 'FontSize', 10);  
-    subplot(2,3,6), plot(Bvalues, Bdistribution, '-r'), y2 = get(gca, 'ylim'); hold on, plot([B B], y2, '--b'), title('Pixel cdf of b channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Cumulative sum', 'FontSize', 10);
-    tightfig;
-    if PRINT
-        print('./Plot/histogram.png', '-r300', '-dpng');
-    end
-    
-    % Figure 4, distance map
-    figure(fig); fig = fig + 1;
-    [ha, pos] = tight_subplot(1,2,[.01 .01],[.01 .01],[.01 .01]);
-    axes(ha(1)), imshow(dist), title('Distance Map, Original');
-    axes(ha(2)), imshow(dist), title('Distance Map, Boundary Enhanced');
-    if PRINT
-        print('./Plot/distance map.png', '-r300', '-dpng');
-    end
-    
-    % Figure 5, object mask
-    figure(fig); fig = fig + 1;
-    [ha, pos] = tight_subplot(1,2,[.01 .01],[.01 .01],[.01 .01]);
-    axes(ha(1)), imshow(bw_plot), title('Thresholded Image, Original');
-    axes(ha(2)), imshow(bw), title('Thresholded Image, Clean');
-    if PRINT
-        print('./Plot/threshold image.png', '-r300', '-dpng');
-    end
-    
+% if PLOT
+%     % Figure 1, Original image and Lab channels
+%     fig = 1; % start figure No.
 %     figure(fig); fig = fig + 1;
-%     imshow(img);
-%     bd = bwperim(bw);
-%     hold on;
-%     visboundaries(bd, 'LineWidth', 1);
-end
+%     [ha, pos] = tight_subplot(1,4,[.01 .01],[.01 .01],[.01 .01]);
+%     axes(ha(1)), imshow(img), title('Original Image');
+%     axes(ha(2)), imshow(L), title('L Channel');
+%     axes(ha(3)), imshow(a), title('a Channel');
+%     axes(ha(4)), imshow(b), title('b Channel');
+%     if PRINT
+%         print('color space.png', '-r300', '-dpng');
+%     end
+%     
+%     % Figure 2, boundary map and mask
+%     if BOUNDARY_ENHANCE
+%         figure(fig); fig = fig + 1;
+%         [ha, pos] = tight_subplot(1,2,[.01 .01],[.01 .01],[.01 .01]);
+%         axes(ha(1)), imshow(boundary), title('Object Boundary');
+%         axes(ha(2)), imshow(boundaryMask), title('Boundary Mask');
+%         if PRINT
+%             print('boundary mask.png', '-r300', '-dpng');
+%         end
+%     end
+%     
+%     % Figure 3, pixel distribution in a and b channels
+%     figure(fig); fig = fig + 1;
+%     subplot(2,3,1), imshow(a), title('a Channel');
+%     subplot(2,3,2), bar(Avalues, Acounts), title('Pixel histogram of a channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Pixel Count', 'FontSize', 10);
+%     subplot(2,3,3), plot(Avalues, Adistribution, '-r'), y1 = get(gca, 'ylim'); hold on, plot([A A], y1, '--b'), title('Pixel cdf of a channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Cumulative sum', 'FontSize', 10);
+% 
+%     subplot(2,3,4), imshow(b), title('b Channel');
+%     subplot(2,3,5), bar(Bvalues, Bcounts), title('Pixel histogram of b channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Pixel Count', 'FontSize', 10);  
+%     subplot(2,3,6), plot(Bvalues, Bdistribution, '-r'), y2 = get(gca, 'ylim'); hold on, plot([B B], y2, '--b'), title('Pixel cdf of b channel', 'FontSize', 10), grid on, xlabel('Value', 'FontSize', 10), ylabel('Cumulative sum', 'FontSize', 10);
+%     tightfig;
+%     if PRINT
+%         print('histogram.png', '-r300', '-dpng');
+%     end
+%     
+%     % Figure 4, distance map
+%     figure(fig); fig = fig + 1;
+%     [ha, pos] = tight_subplot(1,2,[.01 .01],[.01 .01],[.01 .01]);
+%     axes(ha(1)), imshow(dist), title('Distance Map, Original');
+%     axes(ha(2)), imshow(dist), title('Distance Map, Boundary Enhanced');
+%     if PRINT
+%         print('distance map.png', '-r300', '-dpng');
+%     end
+%     
+%     % Figure 5, object mask
+%     figure(fig); fig = fig + 1;
+%     [ha, pos] = tight_subplot(1,2,[.01 .01],[.01 .01],[.01 .01]);
+%     axes(ha(1)), imshow(bw_plot), title('Thresholded Image, Original');
+%     axes(ha(2)), imshow(bw), title('Thresholded Image, Clean');
+%     if PRINT
+%         print('threshold image.png', '-r300', '-dpng');
+%     end
+%     
+% %     figure(fig); fig = fig + 1;
+% %     imshow(img);
+% %     bd = bwperim(bw);
+% %     hold on;
+% %     visboundaries(bd, 'LineWidth', 1);
+% end
 
 %% Obtain region properties and geometric features
 
@@ -410,7 +410,7 @@ end
 
 % Visualize result
 if PLOT
-    % fig = 1;
+    fig = 1;
     % Figure 6, final result
     figure(fig); fig = fig + 1;
     imshow(img);

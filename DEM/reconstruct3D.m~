@@ -136,9 +136,9 @@ for i = 1 : 50 %cornerPoints
         check = sum(side_diff(:)) + sum(top_diff(:)) + sum(front_diff(:)); % check if any different pixel exists
         r = 2 * r; % double the radius for the next larger dig
     end
-    dig_radius = r / 2; % maximum diggable radius
+    dig_radius = r / 2;
     volume_curr = volume_old;
-    radius(i) = r / 2; 
+    radius(i) = r / 2; % maximum diggable volume
     digVoxel(i) = sum(dig(:));
     
     dig = volume_trial(max(x1(i)-r,1):min(x1(i)+r, d(1)), max(y1(i)-r,1):min(y1(i)+r, d(2)), max(z1(i)-r,1):min(z1(i)+r, d(3))); % extract the neighborhood (cube) of the current corner point
