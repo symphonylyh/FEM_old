@@ -115,17 +115,25 @@ front_recon = logical(squeeze(sum(volume,3)));
 
 %r = floor((voxel/50000)^ 1/3);
 volume_curr = volume; % keep track of the current state of the volume
-d = size(volume); % dimension of the matrix (for checking if the dig volume exceed the boundary)
-r = 2;
-count = 100; % removable point
+dim = size(volume); % dimension of the matrix (for checking if the dig volume exceed the boundary)
 radius = [];
+digVoxel = [];
 tic
-for i = 1 : 50 %cornerPoints
-    check = 0; r = 2; % reset check point and starting radius everytime
+for i = 1 : cornerPoints
+    % Determine the maximum diggable volume by an iteration scheme
+    check = 0; r = 25; % reset check point and starting radius everytime
+    isEmpty = false;
     volume_trial = volume_curr;
-    while check == 0
+    %while check == 0
         % Dig in a cube of radius r
-        volume_trial(max(x1(i)-r,1):min(x1(i)+r, d(1)), max(y1(i)-r,1):min(y1(i)+r, d(2)), max(z1(i)-r,1):min(z1(i)+r, d(3))) = 0;
+%         dig = volume_trial(max(x1(i)-r,1):min(x1(i)+r, dim(1)), max(y1(i)-r,1):min(y1(i)+r, dim(2)), max(z1(i)-r,1):min(z1(i)+r, dim(3)));
+%         if sum(dig(:)) == 0 % if there is no solid voxel in the current volume, it means this area is already digged by previous corner points. Skip the loop and skip the convex dig further below
+%             isEmpty = true;
+%             r = 0;
+%             dig_convex = 0;
+%             break;
+%         end
+        volume_trial(max(x1(i)-r,1):min(x1(i)+r, dim(1)), max(y1(i)-r,1):min(y1(i)+r, dim(2)), max(z1(i)-r,1):min(z1(i)+r, dim(3))) = 0;
         % Check if the dig will affect the three profile views
         side_dig = logical(squeeze(sum(volume_trial, 1))); % profile views after dig
         top_dig = logical(squeeze(sum(volume_trial, 2)));
@@ -135,21 +143,25 @@ for i = 1 : 50 %cornerPoints
         front_diff = (front_dig ~= front_recon);
         check = sum(side_diff(:)) + sum(top_diff(:)) + sum(front_diff(:)); % check if any different pixel exists
         r = 2 * r; % double the radius for the next larger dig
-    end
-    dig_radius = r / 2; % maximum diggable radius
-    volume_curr = volume_old;
-    radius(i) = r / 2; 
-    digVoxel(i) = sum(dig(:));
+    %end
     
-    dig = volume_trial(max(x1(i)-r,1):min(x1(i)+r, d(1)), max(y1(i)-r,1):min(y1(i)+r, d(2)), max(z1(i)-r,1):min(z1(i)+r, d(3))); % extract the neighborhood (cube) of the current corner point
-    cube_centroid = size(dig) / 2; % centroid of the dig cube
+    if check == 0
+    % Dig the maximum convex volume and update the volume
+    r = r / 2; % maximum diggable radius (in while loop an additonal *2 is multiplied)
+    dig = volume_curr(max(x1(i)-r,1):min(x1(i)+r, dim(1)), max(y1(i)-r,1):min(y1(i)+r, dim(2)), max(z1(i)-r,1):min(z1(i)+r, dim(3))); % extract the neighborhood (cube) of the current corner point
+    sz = size(dig);
+    
+    if sum(dig(:)) ~= 0 % no need to do convex dig is there is no voxel in the volume
+    
+    % Determine dig direction
+    cube_centroid = sz / 2; % centroid of the dig cube
     dig_centroid = centerOfMass(single(dig)); % centroid of the dig volume (or dig mass)
     dig_direction = dig_centroid - cube_centroid; % indicate at which corner the dig volume is concentrated
     v = dig_direction; % for abbreviation
-    sz = size(dig);
-    t = zeros(sz); % the pyramid
+    
+    % Switch between 8 different types of convex pyramid prototype
+    t = zeros(sz); % the pyramid to be formed based on dig direction
     x0 = sz(1); y0 = sz(2); z0 = sz(3);
-
     if v(1) < 0 && v(2) < 0 && v(3) < 0 % pyramid 1 - - - quadrant
         p1 = [x0 0 0]; p2 = [0 y0 0]; p3 = [0 0 z0];
         normal = cross(p2 - p1, p3 - p1);
@@ -262,33 +274,36 @@ for i = 1 : 50 %cornerPoints
             end
         end
     end
-
 %         figure, VoxelPlotter(t, 1);
 %         figure, VoxelPlotter(dig, 1);
 %         figure, VoxelPlotter(logical(t) & dig, 1);
-    volume_(max(x1(i)-r,1):min(x1(i)+r, size(volume_,1)), max(y1(i)-r,1):min(y1(i)+r, size(volume_,2)), max(z1(i)-r,1):min(z1(i)+r, size(volume_,3))) = logical(t) & dig; % 0;
-    
-%     if check == 0
-%         count = count + 1;
-%     end    
+
+    % Dig and update the volume
+    dig_convex = logical(t) & dig; % intersection convex volume
+    volume_curr(max(x1(i)-r,1):min(x1(i)+r, dim(1)), max(y1(i)-r,1):min(y1(i)+r, dim(2)), max(z1(i)-r,1):min(z1(i)+r, dim(3))) = dig_convex;
+
+    end
+    end
+    % Record the dig radius and dig voxel for output
+    radius(i) = r; 
+    digVoxel(i) = sum(dig_convex(:));   
 end
 toc
 digVoxelSum = sum(digVoxel);
 digRatio = digVoxelSum/voxel;
 
-unique_radius = unique(radius);
-unique_count = arrayfun(@(x)length(find(radius == x)), unique(radius), 'Uniform', false);
-unique_count = cell2mat(unique_count);
-removal = [unique_radius' unique_count'];
+% unique_radius = unique(radius);
+% unique_count = arrayfun(@(x)length(find(radius == x)), unique(radius), 'Uniform', false);
+% unique_count = cell2mat(unique_count);
+% removal = [unique_radius' unique_count'];
 
-[x y z] = ind2sub(size(volume), find(volume == 1));
-solidCoord = [x y z];
+% [x y z] = ind2sub(size(volume), find(volume == 1));
+% solidCoord = [x y z];
 % scatter3(x, y, z, 'MarkerFaceColor',[0 .75 .75]);
 % hold on;
 % scatter3(x1, y1, z1, 'MarkerFaceColor',[0.75 0 0]);
 end
 removal = 1;
-
 volume = volume_curr;
 
 % rockVolume = voxel / D(1)^3 * 1^3; % in in^3
@@ -334,15 +349,15 @@ view(3);
         isonormals(v, p)                              %# compute and set normals
         set(p, 'FaceColor','r', 'EdgeColor','none')   %# set surface props
         
-%         hold on;
-%         corner = flip(corner, 1);
-%         corner = flip(corner, 2);
-%         corner = permute(corner, [1 3 2]); % exchange y and z
-%         v1 = double(corner);
-%         v1 = smooth3(v1);
-%         p1 = patch( isosurface(v1,0) );                 %# create isosurface patch
-%         isonormals(v1, p1)                              %# compute and set normals
-%         set(p1, 'FaceColor','y', 'EdgeColor','none')
+        hold on;
+        corner = flip(corner, 1);
+        corner = flip(corner, 2);
+        corner = permute(corner, [1 3 2]); % exchange y and z
+        v1 = double(corner);
+        v1 = smooth3(v1);
+        p1 = patch( isosurface(v1,0) );                 %# create isosurface patch
+        isonormals(v1, p1)                              %# compute and set normals
+        set(p1, 'FaceColor','y', 'EdgeColor','none')
         
         daspect([1 1 1])                              %# axes aspect ratio
         view(0, 90), axis vis3d tight, box on, grid on    %# set axes props
