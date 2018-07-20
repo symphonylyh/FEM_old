@@ -13,15 +13,18 @@ close all;
 sz = [5 5 5];
 x0 = sz(1); y0 = sz(2); z0 = sz(3);
 t = zeros(sz);
-PYRAMID = 5;
+PYRAMID = 8;
+% comment: pyramid
+% non-comment: thicker pyramid
 if PYRAMID == 1
-p1 = [x0 0 0]; p2 = [0 y0 0]; p3 = [0 0 z0];
+%p1 = [x0 0 0]; p2 = [0 y0 0]; p3 = [0 0 z0];
+p1 = [x0 y0 0]; p2 = [x0 0 z0/2]; p3 = [0 0 z0];
 normal = cross(p2 - p1, p3 - p1);
 d = dot(normal,p1);
 for x = 1:sz(1)
     for y = 1:sz(2)
         for z = 1:sz(3)
-            if dot(normal,[x-1 y-1 z-1]) <= d
+            if dot(normal,[x-1 y-1 z-1]) >= d % dot(normal,[x-1 y-1 z-1]) <= d
                 t(x,y,z) = 1;
             end
         end
@@ -30,13 +33,14 @@ end
 end
 
 if PYRAMID == 2
-p1 = [0 0 0]; p2 = [x0 0 z0]; p3 = [x0 y0 0];
+%p1 = [0 0 0]; p2 = [x0 0 z0]; p3 = [x0 y0 0];
+p1 = [0 y0 0]; p2 = [x0 0 z0]; p3 = [0 0 z0/2];
 normal = cross(p2 - p1, p3 - p1);
 d = dot(normal,p1);
 for x = 1:sz(1)
     for y = 1:sz(2)
         for z = 1:sz(3)
-            if dot(normal,[x-1 y-1 z-1]) <= d
+            if dot(normal,[x-1 y-1 z-1]) >= d % dot(normal,[x-1 y-1 z-1]) <= d
                 t(x,y,z) = 1;
             end
         end
@@ -45,13 +49,14 @@ end
 end
 
 if PYRAMID == 3
-p1 = [x0 0 0]; p2 = [0 0 z0]; p3 = [x0 y0 z0];
+%p1 = [x0 0 0]; p2 = [0 0 z0]; p3 = [x0 y0 z0];
+p1 = [x0 0 0]; p2 = [0 y0 z0]; p3 = [0 0 z0/2];
 normal = cross(p2 - p1, p3 - p1);
 d = dot(normal,p1);
 for x = 1:sz(1)
     for y = 1:sz(2)
         for z = 1:sz(3)
-            if dot(normal,[x y z]) <= d
+            if dot(normal,[x y z]) >= d % dot(normal,[x y z]) <= d
                 t(x,y,z) = 1;
             end
         end
@@ -60,13 +65,14 @@ end
 end
 
 if PYRAMID == 4
-p1 = [x0 0 z0]; p2 = [0 0 0]; p3 = [0 y0 z0];
+%p1 = [x0 0 z0]; p2 = [0 0 0]; p3 = [0 y0 z0];
+p1 = [0 0 0]; p2 = [x0 y0 z0]; p3 = [x0 0 z0/2];
 normal = cross(p2 - p1, p3 - p1);
 d = dot(normal,p1);
 for x = 1:sz(1)
     for y = 1:sz(2)
         for z = 1:sz(3)
-            if dot(normal,[x-1 y-1 z-1]) <= d
+            if dot(normal,[x-1 y-1 z-1]) <= d % dot(normal,[x-1 y-1 z-1]) <= d
                 t(x,y,z) = 1;
             end
         end
@@ -75,13 +81,14 @@ end
 end
 
 if PYRAMID == 5
-p1 = [0 0 0]; p2 = [x0 y0 0]; p3 = [0 y0 z0];
+% p1 = [0 0 0]; p2 = [x0 y0 0]; p3 = [0 y0 z0];
+p1 = [x0 0 0]; p2 = [0 y0 z0]; p3 = [0 0 z0/2];
 normal = cross(p2 - p1, p3 - p1);
 d = dot(normal,p1);
 for x = 1:sz(1)
     for y = 1:sz(2)
         for z = 1:sz(3)
-            if dot(normal,[x-1 y-1 z-1]) <= d
+            if dot(normal,[x-1 y-1 z-1]) <= d % dot(normal,[x-1 y-1 z-1]) <= d
                 t(x,y,z) = 1;
             end
         end
@@ -90,13 +97,14 @@ end
 end
 
 if PYRAMID == 6
-p1 = [x0 y0 z0]; p2 = [0 y0 0]; p3 = [x0 0 0];
+% p1 = [x0 y0 z0]; p2 = [0 y0 0]; p3 = [x0 0 0];
+p1 = [x0 y0 z0]; p2 = [0 0 0]; p3 = [x0 0 z0/2];
 normal = cross(p2 - p1, p3 - p1);
 d = dot(normal,p1);
 for x = 1:sz(1)
     for y = 1:sz(2)
         for z = 1:sz(3)
-            if dot(normal,[x y z]) <= d
+            if dot(normal,[x y z]) <= d % dot(normal,[x y z]) <= d
                 t(x,y,z) = 1;
             end
         end
@@ -105,13 +113,14 @@ end
 end
 
 if PYRAMID == 7
-p1 = [x0 0 z0]; p2 = [x0 y0 0]; p3 = [0 y0 z0];
+% p1 = [x0 0 z0]; p2 = [x0 y0 0]; p3 = [0 y0 z0];
+p1 = [x0 y0 0]; p2 = [x0 0 z0/2]; p3 = [0 0 z0];
 normal = cross(p2 - p1, p3 - p1);
 d = dot(normal,p1);
 for x = 1:sz(1)
     for y = 1:sz(2)
         for z = 1:sz(3)
-            if dot(normal,[x y z]) >= d
+            if dot(normal,[x y z]) <= d % dot(normal,[x y z]) >= d
                 t(x,y,z) = 1;
             end
         end
@@ -120,13 +129,14 @@ end
 end
 
 if PYRAMID == 8
-p1 = [0 0 z0]; p2 = [x0 y0 z0]; p3 = [0 y0 0];
+%p1 = [0 0 z0]; p2 = [x0 y0 z0]; p3 = [0 y0 0];
+p1 = [0 y0 0]; p2 = [x0 0 z0]; p3 = [0 0 z0/2];
 normal = cross(p2 - p1, p3 - p1);
 d = dot(normal,p1);
 for x = 1:sz(1)
     for y = 1:sz(2)
         for z = 1:sz(3)
-            if dot(normal,[x y z]) >= d
+            if dot(normal,[x y z]) <= d % dot(normal,[x y z]) >= d
                 t(x,y,z) = 1;
             end
         end
@@ -147,7 +157,7 @@ SEGMENT = false;
 RECONSTRUCT = true;
 
 % User define folder name here
-inFolderName = './samples/Jun_30_2018/'; 
+inFolderName = './samples/Jul_12_2018/'; 
 
 %% Single ball case
 % img = imread(fullfile(inFolderName, 'IMG_0443.jpg'));
@@ -362,7 +372,7 @@ if RECONSTRUCT
     end
     
     % Group reconstruction or single reconstruction based on user's option
-    DEBUG = true; object = 69; % designate the object to debug
+    DEBUG = true; object = 8; % designate the object to debug
     if DEBUG
         % Create debug folder or clear existing folder
         debugFolderName = strcat(reconFolderName, 'Debug/');
@@ -376,11 +386,13 @@ if RECONSTRUCT
         for view = 1 : 3
             rocks{view} = imread(fullfile(segFolderName, strcat('timg', sprintf('%04d', object), '_', num2str(view - 1), '_rock.png')));
             balls{view} = imread(fullfile(segFolderName, strcat('timg', sprintf('%04d', object), '_', num2str(view - 1), '_ball.png')));
+            %rocks{view} = imresize(rocks{view}, 0.05);
+            %balls{view} = imresize(balls{view}, 0.05);
             % D(view) = info(2 * object, view); 
             D(view) = min(size(balls{view})); % based on minimum dimension
             %R(view) = info(2 * object - 1, view);
         end
-        [rockVoxel, removal] = reconstruct3D(rocks, D, DEBUG, true);
+        [rockVoxel, sphericity, cornerPoints, digRatio] = reconstruct3D(rocks, D, DEBUG, true);
         %ballVoxel = reconstruct3D(balls, D, DEBUG);
         %rockVolume = rockVoxel / ballVoxel * 8 * (2 - sqrt(2)) * 0.75^3 * 16.3871; % the orthogonal intersection volume of a sphere
         
@@ -407,7 +419,10 @@ if RECONSTRUCT
         nums = size(final_full, 1); % size(info,1) / 2; % number of particles
         weights = [];
         volumes = [];
-        remove = [];
+        cornerCounts = [];
+        digRatios = [];
+        rockVoxels = [];
+        ballVoxels = [];
         for i = 1 : nums
             D = []; % diameters of calibration ball
             R = []; % hole ratios of rock
@@ -418,7 +433,7 @@ if RECONSTRUCT
                 D(j) = min(size(balls{j})); % options: use equivalent diameter, or the minimum diameter
                 % R(j) = info(2 * i - 1, j);
             end
-            [rockVoxel, sphericity, removal] = reconstruct3D(rocks, D, DEBUG, true);
+            [rockVoxel, sphericity, cornerPoints, digRatio] = reconstruct3D(rocks, D, DEBUG, true);
             %voxel(i) = rockVoxel;
             %remove = cat(1, remove, removal);
             [ballVoxel, sphericity] = reconstruct3D(balls, D, DEBUG, false);
@@ -444,7 +459,11 @@ if RECONSTRUCT
             volumes(i, 1) = rockVolume;
             weights(i, 1) = rockWeight;
             % sphere(i,1) = sphericity; % not used
+            cornerCounts(i, 1) = cornerPoints;
+            digRatios(i, 1) = digRatio;
             
+            rockVoxels(i, 1) = rockVoxel;
+            ballVoxels(i, 1) = ballVoxel; 
             % Volume correction based on hole ratio (not used for now)
             % holeRatio = 1 - mean(R);
             % rockVoxel = rockVoxel * holeRatio;     
@@ -452,9 +471,13 @@ if RECONSTRUCT
         
 %         csvwrite(fullfile(reconFolderName, 'voxel.csv'), voxel);
 %         csvwrite(fullfile(reconFolderName, 'removal.csv'), remove);
+        csvwrite(fullfile(reconFolderName, 'corners.csv'), cornerCounts);
+        csvwrite(fullfile(reconFolderName, 'ratios.csv'), digRatios);
+        csvwrite(fullfile(reconFolderName, 'voxels.csv'), [rockVoxels ballVoxels]);
+        csvwrite(fullfile(reconFolderName, 'volumeRatio.csv'), [final_full(:,2)/2.66 volumes (final_full(:,2)/2.66) ./ volumes]);
         
         % Save the 3D voxel array to disk
-        save(fullfile(reconFolderName, 'volume.mhat'), 'volumes'); 
+        % save(fullfile(reconFolderName, 'volume.mhat'), 'volumes'); 
         
         % For full results
         error_volume = (volumes - final_full(:, 1)) ./ final_full(:, 1) * 100;
@@ -470,12 +493,12 @@ if RECONSTRUCT
         error_weight = (mean_weight - final(:, 2)) ./ final(:, 2) * 100;
         final = [final(:, 1) mean_volume error_volume final(:, 2) mean_weight error_weight];
         
-        csvwrite(fullfile(reconFolderName, 'volumes.csv'), mean_volume);
+        % csvwrite(fullfile(reconFolderName, 'volumes.csv'), mean_volume);
         
         header = {'Particle No.', 'Measured Volume (cm3)', 'Measured Weight (g)', 'Reconstructed Volume (cm3)', 'Volume1 (cm3)', 'Volume2 (cm3)', 'Volume3 (cm3)'};
         % header = {'Particle No.', 'Measured Volume (cm3)', 'Measured Weight (g)', 'Reconstructed Volume (cm3)', 'Volume1 (cm3)'};
         data = [ (1:size(final,1))' final(:,1) final(:,4) mean_volume volumes' ];
-        csvwrite_with_headers(fullfile(reconFolderName, 'result.csv'), data, header);
+        % csvwrite_with_headers(fullfile(reconFolderName, 'result.csv'), data, header);
         
         % Plot volume comparsion
 %         figure(1); hold on;

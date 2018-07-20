@@ -1,4 +1,4 @@
-function [voxel, sphericity, removal] = reconstruct3D(views, D, debug_mode, rock_mode)
+function [voxel, sphericity, cornerPoints, digRatio] = reconstruct3D(views, D, debug_mode, rock_mode)
 % 3D reconstruction based on three near-orthogonal views.
 %
 % Input:
@@ -14,6 +14,7 @@ close all;
 PLOT = debug_mode;
 %PLOT = false;
 ROCK = rock_mode;
+%ROCK = false;
 
 % Normalize/Scale with respect to the *top* view based on the diameter ratio of calibration ball
 views{2} = imresize(views{2}, D(1) / D(2));
@@ -71,7 +72,7 @@ end
 % b = info(2 * i - 1, :)';
 A = [0 0 1; 1 0 0; 1 0 0; 0 1 0; 0 0 1; 0 1 0];
 
-if (size(views{1}, 1) < 100) % ball
+if (size(views{1}, 1) < 100) % ball reconstruction
     b(7:9, 1) = [0 0 0]';
     A(7:9, :) = [1 -1 0; 0 1 -1; 1 0 -1];
 end
@@ -121,7 +122,7 @@ digVoxel = [];
 tic
 for i = 1 : cornerPoints
     % Determine the maximum diggable volume by an iteration scheme
-    check = 0; r = 25; % reset check point and starting radius everytime
+    check = 0; r = 15; % reset check point and starting radius everytime
     isEmpty = false;
     volume_trial = volume_curr;
     %while check == 0
@@ -145,6 +146,8 @@ for i = 1 : cornerPoints
         r = 2 * r; % double the radius for the next larger dig
     %end
     
+    dig_convex = 0; %
+    
     if check == 0
     % Dig the maximum convex volume and update the volume
     r = r / 2; % maximum diggable radius (in while loop an additonal *2 is multiplied)
@@ -163,13 +166,14 @@ for i = 1 : cornerPoints
     t = zeros(sz); % the pyramid to be formed based on dig direction
     x0 = sz(1); y0 = sz(2); z0 = sz(3);
     if v(1) < 0 && v(2) < 0 && v(3) < 0 % pyramid 1 - - - quadrant
-        p1 = [x0 0 0]; p2 = [0 y0 0]; p3 = [0 0 z0];
+        %p1 = [x0 0 0]; p2 = [0 y0 0]; p3 = [0 0 z0];
+        p1 = [x0 y0 0]; p2 = [x0 0 z0/2]; p3 = [0 0 z0];
         normal = cross(p2 - p1, p3 - p1);
         d = dot(normal,p1);
         for x = 1:sz(1)
             for y = 1:sz(2)
                 for z = 1:sz(3)
-                    if dot(normal,[x-1 y-1 z-1]) <= d
+                    if dot(normal,[x-1 y-1 z-1]) >= d % dot(normal,[x-1 y-1 z-1]) <= d
                         t(x,y,z) = 1;
                     end
                 end
@@ -177,13 +181,14 @@ for i = 1 : cornerPoints
         end
 
     elseif v(1) > 0 && v(2) < 0 && v(3) < 0 % pyramid 2 + - -
-        p1 = [0 0 0]; p2 = [x0 0 z0]; p3 = [x0 y0 0];
+        %p1 = [0 0 0]; p2 = [x0 0 z0]; p3 = [x0 y0 0];
+        p1 = [0 y0 0]; p2 = [x0 0 z0]; p3 = [0 0 z0/2];
         normal = cross(p2 - p1, p3 - p1);
         d = dot(normal,p1);
         for x = 1:sz(1)
             for y = 1:sz(2)
                 for z = 1:sz(3)
-                    if dot(normal,[x-1 y-1 z-1]) <= d
+                    if dot(normal,[x-1 y-1 z-1]) >= d % dot(normal,[x-1 y-1 z-1]) <= d
                         t(x,y,z) = 1;
                     end
                 end
@@ -191,13 +196,14 @@ for i = 1 : cornerPoints
         end
 
     elseif v(1) > 0 && v(2) < 0 && v(3) > 0 % pyramid 3 + - +
-        p1 = [x0 0 0]; p2 = [0 0 z0]; p3 = [x0 y0 z0];
+        %p1 = [x0 0 0]; p2 = [0 0 z0]; p3 = [x0 y0 z0];
+        p1 = [x0 0 0]; p2 = [0 y0 z0]; p3 = [0 0 z0/2];
         normal = cross(p2 - p1, p3 - p1);
         d = dot(normal,p1);
         for x = 1:sz(1)
             for y = 1:sz(2)
                 for z = 1:sz(3)
-                    if dot(normal,[x y z]) <= d
+                    if dot(normal,[x y z]) >= d % dot(normal,[x y z]) <= d
                         t(x,y,z) = 1;
                     end
                 end
@@ -205,13 +211,14 @@ for i = 1 : cornerPoints
         end
 
     elseif v(1) < 0 && v(2) < 0 && v(3) > 0 % pyramid 4 - - +
-        p1 = [x0 0 z0]; p2 = [0 0 0]; p3 = [0 y0 z0];
+        %p1 = [x0 0 z0]; p2 = [0 0 0]; p3 = [0 y0 z0];
+        p1 = [0 0 0]; p2 = [x0 y0 z0]; p3 = [x0 0 z0/2];
         normal = cross(p2 - p1, p3 - p1);
         d = dot(normal,p1);
         for x = 1:sz(1)
             for y = 1:sz(2)
                 for z = 1:sz(3)
-                    if dot(normal,[x-1 y-1 z-1]) <= d
+                    if dot(normal,[x-1 y-1 z-1]) <= d % dot(normal,[x-1 y-1 z-1]) <= d
                         t(x,y,z) = 1;
                     end
                 end
@@ -219,13 +226,14 @@ for i = 1 : cornerPoints
         end
 
     elseif v(1) < 0 && v(2) > 0 && v(3) < 0 % pyramid 5 - + -
-        p1 = [0 0 0]; p2 = [x0 y0 0]; p3 = [0 y0 z0];
+        % p1 = [0 0 0]; p2 = [x0 y0 0]; p3 = [0 y0 z0];
+        p1 = [x0 0 0]; p2 = [0 y0 z0]; p3 = [0 0 z0/2];
         normal = cross(p2 - p1, p3 - p1);
         d = dot(normal,p1);
         for x = 1:sz(1)
             for y = 1:sz(2)
                 for z = 1:sz(3)
-                    if dot(normal,[x-1 y-1 z-1]) <= d
+                    if dot(normal,[x-1 y-1 z-1]) <= d % dot(normal,[x-1 y-1 z-1]) <= d
                         t(x,y,z) = 1;
                     end
                 end
@@ -233,13 +241,14 @@ for i = 1 : cornerPoints
         end
 
     elseif v(1) > 0 && v(2) > 0 && v(3) < 0 % pyramid 6 + + -
-        p1 = [x0 y0 z0]; p2 = [0 y0 0]; p3 = [x0 0 0];
+        % p1 = [x0 y0 z0]; p2 = [0 y0 0]; p3 = [x0 0 0];
+        p1 = [x0 y0 z0]; p2 = [0 0 0]; p3 = [x0 0 z0/2];
         normal = cross(p2 - p1, p3 - p1);
         d = dot(normal,p1);
         for x = 1:sz(1)
             for y = 1:sz(2)
                 for z = 1:sz(3)
-                    if dot(normal,[x y z]) <= d
+                    if dot(normal,[x y z]) <= d % dot(normal,[x y z]) <= d
                         t(x,y,z) = 1;
                     end
                 end
@@ -247,13 +256,14 @@ for i = 1 : cornerPoints
         end
 
     elseif v(1) > 0 && v(2) > 0 && v(3) > 0 % pyramid 7 + + +
-        p1 = [x0 0 z0]; p2 = [x0 y0 0]; p3 = [0 y0 z0];
+        % p1 = [x0 0 z0]; p2 = [x0 y0 0]; p3 = [0 y0 z0];
+        p1 = [x0 y0 0]; p2 = [x0 0 z0/2]; p3 = [0 0 z0];
         normal = cross(p2 - p1, p3 - p1);
         d = dot(normal,p1);
         for x = 1:sz(1)
             for y = 1:sz(2)
                 for z = 1:sz(3)
-                    if dot(normal,[x y z]) >= d
+                    if dot(normal,[x y z]) <= d % dot(normal,[x y z]) >= d
                         t(x,y,z) = 1;
                     end
                 end
@@ -261,13 +271,14 @@ for i = 1 : cornerPoints
         end
 
     elseif v(1) < 0 && v(2) > 0 && v(3) > 0 % pyramid 8 - + +
-        p1 = [0 0 z0]; p2 = [x0 y0 z0]; p3 = [0 y0 0];
+        %p1 = [0 0 z0]; p2 = [x0 y0 z0]; p3 = [0 y0 0];
+        p1 = [0 y0 0]; p2 = [x0 0 z0]; p3 = [0 0 z0/2];
         normal = cross(p2 - p1, p3 - p1);
         d = dot(normal,p1);
         for x = 1:sz(1)
             for y = 1:sz(2)
                 for z = 1:sz(3)
-                    if dot(normal,[x y z]) >= d
+                    if dot(normal,[x y z]) <= d % dot(normal,[x y z]) >= d
                         t(x,y,z) = 1;
                     end
                 end
@@ -281,9 +292,10 @@ for i = 1 : cornerPoints
     % Dig and update the volume
     dig_convex = logical(t) & dig; % intersection convex volume
     volume_curr(max(x1(i)-r,1):min(x1(i)+r, dim(1)), max(y1(i)-r,1):min(y1(i)+r, dim(2)), max(z1(i)-r,1):min(z1(i)+r, dim(3))) = dig_convex;
-
+    
     end
     end
+    
     % Record the dig radius and dig voxel for output
     radius(i) = r; 
     digVoxel(i) = sum(dig_convex(:));   
@@ -303,7 +315,6 @@ digRatio = digVoxelSum/voxel;
 % hold on;
 % scatter3(x1, y1, z1, 'MarkerFaceColor',[0.75 0 0]);
 end
-removal = 1;
 volume = volume_curr;
 
 % rockVolume = voxel / D(1)^3 * 1^3; % in in^3
@@ -318,7 +329,7 @@ if PLOT
 % figure(2), imshow(front);
 % figure(3), imshow(side);
 % 
-% % Show images on a 3D cube: https://www.mathworks.com/matlabcentral/answers/32070-rgb-images-on-a-3d-cube
+% Show images on a 3D cube: https://www.mathworks.com/matlabcentral/answers/32070-rgb-images-on-a-3d-cube
 figure(4);
 % top
 surface([0 scale(3); 0 scale(3)], [0 0; scale(1) scale(1)], [scale(2) scale(2); scale(2) scale(2)], 'FaceColor', 'texturemap', 'CData', flip(double(top)));
