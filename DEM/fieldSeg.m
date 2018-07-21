@@ -153,8 +153,8 @@ end
 
 %% Control panel
 READ = false; COMPRESS = true; compress_size = 1024; % Rename image file (one-time only), compress image file (if the resolution remains the same, turn off the switch)
-SEGMENT = true;
-RECONSTRUCT = false;
+SEGMENT = false;
+RECONSTRUCT = true;
 
 % User define folder name here
 inFolderName = './samples/Jun_30_2018/'; 
@@ -274,7 +274,7 @@ if SEGMENT
         % result = illiSeg(fullfile(compressFolderName, fnames{(object - 1) * 3 + view}), DEBUG);
         
         % For batch processing of a specific view (phone) images separately:
-        % result = illiSeg(fullfile(compressFolderName, strcat('img', sprintf('%04d', object), '_', num2str(view - 1), '.png')), DEBUG);
+        result = illiSeg(fullfile(compressFolderName, strcat('img', sprintf('%04d', object), '_', num2str(view - 1), '.png')), DEBUG);
         
         % For manually segmentation (rock only)
 %         img = imread(fullfile(compressFolderName, strcat('img', sprintf('%04d', object), '_', num2str(view - 1), '.png')));
@@ -461,13 +461,14 @@ if RECONSTRUCT
                 rocks{j} = imread(fullfile(segFolderName, strcat('timg', sprintf('%04d', i), '_', num2str(j - 1), '_rock.png')));
                 balls{j} = imread(fullfile(segFolderName, strcat('timg', sprintf('%04d', i), '_', num2str(j - 1), '_ball.png')));
                 % D(j) = info(2 * i, j); 
-                D(j) = min(size(balls{j})); % options: use equivalent diameter, or the minimum diameter
+                %D(j) = min(size(balls{j})); % options: use equivalent diameter, or the minimum diameter
+                D(j) = 2 * (sum(balls{j}(:)) / 3.1415926)^(1/3);
                 % R(j) = info(2 * i - 1, j);
             end
             [rockVoxel, sphericity, cornerPoints, digRatio, X12] = reconstruct3D(rocks, D, DEBUG, true);
             %voxel(i) = rockVoxel;
             %remove = cat(1, remove, removal);
-            %[ballVoxel, sphericity] = reconstruct3D(balls, D, DEBUG, false);
+            [ballVoxel, sphericity] = reconstruct3D(balls, D, DEBUG, false);
             % Options for the calibration ball volume: 
             % 1. Actual 1 in. ball volume is 4/3*PI*R^3 = 0.523599 in3
             % use the ball diameter in top view to compute volume from the

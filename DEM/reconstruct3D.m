@@ -112,6 +112,8 @@ voxel_side = sum(volume_side(:));
 volume_front = ~top_extrude & front_extrude & ~side_extrude;
 voxel_front = sum(volume_front(:));
 
+
+
 X11 = (voxel - (voxel_front+voxel_top+voxel_side)/3)/voxel;
 X12 = (voxel - min([voxel_front voxel_top voxel_side]))/voxel;
 X13 = (voxel - max([voxel_front voxel_top voxel_side]))/voxel;
@@ -124,6 +126,7 @@ voxel_side = sum(volume_side(:));
 
 volume_front = top_extrude & ~front_extrude & side_extrude;
 voxel_front = sum(volume_front(:));
+
 
 X21 = (voxel - (voxel_front+voxel_top+voxel_side)/3)/voxel;
 X22 = (voxel - min([voxel_front voxel_top voxel_side]))/voxel;
