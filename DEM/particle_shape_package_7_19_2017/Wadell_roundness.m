@@ -5,9 +5,9 @@
 %       junxing@umich.edu 
 %  
 %  The detailed description of code is in the paper:
-%  Zheng and Hryciw (2015). “Traditional Soil Particle Sphericity, 
-%   Roundness and Surface Roughness by Computational Geometry”, 
-%   Géotechnique, Vol. 65, No. 6, 494-506, DOI:10.1680/geot./14-P-192. 
+%  Zheng and Hryciw (2015). Traditional Soil Particle Sphericity, 
+%   Roundness and Surface Roughness by Computational Geometryï¿½, 
+%   Gï¿½otechnique, Vol. 65, No. 6, 494-506, DOI:10.1680/geot./14-P-192. 
 %
 %   If you use this code in your publication, please cite above paper
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -33,10 +33,16 @@ smoothParameter = 30; % smooth parameter in filter method
 
 
 %% main function
-img=imread('example.jpg');
-level = graythresh(img);
-im = im2bw(img,level);
-BW =~im;
+% img=imread('example.jpg');
+% level = graythresh(img);
+% im = im2bw(img,level);
+% BW =~im;
+
+fnames = getAllFilesInFolder('./sample');
+allRoundness = [];
+for hhh = 1 : length(fnames)
+    img = imread(strcat('./sample/', fnames{hhh}));
+    BW = img;
 
 for i = 1:5
     SE = strel('disk',10);
@@ -55,9 +61,9 @@ particles = boundary_smoothing(particles, smoothParameter);
 
 
 
-figure
-imshow(img, []);
-hold on
+% figure(1)
+% imshow(img, []);
+% hold on
 result = [];
 
 for k = 1:particles.NumObjects
@@ -67,10 +73,10 @@ for k = 1:particles.NumObjects
     boundary_points = particles.objects(k).cartesian;
     X = boundary_points(:, 1);
     Y = boundary_points(:, 2);
-    plot(X,Y,'k','LineWidth',1.5);
+    %plot(X,Y,'k','LineWidth',1.5);
     % plot largest circle
     theta = [linspace(0,2*pi, 100)];
-    plot(cos(theta)*R+cx,sin(theta)*R+cy,'color','r','LineWidth', 1.5);
+    %plot(cos(theta)*R+cx,sin(theta)*R+cy,'color','r','LineWidth', 1.5);
     
     % segment the boundary of particels
     seglist = segment_boundary(X, Y, tol, 0);
@@ -82,18 +88,18 @@ for k = 1:particles.NumObjects
     [z, r] = compute_corner_circles(sz,obj , convex, boundary_points, R, factor, 3);
     
     
-    for ee = 1:length(r)
-        plot(z(ee, 1),z(ee,2),...   % plot the center of circles
-            z(ee, 1)  + r(ee)  * cos(theta),...
-            z(ee,2)  + r(ee) * sin(theta), 'g','LineWidth', 1.5); 
-    end
+%     for ee = 1:length(r)
+%         plot(z(ee, 1),z(ee,2),...   % plot the center of circles
+%             z(ee, 1)  + r(ee)  * cos(theta),...
+%             z(ee,2)  + r(ee) * sin(theta), 'g','LineWidth', 1.5); 
+%     end
     
     Roundness = mean(r)/R;
     if Roundness > 1
         Roundness =1;
     end
  
-    text(cx, cy, num2str(k), 'Color', 'b', 'FontSize', 15 )
+    %text(cx, cy, num2str(Roundness), 'Color', 'b', 'FontSize', 15 )
       
       
       
@@ -108,4 +114,8 @@ for k = 1:particles.NumObjects
  %% summary of results 
         result = [result; Roundness, sphericity1, sphericity2, sphericity3, sphericity4, sphericity5];
       
+end
+
+allRoundness(hhh) = Roundness;
+csvwrite('roundess.csv', allRoundness');
 end

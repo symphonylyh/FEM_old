@@ -1,4 +1,4 @@
-function [voxel, sphericity, cornerPoints, digRatio] = reconstruct3D(views, D, debug_mode, rock_mode)
+function [voxel, sphericity, cornerPoints, digRatio, X11] = reconstruct3D(views, D, debug_mode, rock_mode)
 % 3D reconstruction based on three near-orthogonal views.
 %
 % Input:
@@ -9,12 +9,18 @@ function [voxel, sphericity, cornerPoints, digRatio] = reconstruct3D(views, D, d
 % Output:
 % voxel: voxel counter of the reconstructed object
 
+% Silence warning
+voxel = 1;
+sphericity = 1;
+cornerPoints = 1;
+digRatio = 1;
+X12 = 1;
 close all;
 
 PLOT = debug_mode;
-%PLOT = false;
+PLOT = false;
 ROCK = rock_mode;
-%ROCK = false;
+ROCK = false;
 
 % Normalize/Scale with respect to the *top* view based on the diameter ratio of calibration ball
 views{2} = imresize(views{2}, D(1) / D(2));
@@ -94,9 +100,38 @@ side_extrude = permute(side_extrude, [3 1 2]);
 
 % Intersect the three extruded body
 volume = top_extrude & front_extrude & side_extrude;
-
 voxel = sum(volume(:));
 
+if rock_mode
+volume_top = top_extrude & ~front_extrude & ~side_extrude;
+voxel_top = sum(volume_top(:));
+
+volume_side = ~top_extrude & ~front_extrude & side_extrude;
+voxel_side = sum(volume_side(:));
+
+volume_front = ~top_extrude & front_extrude & ~side_extrude;
+voxel_front = sum(volume_front(:));
+
+X11 = (voxel - (voxel_front+voxel_top+voxel_side)/3)/voxel;
+X12 = (voxel - min([voxel_front voxel_top voxel_side]))/voxel;
+X13 = (voxel - max([voxel_front voxel_top voxel_side]))/voxel;
+
+volume_top = ~top_extrude & front_extrude & side_extrude;
+voxel_top = sum(volume_top(:));
+
+volume_side = top_extrude & front_extrude & ~side_extrude;
+voxel_side = sum(volume_side(:));
+
+volume_front = top_extrude & ~front_extrude & side_extrude;
+voxel_front = sum(volume_front(:));
+
+X21 = (voxel - (voxel_front+voxel_top+voxel_side)/3)/voxel;
+X22 = (voxel - min([voxel_front voxel_top voxel_side]))/voxel;
+X23 = (voxel - max([voxel_front voxel_top voxel_side]))/voxel;
+
+X = [X11 X12 X13; X21 X22 X23];
+end
+% ballratio = 8*(2-sqrt(2))/(4/3*3.1415926)
 if ROCK
 [Gx, Gy, Gz] = imgradientxyz(volume);
 Gx = mat2gray(abs(Gx));
@@ -315,7 +350,7 @@ digRatio = digVoxelSum/voxel;
 % hold on;
 % scatter3(x1, y1, z1, 'MarkerFaceColor',[0.75 0 0]);
 end
-volume = volume_curr;
+%volume = volume_curr;
 
 % rockVolume = voxel / D(1)^3 * 1^3; % in in^3
 % rockWeight = rockVolume * 16.3871 * 2.65; % 1 in3 = 16.3871 cm3; typically rock density 2.65g/cm3
@@ -360,15 +395,15 @@ view(3);
         isonormals(v, p)                              %# compute and set normals
         set(p, 'FaceColor','r', 'EdgeColor','none')   %# set surface props
         
-        hold on;
-        corner = flip(corner, 1);
-        corner = flip(corner, 2);
-        corner = permute(corner, [1 3 2]); % exchange y and z
-        v1 = double(corner);
-        v1 = smooth3(v1);
-        p1 = patch( isosurface(v1,0) );                 %# create isosurface patch
-        isonormals(v1, p1)                              %# compute and set normals
-        set(p1, 'FaceColor','y', 'EdgeColor','none')
+%         hold on;
+%         corner = flip(corner, 1);
+%         corner = flip(corner, 2);
+%         corner = permute(corner, [1 3 2]); % exchange y and z
+%         v1 = double(corner);
+%         v1 = smooth3(v1);
+%         p1 = patch( isosurface(v1,0) );                 %# create isosurface patch
+%         isonormals(v1, p1)                              %# compute and set normals
+%         set(p1, 'FaceColor','y', 'EdgeColor','none')
         
         daspect([1 1 1])                              %# axes aspect ratio
         view(0, 90), axis vis3d tight, box on, grid on    %# set axes props

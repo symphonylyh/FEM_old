@@ -153,11 +153,11 @@ end
 
 %% Control panel
 READ = false; COMPRESS = true; compress_size = 1024; % Rename image file (one-time only), compress image file (if the resolution remains the same, turn off the switch)
-SEGMENT = false;
-RECONSTRUCT = true;
+SEGMENT = true;
+RECONSTRUCT = false;
 
 % User define folder name here
-inFolderName = './samples/Jul_12_2018/'; 
+inFolderName = './samples/Jun_30_2018/'; 
 
 %% Single ball case
 % img = imread(fullfile(inFolderName, 'IMG_0443.jpg'));
@@ -259,7 +259,7 @@ if SEGMENT
     end
     
     % Group segmentation or single segmentation based on user's option
-    DEBUG = true; object = 11; view = 3; % designate the object & view (1-top;2-front;3-side) to debug
+    DEBUG = true; object = 1; view = 3; % designate the object & view (1-top;2-front;3-side) to debug
     if DEBUG
         % Create debug  folder or clear existing folder
         debugFolderName = strcat(segFolderName, 'Debug/');
@@ -273,10 +273,10 @@ if SEGMENT
         % For images organized in triplet sequence: 
         % result = illiSeg(fullfile(compressFolderName, fnames{(object - 1) * 3 + view}), DEBUG);
         
-        % For batch processing of each view (phone) images separately:
-        result = illiSeg(fullfile(compressFolderName, strcat('img', sprintf('%04d', object), '_', num2str(view - 1), '.png')), DEBUG);
+        % For batch processing of a specific view (phone) images separately:
+        % result = illiSeg(fullfile(compressFolderName, strcat('img', sprintf('%04d', object), '_', num2str(view - 1), '.png')), DEBUG);
         
-        % For manually segmentation
+        % For manually segmentation (rock only)
 %         img = imread(fullfile(compressFolderName, strcat('img', sprintf('%04d', object), '_', num2str(view - 1), '.png')));
 %         imageSegmenter(img);
 %         pause;
@@ -290,6 +290,37 @@ if SEGMENT
 %         rockCrop = imcrop(BW,allBoundingBox(1:4));
 %         imwrite(img, fullfile(debugFolderName, strcat('img', sprintf('%04d', object), '_', num2str(view - 1), '.png')));
 %         imwrite(rockCrop, fullfile(debugFolderName, strcat('timg', sprintf('%04d', object), '_', num2str(view - 1), '_rock', '.png')));
+
+        % For manually segmentation (rock and ball)
+        img = imread(fullfile(compressFolderName, strcat('img', sprintf('%04d', object), '_', num2str(view - 1), '.png')));
+        imageSegmenter(img);
+        pause;
+        imageSegmenter close;
+       
+        [Label,N] = bwlabel(BW, 4); 
+        stats = regionprops(Label, 'all'); 
+        allArea = [stats.Area];
+        allBoundingBox = [stats.BoundingBox];
+
+        [~, index] = sort(allArea, 'descend'); 
+        rockIdx = index(1);
+        ballIdx = index(2);
+
+        rockMask = ismember(Label, rockIdx);
+        ballMask = ismember(Label, ballIdx);
+
+        rockCrop = imcrop(rockMask,allBoundingBox(4*(rockIdx-1)+1:4*(rockIdx-1)+4));
+        ballCrop = imcrop(ballMask,allBoundingBox(4*(ballIdx-1)+1:4*(ballIdx-1)+4));
+
+        mark = img;
+        rockBoundary = bwperim(rockMask, 4); 
+        ballBoundary = bwperim(ballMask, 4);
+        mark = imoverlay(mark, rockBoundary, 'red');
+        mark = imoverlay(mark, ballBoundary, 'yellow');
+        imwrite(mark, fullfile(debugFolderName, strcat('img', sprintf('%04d', object), '_', num2str(view - 1), '.png')));
+        imwrite(rockCrop, fullfile(debugFolderName, strcat('timg', sprintf('%04d', object), '_', num2str(view - 1), '_rock', '.png')));
+        imwrite(ballCrop, fullfile(debugFolderName, strcat('timg', sprintf('%04d', object), '_', num2str(view - 1), '_ball', '.png')));
+
     else
         % For batch processing of each view (phone) images separately:
         for i = 1 : length(fnames)
@@ -372,7 +403,7 @@ if RECONSTRUCT
     end
     
     % Group reconstruction or single reconstruction based on user's option
-    DEBUG = true; object = 8; % designate the object to debug
+    DEBUG = true; object = 5; % designate the object to debug
     if DEBUG
         % Create debug folder or clear existing folder
         debugFolderName = strcat(reconFolderName, 'Debug/');
@@ -393,8 +424,8 @@ if RECONSTRUCT
             %R(view) = info(2 * object - 1, view);
         end
         [rockVoxel, sphericity, cornerPoints, digRatio] = reconstruct3D(rocks, D, DEBUG, true);
-        %ballVoxel = reconstruct3D(balls, D, DEBUG);
-        %rockVolume = rockVoxel / ballVoxel * 8 * (2 - sqrt(2)) * 0.75^3 * 16.3871; % the orthogonal intersection volume of a sphere
+        ballVoxel = reconstruct3D(balls, D, DEBUG, false);
+        rockVolume = rockVoxel / ballVoxel * 8 * (2 - sqrt(2)) * 0.75^3 * 16.3871; % the orthogonal intersection volume of a sphere
         
         % Plot volume comparsion
 %         figure; hold on;
@@ -433,10 +464,10 @@ if RECONSTRUCT
                 D(j) = min(size(balls{j})); % options: use equivalent diameter, or the minimum diameter
                 % R(j) = info(2 * i - 1, j);
             end
-            [rockVoxel, sphericity, cornerPoints, digRatio] = reconstruct3D(rocks, D, DEBUG, true);
+            [rockVoxel, sphericity, cornerPoints, digRatio, X12] = reconstruct3D(rocks, D, DEBUG, true);
             %voxel(i) = rockVoxel;
             %remove = cat(1, remove, removal);
-            [ballVoxel, sphericity] = reconstruct3D(balls, D, DEBUG, false);
+            %[ballVoxel, sphericity] = reconstruct3D(balls, D, DEBUG, false);
             % Options for the calibration ball volume: 
             % 1. Actual 1 in. ball volume is 4/3*PI*R^3 = 0.523599 in3
             % use the ball diameter in top view to compute volume from the
@@ -464,6 +495,7 @@ if RECONSTRUCT
             
             rockVoxels(i, 1) = rockVoxel;
             ballVoxels(i, 1) = ballVoxel; 
+            X(i,1) = max(X12,0.8);
             % Volume correction based on hole ratio (not used for now)
             % holeRatio = 1 - mean(R);
             % rockVoxel = rockVoxel * holeRatio;     
@@ -471,6 +503,7 @@ if RECONSTRUCT
         
 %         csvwrite(fullfile(reconFolderName, 'voxel.csv'), voxel);
 %         csvwrite(fullfile(reconFolderName, 'removal.csv'), remove);
+        csvwrite(fullfile(reconFolderName, 'X.csv'), X);
         csvwrite(fullfile(reconFolderName, 'corners.csv'), cornerCounts);
         csvwrite(fullfile(reconFolderName, 'ratios.csv'), digRatios);
         csvwrite(fullfile(reconFolderName, 'voxels.csv'), [rockVoxels ballVoxels]);
