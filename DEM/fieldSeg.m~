@@ -500,7 +500,7 @@ if RECONSTRUCT
             ballVoxels(i, 1) = ballVoxel; 
             voxelComponent(i,:) = voxels;
             %X(i,1) = max(X12,0.8);
-            X(i,1) = X12 * (1 - 10 * ballVoxel/rockVoxel);
+            X(i,1) = X12 * ballVoxel/rockVoxel;
             % Volume correction based on hole ratio (not used for now)
             % holeRatio = 1 - mean(R);
             % rockVoxel = rockVoxel * holeRatio;     
