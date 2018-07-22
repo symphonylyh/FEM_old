@@ -157,7 +157,7 @@ SEGMENT = false;
 RECONSTRUCT = true;
 
 % User define folder name here
-inFolderName = './samples/Jul_12_2018/'; 
+inFolderName = './samples/Jun_30_2018/'; 
 
 %% Single ball case
 % img = imread(fullfile(inFolderName, 'IMG_0443.jpg'));
@@ -463,8 +463,8 @@ if RECONSTRUCT
                 rocks{j} = imread(fullfile(segFolderName, strcat('timg', sprintf('%04d', i), '_', num2str(j - 1), '_rock.png')));
                 balls{j} = imread(fullfile(segFolderName, strcat('timg', sprintf('%04d', i), '_', num2str(j - 1), '_ball.png')));
                 % D(j) = info(2 * i, j); 
-                D(j) = min(size(balls{j})); % options: use equivalent diameter, or the minimum diameter
-                %D(j) = 2 * (sum(balls{j}(:)) / 3.1415926)^(1/3);
+                %D(j) = min(size(balls{j})); % options: use equivalent diameter, or the minimum diameter
+                D(j) = 2 * (sum(balls{j}(:)) / 3.1415926)^(1/3);
                 % R(j) = info(2 * i - 1, j);
             end
             [rockVoxel, sphericity, cornerPoints, digRatio, voxels, X12] = reconstruct3D(rocks, D, DEBUG, true);
@@ -500,7 +500,7 @@ if RECONSTRUCT
             ballVoxels(i, 1) = ballVoxel; 
             voxelComponent(i,:) = voxels;
             %X(i,1) = max(X12,0.8);
-            X(i,1) = X12 * ballVoxel/rockVoxel;
+            X(i,1) = X12 * (1 - 2 * ballVoxel/rockVoxel);
             % Volume correction based on hole ratio (not used for now)
             % holeRatio = 1 - mean(R);
             % rockVoxel = rockVoxel * holeRatio;     

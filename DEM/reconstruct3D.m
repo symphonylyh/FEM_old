@@ -123,7 +123,8 @@ if rock_mode
     
     voxels = [cubeVoxel sum(AAA(:)) sum(BBB(:)) sum(AAB(:)) sum(ABA(:)) sum(BAA(:)) sum(ABB(:)) sum(BBA(:)) sum(BAB(:))];
     %X12 = (voxel - min([sum(ABB(:)) sum(BBA(:)) sum(BAB(:))]))/voxel;
-    X12 = (voxel - 0.5 * mean([sum(AAB(:)) sum(ABA(:)) sum(BAA(:)) sum(ABB(:)) sum(BBA(:)) sum(BAB(:))]))/voxel;
+    %X12 = 0.25 * (cubeVoxel - sum(AAA(:)) - sum(BBB(:)))/cubeVoxel;
+    X12 = (cubeVoxel - sum(AAA(:)) - sum(BBB(:)))/cubeVoxel;
 end
 
 % ballratio = 8*(2-sqrt(2))/(4/3*3.1415926)

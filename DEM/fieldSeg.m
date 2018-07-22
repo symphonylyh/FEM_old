@@ -157,7 +157,7 @@ SEGMENT = false;
 RECONSTRUCT = true;
 
 % User define folder name here
-inFolderName = './samples/Jul_12_2018/'; 
+inFolderName = './samples/Jul_12_2018_RR5/'; 
 
 %% Single ball case
 % img = imread(fullfile(inFolderName, 'IMG_0443.jpg'));
@@ -403,7 +403,7 @@ if RECONSTRUCT
     end
     
     % Group reconstruction or single reconstruction based on user's option
-    DEBUG = false; object = 3; % designate the object to debug
+    DEBUG = false; object = 1; % designate the object to debug
     if DEBUG
         % Create debug folder or clear existing folder
         debugFolderName = strcat(reconFolderName, 'Debug/');
@@ -420,7 +420,8 @@ if RECONSTRUCT
             %rocks{view} = imresize(rocks{view}, 0.05);
             %balls{view} = imresize(balls{view}, 0.05);
             % D(view) = info(2 * object, view); 
-            D(view) = min(size(balls{view})); % based on minimum dimension
+            %D(view) = min(size(balls{view})); % based on minimum dimension
+            D(view) = 2 * (sum(balls{view}(:)) / 3.1415926)^(1/3);
             %R(view) = info(2 * object - 1, view);
         end
         [rockVoxel, sphericity, cornerPoints, digRatio] = reconstruct3D(rocks, D, DEBUG, true);
@@ -456,6 +457,7 @@ if RECONSTRUCT
         ballVoxels = [];
         voxelComponent = [];
         X = [];
+        rockBallRatio = [];
         for i = 1 : nums
             D = []; % diameters of calibration ball
             R = []; % hole ratios of rock
@@ -463,8 +465,8 @@ if RECONSTRUCT
                 rocks{j} = imread(fullfile(segFolderName, strcat('timg', sprintf('%04d', i), '_', num2str(j - 1), '_rock.png')));
                 balls{j} = imread(fullfile(segFolderName, strcat('timg', sprintf('%04d', i), '_', num2str(j - 1), '_ball.png')));
                 % D(j) = info(2 * i, j); 
-                D(j) = min(size(balls{j})); % options: use equivalent diameter, or the minimum diameter
-                %D(j) = 2 * (sum(balls{j}(:)) / 3.1415926)^(1/3);
+                %D(j) = min(size(balls{j})); % options: use equivalent diameter, or the minimum diameter
+                D(j) = 2 * (sum(balls{j}(:)) / 3.1415926)^(1/3);
                 % R(j) = info(2 * i - 1, j);
             end
             [rockVoxel, sphericity, cornerPoints, digRatio, voxels, X12] = reconstruct3D(rocks, D, DEBUG, true);
@@ -500,7 +502,9 @@ if RECONSTRUCT
             ballVoxels(i, 1) = ballVoxel; 
             voxelComponent(i,:) = voxels;
             %X(i,1) = max(X12,0.8);
-            X(i,1) = X12 * (1 - 10 * ballVoxel/rockVoxel);
+            rockBallRatio(i,1) = rockVoxel/ballVoxel;
+            rockBallRatio(i,2) = X12;
+            %X(i,1) = 1 - X12 * (1 - 10 * ballVoxel/rockVoxel);
             % Volume correction based on hole ratio (not used for now)
             % holeRatio = 1 - mean(R);
             % rockVoxel = rockVoxel * holeRatio;     
@@ -508,8 +512,9 @@ if RECONSTRUCT
         
 %         csvwrite(fullfile(reconFolderName, 'corners.csv'), cornerCounts);
 %         csvwrite(fullfile(reconFolderName, 'ratios.csv'), digRatios);
-%         csvwrite(fullfile(reconFolderName, 'voxels.csv'), [rockVoxels ballVoxels]);
-        csvwrite(fullfile(reconFolderName, 'X.csv'), X);
+          csvwrite(fullfile(reconFolderName, 'voxels.csv'), [rockVoxels ballVoxels]);
+%         csvwrite(fullfile(reconFolderName, 'X.csv'), X);
+          csvwrite(fullfile(reconFolderName, 'rockBallRatio.csv'), rockBallRatio);
 %         csvwrite(fullfile(reconFolderName, 'volumeRatio.csv'), [final_full(:,2)/2.66 volumes (final_full(:,2)/2.66) ./ volumes]);
 %         csvwrite(fullfile(reconFolderName, 'voxelComponent.csv'), voxelComponent);
         
