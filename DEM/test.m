@@ -1,15 +1,39 @@
-inFolderName = './change';
-fnames = getAllFilesInFolder(inFolderName);
-newFolderName = strcat(inFolderName, 'new/');
-if ~exist(newFolderName, 'dir')
-    mkdir(newFolderName);
-end 
+close all;
 
-for i = 1 : length(fnames)
-    [path, name, extension] = fileparts(fnames{i});
-    newFileName = strcat('t', name, extension);
-    movefile(fullfile(inFolderName, fnames{i}), fullfile(newFolderName, newFileName));   
-end
+img = imread('test4.png');
+
+[L,a,b] = rgb2lab(img);
+L = mat2gray(L);
+a = mat2gray(a);
+b = mat2gray(b);
+
+% figure(1); % Figure 2 in paper
+% [ha, pos] = tight_subplot(1,3,[.01 .01],[.01 .01],[.01 .01]);
+% axes(ha(1)), imshow(L), title('L* Channel');
+% axes(ha(2)), imshow(a), title('a* Channel');
+% axes(ha(3)), imshow(b), title('b* Channel');
+% print('./Plot/Lab space.png', '-r300', '-dpng');    
+
+[Bcounts, Bvalues] = imhist(b);
+Bdistribution = cumsum(Bcounts);
+Bpeaks = findchangepts(Bdistribution, 'MaxNumChanges', 20);
+B = Bvalues(Bpeaks(20));
+
+% % Figure 3 in paper
+% figure(2), imshow(b);
+% print('./Plot/b.png', '-r300', '-dpng');  
+% close all;
+% 
+% figure(2), bar(Bvalues, Bcounts), y2 = get(gca, 'ylim'); hold on, plot([B B], y2, '--r', 'LineWidth', 2), grid on, xlabel('Value', 'FontSize', 16, 'FontWeight', 'Bold'), ylabel('Pixel Count', 'FontSize', 16, 'FontWeight', 'Bold');  
+% print('./Plot/Histogram.png', '-r300', '-dpng');  
+% close all;
+% 
+% figure(2), plot(Bvalues, Bdistribution, '-b', 'LineWidth', 2), y2 = get(gca, 'ylim'); hold on, plot([B B], y2, '--r', 'LineWidth', 2), grid on, xlabel('Value', 'FontSize', 16, 'FontWeight', 'Bold'), ylabel('Cumulative Sum', 'FontSize', 16, 'FontWeight', 'Bold');
+% print('./Plot/Cdf.png', '-r300', '-dpng');  
+% close all;
+
+
+
 
 close all;
 PLOT = true;
