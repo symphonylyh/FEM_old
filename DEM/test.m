@@ -14,26 +14,60 @@ b = mat2gray(b);
 % axes(ha(3)), imshow(b), title('b* Channel');
 % print('./Plot/Lab space.png', '-r300', '-dpng');    
 
+[Acounts, Avalues] = imhist(a);
+Adistribution = cumsum(Acounts);
+Apeaks = findchangepts(Adistribution, 'MaxNumChanges', 20); 
+A = Avalues(Apeaks(20));
+
 [Bcounts, Bvalues] = imhist(b);
 Bdistribution = cumsum(Bcounts);
 Bpeaks = findchangepts(Bdistribution, 'MaxNumChanges', 20);
 B = Bvalues(Bpeaks(20));
+B_bg = Bvalues(Bpeaks(10));
 
-% % Figure 3 in paper
-% figure(2), imshow(b);
-% print('./Plot/b.png', '-r300', '-dpng');  
-% close all;
-% 
-% figure(2), bar(Bvalues, Bcounts), y2 = get(gca, 'ylim'); hold on, plot([B B], y2, '--r', 'LineWidth', 2), grid on, xlabel('Value', 'FontSize', 16, 'FontWeight', 'Bold'), ylabel('Pixel Count', 'FontSize', 16, 'FontWeight', 'Bold');  
+% % Figure 3 in paper 
+% figure(2), bar(Bvalues, Bcounts, 'FaceColor', [0.6 0.6 0.6]), y2 = get(gca, 'ylim'); hold on, plot([B B], y2, '--', 'Color', [1 0.6 0], 'LineWidth', 2), plot([B_bg B_bg], y2, '--b', 'LineWidth', 2), grid on, xlabel('Value', 'FontSize', 16, 'FontWeight', 'Bold'), ylabel('Pixel Count', 'FontSize', 16, 'FontWeight', 'Bold');  
 % print('./Plot/Histogram.png', '-r300', '-dpng');  
 % close all;
 % 
-% figure(2), plot(Bvalues, Bdistribution, '-b', 'LineWidth', 2), y2 = get(gca, 'ylim'); hold on, plot([B B], y2, '--r', 'LineWidth', 2), grid on, xlabel('Value', 'FontSize', 16, 'FontWeight', 'Bold'), ylabel('Cumulative Sum', 'FontSize', 16, 'FontWeight', 'Bold');
+% figure(2), plot(Bvalues, Bdistribution, '-b', 'LineWidth', 2, 'Color', [0.5 0.5 0.5]), y2 = get(gca, 'ylim'); hold on, plot([B B], y2, '--', 'LineWidth', 2, 'Color', [1 0.6 0]), plot([B_bg B_bg], y2, '--b', 'LineWidth', 2), grid on, xlabel('Value', 'FontSize', 16, 'FontWeight', 'Bold'), ylabel('Cumulative Sum', 'FontSize', 16, 'FontWeight', 'Bold');
 % print('./Plot/Cdf.png', '-r300', '-dpng');  
 % close all;
 
+sigma = 2;
+dist = mat2gray(abs(b - B).^2.0);
+dist_erode = imerode(dist, strel('disk', 2 * sigma)); % erosion is essentially a local-minima convolution kernal, it assign the minimum pixel in the window to the center pixel. Dilation is local-maxima opeartor. This is true for both grayscale and binary image. 
+dist_reconstruct = imreconstruct(dist_erode, dist); % image reconstruction is like given a seed location, and dilate many times until it is similar to the target, imreconstruct(seed, target). usually seed is got by erosion (by focusing on the highlight part), and target is usually just the original image. The result is a smoothed/denoised shape-preserving image.
+dist_dilate = imdilate(dist_reconstruct, strel('disk', 2 * sigma));
+dist_reconstruct = imreconstruct(imcomplement(dist_dilate), imcomplement(dist_reconstruct)); % imreconstruct works on light pixels, so should use complement image
+dist_reconstruct = imcomplement(dist_reconstruct);
 
+% figure(2), imshowpair(b, dist_reconstruct, 'montage');
+% print('./Plot/dist.png', '-r300', '-dpng'); 
 
+dist = dist_reconstruct;
+T = adaptthresh(dist, 0.4, 'ForegroundPolarity', 'dark'); % Adaptive thresholding is awesome!! 0.1 is sensitivity to distinguish background & foreground old: bw = ~imbinarize(dist, 0.1);
+bw = ~imbinarize(dist, T); % adaptive threshold
+bw = ~imbinarize(dist, 0.22);
+bw_prev = bw;
+
+[h,w] = size(img);
+bw = imerode(bw, strel('disk', 4 * sigma)); % imdilate's correspondence
+bw = imdilate(bw, strel('disk', 4 * sigma)); % obtain a closed boundary
+bw = imfill(bw, 4, 'holes'); % fill holes inside a connected region, 8-connected is more strict and fill fewer holes
+%bw = imerode(bw, strel('disk', 2 * sigma)); % imdilate's correspondence
+bw = imopen(bw, strel('disk', 2 * sigma)); % open: open holes (or remove objects), erode + dilate
+bw = bwareaopen(bw, ceil(h/50) * ceil(w/50), 4); % remove small object
+bw = imclearborder(bw, 8);
+
+imshowpair(bw_prev, bw, 'montage');
+print('./Plot/threshold.png', '-r300', '-dpng'); 
+
+% imshow(img);
+% bd = bwperim(bw);
+% hold on;
+% visboundaries(bd, 'LineWidth', 1);
+% print('./Plot/segmentation.png', '-r300', '-dpng'); 
 
 close all;
 PLOT = true;
