@@ -14,6 +14,7 @@ voxel = 1;
 sphericity = 1;
 cornerPoints = 1;
 digRatio = 1;
+voxels = 1;
 X12 = 1;
 close all;
 

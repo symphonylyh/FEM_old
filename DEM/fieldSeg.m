@@ -157,7 +157,7 @@ SEGMENT = false;
 RECONSTRUCT = true;
 
 % User define folder name here
-inFolderName = './samples/Jul_12_2018_RR5/'; 
+inFolderName = './samples/Jun_30_2018/'; 
 
 %% Single ball case
 % img = imread(fullfile(inFolderName, 'IMG_0443.jpg'));
@@ -466,13 +466,20 @@ if RECONSTRUCT
                 balls{j} = imread(fullfile(segFolderName, strcat('timg', sprintf('%04d', i), '_', num2str(j - 1), '_ball.png')));
                 % D(j) = info(2 * i, j); 
                 %D(j) = min(size(balls{j})); % options: use equivalent diameter, or the minimum diameter
-                D(j) = 2 * (sum(balls{j}(:)) / 3.1415926)^(1/3);
+                D(j) = 2 * (sum(balls{j}(:)) / 3.1415926)^(1/2);
                 % R(j) = info(2 * i - 1, j);
             end
-            [rockVoxel, sphericity, cornerPoints, digRatio, voxels, X12] = reconstruct3D(rocks, D, DEBUG, true);
+            [rockVoxel, sphericity, cornerPoints, digRatio, voxels, X12] = reconstruct3D(rocks, D, DEBUG, false);
             %voxel(i) = rockVoxel;
             %remove = cat(1, remove, removal);
             [ballVoxel, sphericity] = reconstruct3D(balls, D, DEBUG, false);
+            % new calculation
+            r_ball = D(1) / 2;
+            t = (rockVoxel/ballVoxel)^(1/3);
+            c2 = (1-(1-1/t)*1/(r_ball+1))^3;
+            rockVoxel = rockVoxel * c2 * 0.98;
+            rockVolume =  rockVoxel / ballVoxel * 8 * (2 - sqrt(2)) * 0.75^3 * 16.3871;
+       
             % Options for the calibration ball volume: 
             % 1. Actual 1 in. ball volume is 4/3*PI*R^3 = 0.523599 in3
             % use the ball diameter in top view to compute volume from the
@@ -509,12 +516,12 @@ if RECONSTRUCT
             % holeRatio = 1 - mean(R);
             % rockVoxel = rockVoxel * holeRatio;     
         end
-        
+        csvwrite(fullfile(reconFolderName, 'volumes.csv'), volumes);
 %         csvwrite(fullfile(reconFolderName, 'corners.csv'), cornerCounts);
 %         csvwrite(fullfile(reconFolderName, 'ratios.csv'), digRatios);
-          csvwrite(fullfile(reconFolderName, 'voxels.csv'), [rockVoxels ballVoxels]);
+%           csvwrite(fullfile(reconFolderName, 'voxels.csv'), [rockVoxels ballVoxels]);
 %         csvwrite(fullfile(reconFolderName, 'X.csv'), X);
-          csvwrite(fullfile(reconFolderName, 'rockBallRatio.csv'), rockBallRatio);
+%           csvwrite(fullfile(reconFolderName, 'rockBallRatio.csv'), rockBallRatio);
 %         csvwrite(fullfile(reconFolderName, 'volumeRatio.csv'), [final_full(:,2)/2.66 volumes (final_full(:,2)/2.66) ./ volumes]);
 %         csvwrite(fullfile(reconFolderName, 'voxelComponent.csv'), voxelComponent);
         
