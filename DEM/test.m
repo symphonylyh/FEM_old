@@ -1,4 +1,12 @@
 close all;
+img = im2double(imread('1.JPG'));
+img = img(:, 134:666, :);
+img_ = imrotate(img, -90);
+
+C = zeros([1333 1333 3]);
+C(1:800, 1:533, :) = img;
+C(801:end, 1:800, :) = img_;
+imwrite(C, '2.png');
 
 img = imread('test4.png');
 

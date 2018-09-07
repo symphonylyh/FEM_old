@@ -19,7 +19,7 @@ X12 = 1;
 close all;
 
 PLOT = debug_mode;
-PLOT = false;
+PLOT = true;
 ROCK = rock_mode;
 ROCK = false;
 
@@ -386,6 +386,7 @@ view(3);
         volume = flip(volume, 1); % flip x and y
         volume = flip(volume, 2);
         volume = permute(volume, [1 3 2]); % exchange y and z
+        volume = padarray(volume, [2 2 2], 0, 'both'); % pad array to fill the holes when visualization
         v = double(volume);
         v = smooth3(v);
         p = patch( isosurface(v,0) );                 %# create isosurface patch

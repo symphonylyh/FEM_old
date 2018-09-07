@@ -157,7 +157,7 @@ SEGMENT = false;
 RECONSTRUCT = true;
 
 % User define folder name here
-inFolderName = './samples/Jun_30_2018/'; 
+inFolderName = './samples/Jul_12_2018/'; 
 
 %% Single ball case
 % img = imread(fullfile(inFolderName, 'IMG_0443.jpg'));
@@ -403,7 +403,7 @@ if RECONSTRUCT
     end
     
     % Group reconstruction or single reconstruction based on user's option
-    DEBUG = false; object = 1; % designate the object to debug
+    DEBUG = true; object = 11; % designate the object to debug
     if DEBUG
         % Create debug folder or clear existing folder
         debugFolderName = strcat(reconFolderName, 'Debug/');
