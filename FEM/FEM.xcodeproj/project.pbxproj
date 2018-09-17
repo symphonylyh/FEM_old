@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FB0E371E214F2D0F003921E9 /* BackAnalysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB0E371D214F2D0F003921E9 /* BackAnalysis.cpp */; };
 		FB2060E62044B43B00331FEA /* Analysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB2060E52044B43B00331FEA /* Analysis.cpp */; };
 		FB2060E92044B57100331FEA /* Linear.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB2060E82044B57100331FEA /* Linear.cpp */; };
 		FB773107209372A900A8273A /* Material.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB773106209372A900A8273A /* Material.cpp */; };
@@ -39,6 +40,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		FB0E371A214F2CC6003921E9 /* BackAnalysis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BackAnalysis.h; sourceTree = "<group>"; };
+		FB0E371D214F2D0F003921E9 /* BackAnalysis.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BackAnalysis.cpp; sourceTree = "<group>"; };
 		FB2060E52044B43B00331FEA /* Analysis.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Analysis.cpp; sourceTree = "<group>"; };
 		FB2060E72044B45200331FEA /* Analysis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Analysis.h; sourceTree = "<group>"; };
 		FB2060E82044B57100331FEA /* Linear.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Linear.cpp; sourceTree = "<group>"; };
@@ -441,6 +444,8 @@
 				FBB55DC620B11B0D006AC306 /* LinearElastic.h */,
 				FBB55DC720B11B2A006AC306 /* NonlinearElastic.cpp */,
 				FBB55DC920B11B39006AC306 /* NonlinearElastic.h */,
+				FB0E371A214F2CC6003921E9 /* BackAnalysis.h */,
+				FB0E371D214F2D0F003921E9 /* BackAnalysis.cpp */,
 			);
 			path = FEM;
 			sourceTree = "<group>";
@@ -1149,6 +1154,7 @@
 				FBA7F8B52027F55B00BA5297 /* Node.cpp in Sources */,
 				FBB55DC320B0E88E006AC306 /* Nonlinear.cpp in Sources */,
 				FB773107209372A900A8273A /* Material.cpp in Sources */,
+				FB0E371E214F2D0F003921E9 /* BackAnalysis.cpp in Sources */,
 				FB2060E92044B57100331FEA /* Linear.cpp in Sources */,
 				FB2060E62044B43B00331FEA /* Analysis.cpp in Sources */,
 				FBE4BE11202FFB8900DC83C8 /* ElementQ4.cpp in Sources */,

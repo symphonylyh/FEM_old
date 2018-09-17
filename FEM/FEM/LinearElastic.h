@@ -17,6 +17,16 @@ class LinearElastic : public Material
     /** See the documentation of base class Material. */
     LinearElastic(const bool & anisotropy, const bool & nonlinearity, const bool & noTension, const std::vector<double> & properties);
     ~LinearElastic();
+
+    void adjustModulus(const double & ratio); // Used in back analysis scheme
+
+  protected:
+    double v; // Used in back analysis scheme
+    double vr;
+    double vz;
+    double Mr;
+    double Mz;
+    double G;
 };
 
 #endif /* LinearElastic_h */

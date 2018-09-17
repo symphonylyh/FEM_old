@@ -45,6 +45,13 @@ class Material
     const double & modulus() const;
 
     /**
+     * Adjust the modulus by ratio. Used in back analysis scheme.
+     *
+     * @param ratio The ratio for adjustment. Negative values means decrease and vice versa.
+     */
+    virtual void adjustModulus(const double & ratio);
+
+    /**
      * Get the stress-strain constitutive matrix of the element.
      *
      * @return The 4-by-4 E matrix.

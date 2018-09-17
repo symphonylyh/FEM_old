@@ -13,6 +13,7 @@
 
 #include "Linear.h"
 #include "Nonlinear.h"
+#include "BackAnalysis.h"
 #include "IO.h" //#include "Matrix/src/Core/IO.h" // to change the folder name, you can just change in Node.h and Shape.h into "include Matrix/Eigen"
 
 int main() {
@@ -135,10 +136,11 @@ int main() {
     // outFileName += ".txt";
 
 auto start = std::chrono::high_resolution_clock::now();
-    Analysis* case1 = new Nonlinear(inFileName);
+    // Analysis* case1 = new Nonlinear(inFileName);
+    Analysis* case1 = new BackAnalysis(inFileName);
     case1->solve();
 
-    // case1->printDisp();
+    case1->printDisp();
     // case1->printStrain();
     // case1->printStress();
     // case1->writeToFile(outFileName);

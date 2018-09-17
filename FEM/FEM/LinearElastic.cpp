@@ -16,7 +16,15 @@ LinearElastic::LinearElastic(const bool & anisotropy, const bool & nonlinearity,
     if (!anisotropy) {
         // Isotropic: Modulus, Poisson's ratio, body force (r,z), thermal coefficient, temperature change
         double M = properties[i++];
-        double v = properties[i++];
+        // Previous:
+        // double v = properties[i++];
+        // Now when used in back analysis scheme, poisson's ratio becomes a protected member variable of LinearElastic class.
+        v = properties[i++];
+        vr = 0; // silence warning
+        vz = 0; // silence warning
+        Mr = 0; // silence warning
+        Mz = 0; // silence warning
+        G = 0; // silence warning
 
         modulus_ = M;
         // Compute the stress-strain constitutive matrix
@@ -28,11 +36,12 @@ LinearElastic::LinearElastic(const bool & anisotropy, const bool & nonlinearity,
     }
     else {
         // Cross-anisotropic: Modulus R, Modulus Z, Poisson's ratio R, Poisson's ratio Z, Shear Modulus G, body force (r,z), thermal coefficient, temperature change
-        double Mr = properties[i++];
-        double Mz = properties[i++];
-        double vr = properties[i++];
-        double vz = properties[i++];
-        double G = properties[i++];
+        /* double */ Mr = properties[i++]; // see above
+        /* double */ Mz = properties[i++]; // see above
+        /* double */ vr = properties[i++]; // see above
+        /* double */ vz = properties[i++]; // see above
+        /* double */ G = properties[i++]; // see above
+        v = 0; // silence warning
 
         // Helper coefficients
         double n = Mr / Mz;
@@ -60,4 +69,37 @@ LinearElastic::LinearElastic(const bool & anisotropy, const bool & nonlinearity,
 
 LinearElastic::~LinearElastic()
 {
+}
+
+void LinearElastic::adjustModulus(const double & ratio)
+{
+    // Just imitate the constructor
+    if (!anisotropy) {
+        // Isotropic: just modify modulus and update E matrix
+        modulus_ *= (1 + ratio);
+        // Compute the stress-strain constitutive matrix
+        E_ << 1 - v, v, v, 0,
+              v,   1-v, v, 0,
+              v,   v,  1-v, 0,
+              0,  0,    0,  (1-2*v)/2;
+        E_ = E_ * modulus_ / (1+v) /(1-2*v);
+    }
+    else {
+        // Cross-anisotropic: modify Modulus R, Modulus Z, Shear Modulus G
+        Mr *= (1 + ratio);
+        Mz *= (1 + ratio);
+        G *= (1 + ratio);
+
+        // Helper coefficients
+        double n = Mr / Mz;
+        double m = G / Mz;
+        double A = Mz / (1 + vr) / (1 - vr - 2 * n * vz * vz);
+
+        // Compute the stress-strain constitutive matrix
+        E_ << n * (1 - n * vz * vz), n * (vr + n * vz * vz), n * vz * (1 + vr), 0,
+              n * (vr + n * vz * vz), n * (1 - n * vz * vz), n * vz * (1 + vr), 0,
+              n * vz * (1 + vr), n * vz * (1 + vr), 1 - vr * vr, 0,
+              0, 0, 0, m * (1 + vr) * (1 - vr - 2 * n * vz * vz);
+        E_ = E_ * A;
+    }
 }

@@ -22,6 +22,11 @@ const double & Material::modulus() const
     return modulus_;
 }
 
+void Material::adjustModulus(const double & ratio)
+{
+    return; 
+}
+
 const MatrixXd & Material::EMatrix() const
 {
     return E_;
