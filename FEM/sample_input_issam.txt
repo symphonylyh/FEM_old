@@ -34,7 +34,7 @@
 // Line 2: The assigned layer property values (Modulus, Poisson's ratio, body force (r,z), thermal coefficient, temperature change)
 // if cross-anisotropic, (Horizontal Modulus, Vertical Modulus, Horizontal Poisson's ratio, Vertical Poisson's ratio, Shear Modulus, body force (r,z), thermal coeff, temperature change)
 0 100 0 0 0
-30000 0.3 0 -0.0807 6.5e-6 0
+300000 0.3 0 -0.0807 6.5e-6 0
 101 200 1 0 0
 6750.000000 45000.000000 0.150000 0.450000 15734.000000 0 0 6.5e-6 0
 201 300 0 0 0

@@ -120,9 +120,9 @@ int main() {
     //--------------------------------Main program------------------------------
     //--------------------------------------------------------------------------
     // Get file name
-    std::string inFileName = "../Input/input_triaxial.txt";
+    std::string inFileName = "../Input/input_issam.txt";
     std::string outFileName = "../Output/output_889_3layer_nonlinear.txt";
-    std::string outVTKName = "../Output/input_triaxial.vtk";
+    std::string outVTKName = "../Output/input_issam.vtk";
     //
     // std::cout << "Enter the input file name: ";
     // std::string inFileName;
@@ -140,11 +140,11 @@ auto start = std::chrono::high_resolution_clock::now();
     Analysis* case1 = new BackAnalysis(inFileName);
     case1->solve();
 
-    case1->printDisp();
+    // case1->printDisp();
     // case1->printStrain();
     // case1->printStress();
     // case1->writeToFile(outFileName);
-    // case1->writeToVTK(outVTKName);
+    case1->writeToVTK(outVTKName);
 
     delete case1; case1 = NULL;
 
