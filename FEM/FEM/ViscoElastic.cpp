@@ -2,7 +2,7 @@
  * @file ViscoElastic.cpp
  * Implementation of ViscoElastic class.
  *
- * @author Haohang Huang
+ * @author Jiayi Luo
  * @date May 19, 2018
  */
 
@@ -22,7 +22,7 @@ ViscoElastic::ViscoElastic(const bool & anisotropy, const bool & nonlinearity, c
 
     // All the following are the temporary values.
     // G_array and K_array are supposed to be the same length.
-    double G_array[] = {0.362,0.363,0.177,0.074,0.017,0.006}; 
+    double G_array[] = {0.362,0.363,0.177,0.074,0.017,0.006};
     std::vector<double> G (G_array, G_array + sizeof(G_array) / sizeof(double) );
     double K_array[] = {0.362,0.363,0.177,0.074,0.017,0.006};
     std::vector<double> K (K_array, K_array + sizeof(K_array) / sizeof(double) );
@@ -42,7 +42,7 @@ ViscoElastic::ViscoElastic(const bool & anisotropy, const bool & nonlinearity, c
           v, 1 - v, v, 0,
           v, v, 1 - v, 0,
           0,  0,   0,  (1-2*v)/2;
-    E_ = E_ * modulus_ / (1+v) /(1-2*v); 
+    E_ = E_ * modulus_ / (1+v) /(1-2*v);
 
     // Assign body force (unit weight)
     bodyForce_ << properties[i], properties[i+1];

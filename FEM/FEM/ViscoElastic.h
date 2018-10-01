@@ -2,7 +2,7 @@
  * @file ViscoElastic.h
  * Derived class from Material for viscoelastic materials.
  *
- * @author Haohang Huang
+ * @author Jiayi Luo
  * @date May 19, 2018
  */
 
