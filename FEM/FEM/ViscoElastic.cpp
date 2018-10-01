@@ -2,7 +2,7 @@
  * @file ViscoElastic.cpp
  * Implementation of ViscoElastic class.
  *
- * @author Haohang Huang
+ * @author Haohang Huang111
  * @date May 19, 2018
  */
 
