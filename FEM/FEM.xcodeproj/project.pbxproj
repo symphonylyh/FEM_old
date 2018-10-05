@@ -413,8 +413,6 @@
 		FBA7F8AB2027F50400BA5297 /* FEM */ = {
 			isa = PBXGroup;
 			children = (
-				FBAA12442162C90D0085842D /* ViscoElastic.cpp */,
-				FBAA12432162C90D0085842D /* ViscoElastic.h */,
 				FBA7FA102027F78B00BA5297 /* Eigen */,
 				FBA7F8AC2027F50400BA5297 /* main.cpp */,
 				FBA7F8B62027F57300BA5297 /* Element.cpp */,
@@ -449,6 +447,8 @@
 				FBB55DC620B11B0D006AC306 /* LinearElastic.h */,
 				FBB55DC720B11B2A006AC306 /* NonlinearElastic.cpp */,
 				FBB55DC920B11B39006AC306 /* NonlinearElastic.h */,
+				FBAA12432162C90D0085842D /* ViscoElastic.h */,
+				FBAA12442162C90D0085842D /* ViscoElastic.cpp */,
 				FB0E371A214F2CC6003921E9 /* BackAnalysis.h */,
 				FB0E371D214F2D0F003921E9 /* BackAnalysis.cpp */,
 			);

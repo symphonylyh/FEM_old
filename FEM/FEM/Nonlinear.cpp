@@ -91,16 +91,16 @@ if (incremental) {
         solver.compute(globalStiffness);
         nodalDisp = solver.solve(nodalForce);
 
-        std::cout << "Body Force Increment No." << ic << ", Total iterations = " << count << std::endl;
+        // std::cout << "Body Force Increment No." << ic << ", Total iterations = " << count << std::endl;
         // std::cout << "Nodal Displacement: ";
         // std::cout << std::endl;
         // for (int i = 0; i < mesh.nodeCount(); i++) {
         //   std::cout << "Node " << i << " : " << nodalDisp(2 * i) << " " << nodalDisp(2 * i + 1) << std::endl;
         // }
         // std::cout << std::endl;
-        std::cout << "-----------------------------------------" << std::endl;
+        // std::cout << "-----------------------------------------" << std::endl;
     }
-    std::cout << "Material load applied! \n" << std::endl;
+    // std::cout << "Material load applied! \n" << std::endl;
 
     // Should note the possible numerical error by dividing the increments, e.g.,
     // x / 5 * 5 might not be exactly the same number
@@ -133,7 +133,7 @@ if (incremental) {
             nodalDisp = solver.solve(nodalForce);
 
             // Traverse each element, compute stress at Gaussian points, and update the modulus for the next (i + 1) iteration (if current iteration is i)
-            nonlinearConvergence = nonlinearIteration(0.3);
+            nonlinearConvergence = nonlinearIteration(0.15);
 
             count++;
         }
@@ -145,10 +145,10 @@ if (incremental) {
         solver.compute(globalStiffness);
         nodalDisp = solver.solve(nodalForce);
 
-        std::cout << "Traffic Load Increment No." << ic << ", Total iterations = " << count << std::endl;
-        std::cout << "-----------------------------------------" << std::endl;
+        // std::cout << "Traffic Load Increment No." << ic << ", Total iterations = " << count << std::endl;
+        // std::cout << "-----------------------------------------" << std::endl;
     }
-    std::cout << "Traffic load applied! \n" << std::endl;
+    // std::cout << "Traffic load applied! \n" << std::endl;
 
     // -----------------------------------------------------------------------------
     // ----------------- End of Incremental Loading Scheme -------------------------
@@ -162,7 +162,7 @@ else {
     int i = 0; // for debug print only
     while (!nonlinearConvergence) { // convergence criteria
     //for (int i = 0; i < 10; i++) {
-        std::cout << "Nonlinear Iteration No." << i++ << std::endl;
+        // std::cout << "Nonlinear Iteration No." << i++ << std::endl;
         // Assemble the K and F based on the mesh information. At 1st iteration, the initial guess modulus M0 will be used; later on at iteration i, the stress-dependent modulus updated from (i - 1) iteratiion will be used
         applyForce();
         assembleStiffness();
@@ -197,7 +197,7 @@ else {
     i = 0;
     while (!tensionConvergence) { // convergence criteria
     // for (int i = 0; i < 2; i++) { // for debug print only
-        std::cout << "Tension Iteration No." << i++ << std::endl;
+        // std::cout << "Tension Iteration No." << i++ << std::endl;
         // Solve K U = F
         // Note 1: the above nonlinear iteration scheme is iteratively solving a
         // series of linear elastic cases, where K should be updated every time.
@@ -300,10 +300,10 @@ bool Nonlinear::nonlinearIteration(double damping)
                 // Convergence criteria
                 // Criteria 1: modulus stabilize within 5% at all Gaussian points (less strict criteria only checks the center Gaussian point)
                 double error = std::abs(modulus - modulus_new);
-                if (/*g == 4 && */error / modulus_old > 0.05) // tutu uses modulus_old, but I want to use modulus
+                if (g == 4 && error / modulus_old > 0.05) // tutu uses modulus_old, but I want to use modulus
                     convergence = false;
                 // Criteraia 2: Accumulative modulus error within 0.2%
-                if (/*g == 4*/true) { // less strict convergence criteria
+                if (g == 4/*true*/) { // less strict convergence criteria
                     sumError += error * error;
                     sumModulus += modulus_old * modulus_old; // tutu uses modulus_old, but I want to use modulus
                 }
@@ -314,16 +314,17 @@ bool Nonlinear::nonlinearIteration(double damping)
                     // std::cout << "E: " << material->EMatrix(modulus_old) << std::endl;
                     // std::cout << "cylindrical stress: " << stress.transpose() << std::endl;
                     // std::cout << "principal stress: " << principalStress(stress).transpose() << std::endl;
-                    std::cout << "Old modulus: " << modulus_old << std::endl;
-                    std::cout << "New modulus: " << modulus_new << std::endl;
-                    std::cout << "True modulus: " << modulus << std::endl;
+
+                    // std::cout << "Old modulus: " << modulus_old << std::endl;
+                    // std::cout << "New modulus: " << modulus_new << std::endl;
+                    // std::cout << "True modulus: " << modulus << std::endl;
                 }
             }
 
         }
 
     }
-    std::cout << "Sum Error: " << sumError / sumModulus << std::endl;
+    // std::cout << "Sum Error: " << sumError / sumModulus << std::endl;
     //std::cout << "Modulus Element No.1: " << mesh.elementArray()[1]->modulusAtGaussPt(1) << std::endl;
     return (sumError / sumModulus < 0.002 && convergence) ? true : false;
 

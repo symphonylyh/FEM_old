@@ -120,9 +120,10 @@ int main() {
     //--------------------------------Main program------------------------------
     //--------------------------------------------------------------------------
     // Get file name
-    std::string inFileName = "../Input/input_issam.txt";
-    std::string outFileName = "../Output/output_889_3layer_nonlinear.txt";
-    std::string outVTKName = "../Output/input_issam.vtk";
+    // std::string inFileName = "../Input/input_triaxial.txt";
+    std::string inFileName = "../Input/Triaxial/3_6.txt";
+    std::string outFileName = "../Output/Triaxial/3_6.txt";
+    std::string outVTKName = "../Output/Triaxial/3_6.vtk";
     //
     // std::cout << "Enter the input file name: ";
     // std::string inFileName;
@@ -134,11 +135,18 @@ int main() {
     // std::getline(std::cin, outFileName);
     // std::string outVTKName = outFileName + ".vtk";
     // outFileName += ".txt";
-
+    std::string triaxial[32] = {"3_3", "3_6", "3_9", "3_12", "5_5", "5_10", "5_15", "5_20", "10_5", "10_10", "10_15", "10_20", "10_25", "10_30", "10_35", "15_5", "15_10", "15_15", "15_20", "15_25", "15_30", "15_35", "20_5", "20_10", "20_15", "20_20", "20_25", "20_30", "20_35", "20_40", "20_45", "20_50"};
 auto start = std::chrono::high_resolution_clock::now();
+    for (size_t i = 0; i < 32; i++) {
+        std::cout << triaxial[i] << std::endl;
+        Analysis* case1 = new Nonlinear("../Input/Triaxial/" + triaxial[i] + ".txt");
+        case1->solve();
+        std::cout << std::endl;
+    }
+    //
     // Analysis* case1 = new Nonlinear(inFileName);
-    Analysis* case1 = new BackAnalysis(inFileName);
-    case1->solve();
+    // // Analysis* case1 = new BackAnalysis(inFileName);
+    // case1->solve();
 
     // case1->printDisp();
     // case1->printStrain();
@@ -146,7 +154,7 @@ auto start = std::chrono::high_resolution_clock::now();
     // case1->writeToFile(outFileName);
     // case1->writeToVTK(outVTKName);
 
-    delete case1; case1 = NULL;
+    // delete case1; case1 = NULL;
 
 auto finish = std::chrono::high_resolution_clock::now();
 auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
