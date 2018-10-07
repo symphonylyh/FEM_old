@@ -138,10 +138,10 @@ int main() {
     std::string triaxial[32] = {"3_3", "3_6", "3_9", "3_12", "5_5", "5_10", "5_15", "5_20", "10_5", "10_10", "10_15", "10_20", "10_25", "10_30", "10_35", "15_5", "15_10", "15_15", "15_20", "15_25", "15_30", "15_35", "20_5", "20_10", "20_15", "20_20", "20_25", "20_30", "20_35", "20_40", "20_45", "20_50"};
 auto start = std::chrono::high_resolution_clock::now();
     for (size_t i = 0; i < 32; i++) {
-        std::cout << triaxial[i] << std::endl;
+        // std::cout << triaxial[i] << std::endl;
         Analysis* case1 = new Nonlinear("../Input/Triaxial/" + triaxial[i] + ".txt");
         case1->solve();
-        std::cout << std::endl;
+        // std::cout << std::endl;
     }
     //
     // Analysis* case1 = new Nonlinear(inFileName);

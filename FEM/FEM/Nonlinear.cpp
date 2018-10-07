@@ -239,10 +239,11 @@ else {
     mesh.nodeArray()[70]->getDisp()(1) +
     mesh.nodeArray()[71]->getDisp()(1) +
     mesh.nodeArray()[72]->getDisp()(1) ) / 7;
-    std::cout << "Axial strain (average): " << - (strain1 - strain2) / 6 << std::endl; // "-" is compressive, "+" is tensile, so reverse the sign
-    std::cout << "Axial strain (point): " << - (mesh.nodeArray()[28]->getDisp()(1) - mesh.nodeArray()[72]->getDisp()(1)) / 6 << std::endl;
-    std::cout << "Displacement (upper clamp): " << mesh.nodeArray()[28]->getDisp()(1) << std::endl;
-    std::cout << "Displacement (lower clamp): " << mesh.nodeArray()[72]->getDisp()(1) << std::endl;
+    // std::cout << "Axial strain (average): " << - (strain1 - strain2) / 6 << std::endl; // "-" is compressive, "+" is tensile, so reverse the sign
+    // std::cout << "Axial strain (point): " << - (mesh.nodeArray()[28]->getDisp()(1) - mesh.nodeArray()[72]->getDisp()(1)) / 6 << std::endl;
+    // std::cout << "Displacement (upper clamp): " << mesh.nodeArray()[28]->getDisp()(1) << std::endl;
+    // std::cout << "Displacement (lower clamp): " << mesh.nodeArray()[72]->getDisp()(1) << std::endl;
+    std::cout << mesh.nodeArray()[28]->getDisp()(1) << " " << mesh.nodeArray()[72]->getDisp()(1) << std::endl;
 }
 
 bool Nonlinear::nonlinearIteration(double damping)
@@ -300,10 +301,10 @@ bool Nonlinear::nonlinearIteration(double damping)
                 // Convergence criteria
                 // Criteria 1: modulus stabilize within 5% at all Gaussian points (less strict criteria only checks the center Gaussian point)
                 double error = std::abs(modulus - modulus_new);
-                if (g == 4 && error / modulus_old > 0.05) // tutu uses modulus_old, but I want to use modulus
+                if (/*g == 4 && */error / modulus_old > 0.05) // tutu uses modulus_old, but I want to use modulus
                     convergence = false;
                 // Criteraia 2: Accumulative modulus error within 0.2%
-                if (g == 4/*true*/) { // less strict convergence criteria
+                if (/*g == 4*/true) { // less strict convergence criteria
                     sumError += error * error;
                     sumModulus += modulus_old * modulus_old; // tutu uses modulus_old, but I want to use modulus
                 }
