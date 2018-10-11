@@ -416,21 +416,21 @@ bool Nonlinear::noTensionIteration()
 
 VectorXd Nonlinear::principalStress(const VectorXd & stress) const
 {
-    // MatrixXd tensor(3,3);
-    // tensor << stress(0), 0, stress(3),
-    //           0, stress(1), 0,
-    //           stress(3), 0, stress(2);
-    // SelfAdjointEigenSolver<MatrixXd> es(tensor, EigenvaluesOnly);
-    // return es.eigenvalues();
+    MatrixXd tensor(3,3);
+    tensor << -stress(0), 0, -stress(3),
+              0, -stress(1), 0,
+              -stress(3), 0, -stress(2);
+    SelfAdjointEigenSolver<MatrixXd> es(tensor, EigenvaluesOnly);
+    return es.eigenvalues();
 
     // Tutu's approach
-    VectorXd result(3);
-    double radius = std::sqrt( (stress(0) - stress(2)) * (stress(0) - stress(2)) / 4 + stress(3) * stress(3) ); // sqrt{ [(s1 - s3)/2]^2 + tau^2 }
-    double sigma1 = (stress(0) + stress(2)) / 2 + radius;
-    double sigma2 = stress(1);
-    double sigma3 = (stress(0) + stress(2)) / 2 - radius;
-    if (sigma2 < sigma3)
-        std::swap(sigma2, sigma3);
-    result << sigma3, sigma2, sigma1;
-    return result;
+    // VectorXd result(3);
+    // double radius = std::sqrt( (stress(0) - stress(2)) * (stress(0) - stress(2)) / 4 + stress(3) * stress(3) ); // sqrt{ [(s1 - s3)/2]^2 + tau^2 }
+    // double sigma1 = (stress(0) + stress(2)) / 2 + radius;
+    // double sigma2 = stress(1);
+    // double sigma3 = (stress(0) + stress(2)) / 2 - radius;
+    // if (sigma2 < sigma3)
+    //     std::swap(sigma2, sigma3);
+    // result << sigma3, sigma2, sigma1;
+    // return result;
 }
