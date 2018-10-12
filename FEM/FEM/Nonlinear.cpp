@@ -417,9 +417,9 @@ bool Nonlinear::noTensionIteration()
 VectorXd Nonlinear::principalStress(const VectorXd & stress) const
 {
     MatrixXd tensor(3,3);
-    tensor << -stress(0), 0, -stress(3),
-              0, -stress(1), 0,
-              -stress(3), 0, -stress(2);
+    tensor << stress(0), 0, stress(3),
+              0, stress(1), 0,
+              stress(3), 0, stress(2);
     SelfAdjointEigenSolver<MatrixXd> es(tensor, EigenvaluesOnly);
     return es.eigenvalues();
 

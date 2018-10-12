@@ -103,14 +103,20 @@ void Mesh::readFromFile(std::string const & fileName)
     for (int i = 0; i < elementProperties; i++) {
         std::getline(file, readLine);
         std::vector<int> range;
-        parseLine(readLine, range);
+        parseLine(readLine, range); // range will store 0 4 1 0 0
         layerMap[range[0]] = i; // record the lower bound of the range
         std::getline(file, readLine);
         parseLine(readLine, elementProperty);
         if (range[3] == 0) // linear elastic
             materialList.push_back(new LinearElastic(range[2], range[3], range[4], elementProperty)); // dynamically allocated, remember to delete in destructor!
-        else // nonlinear elastic
+        else { // nonlinear elastic
+            // for nonlinear layer it should read one more line about the material model parameters
+            std::getline(file, readLine);
+            std::vector<double> nonlinearModel;
+            parseLine(readLine, nonlinearModel);
+            elementProperty.insert(elementProperty.end(), nonlinearModel.begin(), nonlinearModel.end()); // append two lines
             materialList.push_back(new NonlinearElastic(range[2], range[3], range[4], elementProperty));
+        }
         // 0 if isotropic, 1 if cross-anisotropic; 0 if linear elastic, 1 if nonlinear elastic; 0 if normal material, 1 if no-tension material.
     }
     std::vector<double>().swap(elementProperty);

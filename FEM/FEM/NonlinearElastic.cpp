@@ -12,6 +12,7 @@
 NonlinearElastic::NonlinearElastic(const bool & anisotropy, const bool & nonlinearity, const bool & noTension, const std::vector<double> & properties)
   : Material(anisotropy, nonlinearity, noTension)
 {
+    // if (!anisotropy) 
     int i = 0;
     // Uzan (1985) model:
     // M = k1 * theta^k2 * sigma_d^k3 where theta = sigma1 + sigma2 + sigma3 (bulk stress), sigma_d = sigma1 - sigma3 (deviatoric stress)
@@ -48,18 +49,8 @@ NonlinearElastic::~NonlinearElastic()
 
 double NonlinearElastic::stressDependentModulus(const VectorXd & stress) const
 {
-    // std::cout << stress(0) << " " << stress(1) << " " << stress(2) << std::endl;
     double bulk = stress(0) + stress(1) + stress(2);
     double deviator = stress(2) - stress(0); // sigma1 - sigma3
-
-    double sigma1 = stress(2) < 0 ? stress(2) : stress(2);
-    double sigma2 = stress(1) < 0 ? 0 : stress(1);
-    double sigma3 = stress(0) < 0 ? 0 : stress(0);
-
-    bulk = sigma1 + sigma2 + sigma3;
-    deviator = sigma1 - sigma3;
-    if (bulk < 0 || deviator < 0) std::cout << "Negative!" << std::endl;
-    // std::cout << stress(0) << " " << stress(1) << " " << stress(2) << std::endl;
 
     // Calculated new stress-dependent resilient modulus from Uzan model
     double M = coeffUzan(0) * std::pow(std::abs(bulk), coeffUzan(1)) * std::pow(std::abs(deviator), coeffUzan(2));
