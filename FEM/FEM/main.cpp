@@ -121,7 +121,7 @@ int main() {
     //--------------------------------------------------------------------------
     // Get file name
     // std::string inFileName = "../Input/input_triaxial.txt";
-    std::string inFileName = "../Input/Triaxial/3_12_new.txt";
+    std::string inFileName = "../Input/Triaxial/20_5.txt";
     std::string outFileName = "../Output/output_3layer_issam.txt";
     std::string outVTKName = "../Output/output_3layer_issam.vtk";
     //
@@ -146,13 +146,13 @@ auto start = std::chrono::high_resolution_clock::now();
     //     // std::cout << std::endl;
     // }
 
-    // // Triaxial case (zero deviator stress)
-    // for (size_t i = 0; i < 5; i++) {
-    //     // std::cout << triaxial[i] << std::endl;
-    //     Analysis* case1 = new Nonlinear("../Input/Triaxial/" + triaxial_zero[i] + ".txt");
-    //     case1->solve();
-    //     // std::cout << std::endl;
-    // }
+    // Triaxial case (zero deviator stress)
+    for (size_t i = 0; i < 5; i++) {
+        // std::cout << triaxial[i] << std::endl;
+        Analysis* case1 = new Nonlinear("../Input/Triaxial/" + triaxial_zero[i] + ".txt");
+        case1->solve();
+        // std::cout << std::endl;
+    }
 
     // Issam FWD case
     // Analysis* case1 = new Linear(inFileName);
@@ -160,10 +160,9 @@ auto start = std::chrono::high_resolution_clock::now();
     // case1->writeToFile(outFileName);
     // case1->writeToVTK(outVTKName);
 
-    //
-    Analysis* case1 = new Nonlinear(inFileName);
+    // Analysis* case1 = new Nonlinear(inFileName);
     // // Analysis* case1 = new BackAnalysis(inFileName);
-    case1->solve();
+    // case1->solve();
 
     // case1->printDisp();
     // case1->printStrain();

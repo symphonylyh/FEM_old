@@ -59,6 +59,7 @@ if (incremental) {
         for (unsigned m = 0; m < materials.size(); m++) {
             materials[m]->setBodyForce(gravityIncrement[m] * ic);
             materials[m]->setThermalStrain(thermalIncrement[m] * ic);
+            // std::cout << "Debug: " << gravityIncrement[m] * ic << std::endl;
         }
 
         // Achieve the modulus and tension convergence at each increment
@@ -84,8 +85,9 @@ if (incremental) {
 
             count++;
         }
-        // Final run
-        applyForce();
+        // For the exit iteration, the new converged modulus is updated, but the nodalDisp
+        // is for the last iteration, so we should do one more solve to match the modulus & displacment
+        nodalForce = VectorXd::Zero(2 * mesh.nodeCount());
         assembleStiffness();
         SimplicialLDLT <SparseMatrix<double> > solver;
         solver.compute(globalStiffness);
@@ -101,9 +103,15 @@ if (incremental) {
         // std::cout << "-----------------------------------------" << std::endl;
     }
     // std::cout << "Material load applied! \n" << std::endl;
+    // For triaxial case: Output the displacment information after the body load but before the surface load
+    // std::cout << nodalDisp(2 * 28 + 1) << " " << nodalDisp(2 * 72 + 1) << std::endl;
+    // OR
+    // computeStrainAndStress();
+    // averageStrainAndStress();
+    // std::cout << mesh.nodeArray()[28]->getDisp()(1) << " " << mesh.nodeArray()[72]->getDisp()(1) << std::endl;
 
     // Should note the possible numerical error by dividing the increments, e.g.,
-    // x / 5 * 5 might not be exactly the same number
+    // x / 5 * 5 might not be exactly the same number. Actually they are almost the same
 
     // Traffic load increments (point load and edge load)
     int loadIncrementNum = 5; // Typically ten increments for traffic load
