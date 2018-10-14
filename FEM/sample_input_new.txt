@@ -27,15 +27,18 @@
 // If Nonlinear: 
 // Model No. [K-theta:1 Uzan:2 UT-Austin:3 MEPDG:4] and the corresponding parameters
 // if isotropic nonlinearity:
-1 4231 0.3
+1 
+4231 0.3
 // if anisotropic nonlinearity (provide parameters for each of Modulus R, Modulus Z, Shear G)
-2 4231 0.645 -0.056 4231 0.645 -0.056 4231 0.645 -0.056
+2 
+4231 0.645 -0.056 4231 0.645 -0.056 4231 0.645 -0.056
 // Full example
 0 4 0 0 0 // layer 1
 30000 0.3 0 -0.0807 6.5e-6 100
 5 8 1 1 0 // layer 2
 6750.000000 45000.000000 0.150000 0.450000 15734.000000 0 -0.0807 6.5e-6 0
-2 4231 0.645 -0.056 4231 0.645 -0.056 4231 0.645 -0.056
+2 
+4231 0.645 -0.056 4231 0.645 -0.056 4231 0.645 -0.056
 9 12 1 0 0 // layer 3
 6750.000000 45000.000000 0.150000 0.450000 15734.000000 0 -0.0807 6.5e-6 0
 ...

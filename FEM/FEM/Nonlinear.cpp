@@ -301,10 +301,10 @@ bool Nonlinear::nonlinearIteration(double damping)
                 // Convergence criteria
                 // Criteria 1: modulus stabilize within 5% at all Gaussian points (less strict criteria only checks the center Gaussian point)
                 double error = std::abs(modulus - modulus_new);
-                if (/*g == 4 && */error / modulus_old > 0.05) // tutu uses modulus_old, but I want to use modulus
+                if (g == 4 && error / modulus_old > 0.05) // tutu uses modulus_old, but I want to use modulus
                     convergence = false;
                 // Criteraia 2: Accumulative modulus error within 0.2%
-                if (/*g == 4*/true) { // less strict convergence criteria
+                if (g == 4/*true*/) { // less strict convergence criteria
                     sumError += error * error;
                     sumModulus += modulus_old * modulus_old; // tutu uses modulus_old, but I want to use modulus
                 }
@@ -416,21 +416,22 @@ bool Nonlinear::noTensionIteration()
 
 VectorXd Nonlinear::principalStress(const VectorXd & stress) const
 {
-    MatrixXd tensor(3,3);
-    tensor << stress(0), 0, stress(3),
-              0, stress(1), 0,
-              stress(3), 0, stress(2);
-    SelfAdjointEigenSolver<MatrixXd> es(tensor, EigenvaluesOnly);
-    return es.eigenvalues();
+    // In our coordinates, vertical stress: -:compression +:tension; Horizontal stress: -:compression +:tension
+    // MatrixXd tensor(3,3);
+    // tensor << stress(0), 0, stress(3),
+    //           0, stress(1), 0,
+    //           stress(3), 0, stress(2);
+    // SelfAdjointEigenSolver<MatrixXd> es(tensor, EigenvaluesOnly);
+    // return es.eigenvalues();
 
     // Tutu's approach
-    // VectorXd result(3);
-    // double radius = std::sqrt( (stress(0) - stress(2)) * (stress(0) - stress(2)) / 4 + stress(3) * stress(3) ); // sqrt{ [(s1 - s3)/2]^2 + tau^2 }
-    // double sigma1 = (stress(0) + stress(2)) / 2 + radius;
-    // double sigma2 = stress(1);
-    // double sigma3 = (stress(0) + stress(2)) / 2 - radius;
-    // if (sigma2 < sigma3)
-    //     std::swap(sigma2, sigma3);
-    // result << sigma3, sigma2, sigma1;
-    // return result;
+    VectorXd result(3);
+    double radius = std::sqrt( (stress(0) - stress(2)) * (stress(0) - stress(2)) / 4 + stress(3) * stress(3) ); // sqrt{ [(s1 - s3)/2]^2 + tau^2 }
+    double sigma1 = (stress(0) + stress(2)) / 2 + radius;
+    double sigma2 = stress(1);
+    double sigma3 = (stress(0) + stress(2)) / 2 - radius;
+    if (sigma2 < sigma3)
+        std::swap(sigma2, sigma3);
+    result << sigma3, sigma2, sigma1;
+    return result;
 }
