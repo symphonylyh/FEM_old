@@ -12,8 +12,12 @@
 #include <algorithm>
 #include <functional>
 
-Nonlinear::Nonlinear(std::string const & fileName) : Analysis(fileName)/*, damping(0.3)*/ // adjustable damping ratio
+Nonlinear::Nonlinear(std::string const & fileName) : Analysis(fileName)
 {
+    gravityIncrementNum = (mesh.iterations)[0];
+    loadIncrementNum = (mesh.iterations)[1];
+    gravityDamping = (mesh.iterations)[2];
+    loadDamping = (mesh.iterations)[3];
 }
 
 Nonlinear::~Nonlinear()
@@ -36,12 +40,11 @@ if (incremental) {
     // --------------- Start of Incremental Loading Scheme -------------------------
     // -----------------------------------------------------------------------------
 
-    // Gravity and residual stress increments
+    // Gravity, temperature, and residual stress increments
     // Idea: for each material, re-assign the body force, residual stress and
     // thermal strain incrementally. At the beginning we should calculate the increments
     // A good observation: with gravity load only, the stress is independent with the modulus,
     // so any arbitrary initial guess of the modulus won't affect the stress-dependent modulus.
-    int gravityIncrementNum = 5; // Typically five increments for body weight (gravity load) and initial residual stress
     const std::vector<Material*> & materials = mesh.materialList;
     std::vector<Vector2d> gravityIncrement;
     std::vector<VectorXd> thermalIncrement;
@@ -81,7 +84,7 @@ if (incremental) {
             nodalDisp = solver.solve(nodalForce);
 
             // Traverse each element, compute stress at Gaussian points, and update the modulus for the next (i + 1) iteration (if current iteration is i)
-            nonlinearConvergence = nonlinearIteration(0.3);
+            nonlinearConvergence = nonlinearIteration(gravityDamping);
 
             count++;
         }
@@ -114,7 +117,6 @@ if (incremental) {
     // x / 5 * 5 might not be exactly the same number. Actually they are almost the same
 
     // Traffic load increments (point load and edge load)
-    int loadIncrementNum = 5; // Typically ten increments for traffic load
     std::vector<double> pointLoadIncrement = mesh.loadValue;
     std::vector<std::vector<double> > edgeLoadIncrement = mesh.edgeLoadValue;
     std::transform(pointLoadIncrement.begin(), pointLoadIncrement.end(), pointLoadIncrement.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, 1.0 / loadIncrementNum)); // in-place change
@@ -141,7 +143,7 @@ if (incremental) {
             nodalDisp = solver.solve(nodalForce);
 
             // Traverse each element, compute stress at Gaussian points, and update the modulus for the next (i + 1) iteration (if current iteration is i)
-            nonlinearConvergence = nonlinearIteration(0.15);
+            nonlinearConvergence = nonlinearIteration(loadDamping);
 
             count++;
         }
@@ -162,7 +164,7 @@ if (incremental) {
     // ----------------- End of Incremental Loading Scheme -------------------------
     // -----------------------------------------------------------------------------
 }
-else {
+else { // experimental module for tension modification (loads are applied directly rather than incrementally for convenience)
     // -------------------------------------------------------------------------
     // --------------- Start of Nonlinear Iteration Scheme ---------------------
     // -------------------------------------------------------------------------

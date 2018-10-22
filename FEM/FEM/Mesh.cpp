@@ -96,10 +96,11 @@ void Mesh::readFromFile(std::string const & fileName)
     // Read element properties (modulus, Poisson's ratio, thermal parameters, etc)
     // Format:
     // Line 1: start & end index of element, material isotropy, linearity, and tension property. e.g., 0 35 0 0 1 means element No.0~35 are isotropic and linear elastic material, with no-tension modification.
-    // Line 2: material properties
+    // Line 2 and so forth: material properties
     std::map<int, int> layerMap; // use an ordered map to decide layer No. by range finding, e.g., N layers, store N start indices of the element as [0 N1) [N1 N2) [N2 N3)
     std::vector<double> elementProperty;
     materialList.reserve(elementProperties);
+    bool nonlinear = false;
     for (int i = 0; i < elementProperties; i++) {
         std::getline(file, readLine);
         std::vector<int> range;
@@ -110,6 +111,7 @@ void Mesh::readFromFile(std::string const & fileName)
         if (range[3] == 0) // linear elastic
             materialList.push_back(new LinearElastic(range[2], range[3], range[4], elementProperty)); // dynamically allocated, remember to delete in destructor!
         else { // nonlinear elastic
+            nonlinear = true;
             // for nonlinear layer it should read two more lines about the material model parameters
             std::getline(file, readLine);
             int model = std::stoi(readLine, NULL); // [K-theta:1 Uzan:2 UT-Austin:3 MEPDG:4]
@@ -121,6 +123,12 @@ void Mesh::readFromFile(std::string const & fileName)
         // 0 if isotropic, 1 if cross-anisotropic; 0 if linear elastic, 1 if nonlinear elastic; 0 if normal material, 1 if no-tension material.
     }
     std::vector<double>().swap(elementProperty);
+
+    // Read nonlinear iteration parameters (No. of load increments, damping ratios) if there are at least one nonlinear material
+    if (nonlinear) {
+        std::getline(file, readLine);
+        parseLine(readLine, iterations); // vector "iterations" declared as a member variable of Mesh class, to be used in Nonlinear class
+    }
 
     // Read element's node list and create the corresponding element type
     std::vector<int> elementNodeList;

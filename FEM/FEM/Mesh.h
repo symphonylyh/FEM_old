@@ -95,6 +95,9 @@ class Mesh
         /** A list of layered materials */
         std::vector<Material*> materialList;
 
+        /** Iteration parameters used in nonlinear scheme */
+        std::vector<double> iterations;
+
         /** A list of the degree of freedom that are at boundary
          *
          * @note Actually this is not NODE list, but degree of freedom list,

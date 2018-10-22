@@ -139,12 +139,12 @@ int main() {
     std::string triaxial_zero[5] = {"3_0", "5_0", "10_0", "15_0", "20_0"};
 auto start = std::chrono::high_resolution_clock::now();
     // Triaxial case
-    for (size_t i = 0; i < 32; i++) {
-        // std::cout << triaxial[i] << std::endl;
-        Analysis* case1 = new Nonlinear("../Input/Triaxial/" + triaxial[i] + ".txt");
-        case1->solve();
-        // std::cout << std::endl;
-    }
+    // for (size_t i = 0; i < 32; i++) {
+    //     // std::cout << triaxial[i] << std::endl;
+    //     Analysis* case1 = new Nonlinear("../Input/Triaxial/" + triaxial[i] + ".txt");
+    //     case1->solve();
+    //     // std::cout << std::endl;
+    // }
 
     // Triaxial case (zero deviator stress)
     // for (size_t i = 0; i < 5; i++) {
@@ -160,9 +160,9 @@ auto start = std::chrono::high_resolution_clock::now();
     // case1->writeToFile(outFileName);
     // case1->writeToVTK(outVTKName);
 
-    // Analysis* case1 = new Nonlinear(inFileName);
+    Analysis* case1 = new Nonlinear(inFileName);
     // // Analysis* case1 = new BackAnalysis(inFileName);
-    // case1->solve();
+    case1->solve();
 
     // case1->printDisp();
     // case1->printStrain();

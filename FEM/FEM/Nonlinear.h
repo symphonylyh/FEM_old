@@ -51,8 +51,11 @@ class Nonlinear : public Analysis
      */
     VectorXd principalStress(const VectorXd & stress) const;
 
-    /** Damping ratio selected in the nonlinear iteration scheme. */
-    // double damping;
+  private:
+    int gravityIncrementNum; /* No. of body load (gravity & temperature & residual) increments */
+    int loadIncrementNum; /* No. of traffic load (point & edge) increments */
+    double gravityDamping; /* Damping ratio lambda for body force incremental loading */
+    double loadDamping; /* Damping ratio lambda for traffic incremental loading */
 
 };
 
