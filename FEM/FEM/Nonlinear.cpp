@@ -35,6 +35,8 @@ void Nonlinear::solve()
 // no increment, all Gaussian but only check convergence at center, 0.3 damping, no final run --> 2.57e-4 result
 
 bool incremental = true;
+if (gravityIncrementNum == 0 && loadIncrementNum == 0) incremental = false; // input two zeros means I don't want to have incremental loading
+
 if (incremental) {
     // -----------------------------------------------------------------------------
     // --------------- Start of Incremental Loading Scheme -------------------------
