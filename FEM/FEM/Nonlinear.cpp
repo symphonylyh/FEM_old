@@ -98,14 +98,14 @@ if (incremental) {
         solver.compute(globalStiffness);
         nodalDisp = solver.solve(nodalForce);
 
-        // std::cout << "Body Force Increment No." << ic << ", Total iterations = " << count << std::endl;
+        std::cout << "Body Force Increment No." << ic << ", Total iterations = " << count << std::endl;
         // std::cout << "Nodal Displacement: ";
         // std::cout << std::endl;
         // for (int i = 0; i < mesh.nodeCount(); i++) {
         //   std::cout << "Node " << i << " : " << nodalDisp(2 * i) << " " << nodalDisp(2 * i + 1) << std::endl;
         // }
         // std::cout << std::endl;
-        // std::cout << "-----------------------------------------" << std::endl;
+        std::cout << "-----------------------------------------" << std::endl;
     }
     // std::cout << "Material load applied! \n" << std::endl;
     // For triaxial case: Output the displacment information after the body load but before the surface load
@@ -157,8 +157,8 @@ if (incremental) {
         solver.compute(globalStiffness);
         nodalDisp = solver.solve(nodalForce);
 
-        // std::cout << "Traffic Load Increment No." << ic << ", Total iterations = " << count << std::endl;
-        // std::cout << "-----------------------------------------" << std::endl;
+        std::cout << "Traffic Load Increment No." << ic << ", Total iterations = " << count << std::endl;
+        std::cout << "-----------------------------------------" << std::endl;
     }
     // std::cout << "Traffic load applied! \n" << std::endl;
 
