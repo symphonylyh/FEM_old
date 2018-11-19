@@ -200,6 +200,8 @@ else { // experimental module for tension modification (loads are applied direct
     // -------------------- End of Nonlinear Scheme ----------------------------
     // -------------------------------------------------------------------------
 
+    bool tensionScheme = false;
+    if (tensionScheme) {
     // -------------------------------------------------------------------------
     // --------------- Start of No Tension Iteration Scheme --------------------
     // -------------------------------------------------------------------------
@@ -228,34 +230,23 @@ else { // experimental module for tension modification (loads are applied direct
     // -------------------------------------------------------------------------
     // ----------------  End of No Tension Iteration Scheme --------------------
     // -------------------------------------------------------------------------
+    }
 }
     // After both material nonlinearity and granular no-tension scheme converge,
     // compute the nodal strain and stress from the final displacment results
     computeStrainAndStress();
     averageStrainAndStress();
 
-    // Output the axial strain (for triaxial case only)
-    double strain1;
-    strain1 = (mesh.nodeArray()[22]->getDisp()(1) +
-    mesh.nodeArray()[23]->getDisp()(1) +
-    mesh.nodeArray()[24]->getDisp()(1) +
-    mesh.nodeArray()[25]->getDisp()(1) +
-    mesh.nodeArray()[26]->getDisp()(1) +
-    mesh.nodeArray()[27]->getDisp()(1) +
-    mesh.nodeArray()[28]->getDisp()(1) ) / 7;
-    double strain2;
-    strain2 = (mesh.nodeArray()[66]->getDisp()(1) +
-    mesh.nodeArray()[67]->getDisp()(1) +
-    mesh.nodeArray()[68]->getDisp()(1) +
-    mesh.nodeArray()[69]->getDisp()(1) +
-    mesh.nodeArray()[70]->getDisp()(1) +
-    mesh.nodeArray()[71]->getDisp()(1) +
-    mesh.nodeArray()[72]->getDisp()(1) ) / 7;
-    // std::cout << "Axial strain (average): " << - (strain1 - strain2) / 6 << std::endl; // "-" is compressive, "+" is tensile, so reverse the sign
-    // std::cout << "Axial strain (point): " << - (mesh.nodeArray()[28]->getDisp()(1) - mesh.nodeArray()[72]->getDisp()(1)) / 6 << std::endl;
-    // std::cout << "Displacement (upper clamp): " << mesh.nodeArray()[28]->getDisp()(1) << std::endl;
-    // std::cout << "Displacement (lower clamp): " << mesh.nodeArray()[72]->getDisp()(1) << std::endl;
-    std::cout << mesh.nodeArray()[28]->getDisp()(1) << " " << mesh.nodeArray()[72]->getDisp()(1) << std::endl;
+    // Output the average axial strain at the surface (for fastcell case only)
+    int node_start = 0, node_end = 38 + 1; // Node 0 ~ 40 are the surface nodes
+    int node_curr = node_start;
+    double disp = 0;
+    while (node_curr != node_end) {
+        disp += mesh.nodeArray()[node_curr]->getDisp()(1);
+        node_curr++;
+    }
+    double strain = - disp / (node_end - node_start) / (150.0/25.4);
+    std::cout << strain << std::endl;
 }
 
 bool Nonlinear::nonlinearIteration(double damping)
@@ -429,21 +420,21 @@ bool Nonlinear::noTensionIteration()
 VectorXd Nonlinear::principalStress(const VectorXd & stress) const
 {
     // In our coordinates, vertical stress: -:compression +:tension; Horizontal stress: -:compression +:tension
-    // MatrixXd tensor(3,3);
-    // tensor << stress(0), 0, stress(3),
-    //           0, stress(1), 0,
-    //           stress(3), 0, stress(2);
-    // SelfAdjointEigenSolver<MatrixXd> es(tensor, EigenvaluesOnly);
-    // return es.eigenvalues();
+    MatrixXd tensor(3,3);
+    tensor << stress(0), 0, stress(3),
+              0, stress(1), 0,
+              stress(3), 0, stress(2);
+    SelfAdjointEigenSolver<MatrixXd> es(tensor, EigenvaluesOnly);
+    return es.eigenvalues();
 
     // Tutu's approach
-    VectorXd result(3);
-    double radius = std::sqrt( (stress(0) - stress(2)) * (stress(0) - stress(2)) / 4 + stress(3) * stress(3) ); // sqrt{ [(s1 - s3)/2]^2 + tau^2 }
-    double sigma1 = (stress(0) + stress(2)) / 2 + radius;
-    double sigma2 = stress(1);
-    double sigma3 = (stress(0) + stress(2)) / 2 - radius;
-    if (sigma2 < sigma3)
-        std::swap(sigma2, sigma3);
-    result << sigma3, sigma2, sigma1;
-    return result;
+    // VectorXd result(3);
+    // double radius = std::sqrt( (stress(0) - stress(2)) * (stress(0) - stress(2)) / 4 + stress(3) * stress(3) ); // sqrt{ [(s1 - s3)/2]^2 + tau^2 }
+    // double sigma1 = (stress(0) + stress(2)) / 2 + radius;
+    // double sigma2 = stress(1);
+    // double sigma3 = (stress(0) + stress(2)) / 2 - radius;
+    // if (sigma2 < sigma3)
+    //     std::swap(sigma2, sigma3);
+    // result << sigma3, sigma2, sigma1;
+    // return result;
 }

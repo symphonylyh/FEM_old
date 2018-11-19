@@ -76,7 +76,7 @@ double NonlinearElastic::stressDependentModulus(const VectorXd & stress) const
     double bulk = std::abs( stress(2) + stress(1) + stress(0) );
     double deviator = std::abs( stress(2) - stress(0) );
     double octahedral = std::sqrt(std::pow(stress(2) - stress(1), 2) + std::pow(stress(1) - stress(0), 2) + std::pow(stress(2) - stress(0), 2)) / 3;
-    double atm = 14.7; // atmospheric pressure, 101.325 kPa or 14.7 psi
+    double atm = 14.696; // atmospheric pressure, 101.325 kPa or 14.7 psi
 
     // Calculated new stress-dependent resilient modulus from different models
     double M = 0;

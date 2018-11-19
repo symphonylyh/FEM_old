@@ -121,9 +121,9 @@ int main() {
     //--------------------------------------------------------------------------
     // Get file name
     // std::string inFileName = "../Input/input_triaxial.txt";
-    std::string inFileName = "../Input/FastCell/input.txt";
+    std::string inFileName = "../Input/FastCell/FOUNT-S2/input_0.txt";
     std::string outFileName = "../Output/output_3layer_issam.txt";
-    std::string outVTKName = "../Output/FastCell/output.vtk";
+    std::string outVTKName = "../Output/FastCell/FOUNT-S2/output_0.vtk";
     //
     // std::cout << "Enter the input file name: ";
     // std::string inFileName;
@@ -135,10 +135,9 @@ int main() {
     // std::getline(std::cin, outFileName);
     // std::string outVTKName = outFileName + ".vtk";
     // outFileName += ".txt";
-    std::string triaxial[32] = {"3_3", "3_6", "3_9", "3_12", "5_5", "5_10", "5_15", "5_20", "10_5", "10_10", "10_15", "10_20", "10_25", "10_30", "10_35", "15_5", "15_10", "15_15", "15_20", "15_25", "15_30", "15_35", "20_5", "20_10", "20_15", "20_20", "20_25", "20_30", "20_35", "20_40", "20_45", "20_50"};
-    std::string triaxial_zero[5] = {"3_0", "5_0", "10_0", "15_0", "20_0"};
 auto start = std::chrono::high_resolution_clock::now();
     // Triaxial case
+    // std::string triaxial[32] = {"3_3", "3_6", "3_9", "3_12", "5_5", "5_10", "5_15", "5_20", "10_5", "10_10", "10_15", "10_20", "10_25", "10_30", "10_35", "15_5", "15_10", "15_15", "15_20", "15_25", "15_30", "15_35", "20_5", "20_10", "20_15", "20_20", "20_25", "20_30", "20_35", "20_40", "20_45", "20_50"};
     // for (size_t i = 0; i < 32; i++) {
     //     // std::cout << triaxial[i] << std::endl;
     //     Analysis* case1 = new Nonlinear("../Input/Triaxial/" + triaxial[i] + ".txt");
@@ -147,11 +146,28 @@ auto start = std::chrono::high_resolution_clock::now();
     // }
 
     // Triaxial case (zero deviator stress)
+    // std::string triaxial_zero[5] = {"3_0", "5_0", "10_0", "15_0", "20_0"};
     // for (size_t i = 0; i < 5; i++) {
     //     // std::cout << triaxial[i] << std::endl;
     //     Analysis* case1 = new Nonlinear("../Input/Triaxial/" + triaxial_zero[i] + ".txt");
     //     case1->solve();
     //     // std::cout << std::endl;
+    // }
+
+    // FastCell case
+    std::string fastcell[15] = {"input_0", "input_1", "input_2", "input_3", "input_4", "input_5", "input_6", "input_7", "input_8", "input_9", "input_10", "input_11", "input_12", "input_13", "input_14"};
+    for (size_t i = 0; i < 15; i++) {
+        Analysis* case1 = new Nonlinear("../Input/FastCell/FOUNT-S2/" + fastcell[i] + ".txt");
+        case1->solve();
+        delete case1;
+    }
+    //
+    // // FastCell case (zero deviator stress)
+    // std::string fastcell_zero[5] = {"zero_0", "zero_1", "zero_2", "zero_3", "zero_4"};
+    // for (size_t i = 0; i < 5; i++) {
+    //     Analysis* case1 = new Nonlinear("../Input/FastCell/FOUNT-S2/" + fastcell_zero[i] + ".txt");
+    //     case1->solve();
+    //     delete case1;
     // }
 
     // Issam FWD case
@@ -160,15 +176,16 @@ auto start = std::chrono::high_resolution_clock::now();
     // case1->writeToFile(outFileName);
     // case1->writeToVTK(outVTKName);
 
-    Analysis* case1 = new Nonlinear(inFileName);
+    // Normal Single case
+    // Analysis* case1 = new Nonlinear(inFileName);
     // // Analysis* case1 = new BackAnalysis(inFileName);
-    case1->solve();
+    // case1->solve();
 
     // case1->printDisp();
     // case1->printStrain();
     // case1->printStress();
     // case1->writeToFile(outFileName);
-    case1->writeToVTK(outVTKName);
+    // case1->writeToVTK(outVTKName);
 
     // delete case1; case1 = NULL;
 
