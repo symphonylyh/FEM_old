@@ -121,9 +121,10 @@ int main() {
     //--------------------------------------------------------------------------
     // Get file name
     // std::string inFileName = "../Input/input_triaxial.txt";
-    std::string inFileName = "../Input/FastCell/FOUNT-S2/input_0.txt";
+    std::string inFileName = "../Input/800/input.txt";
     std::string outFileName = "../Output/output_3layer_issam.txt";
     std::string outVTKName = "../Output/FastCell/FOUNT-S2/output_0.vtk";
+    outVTKName = "../Input/800/output.vtk";
     //
     // std::cout << "Enter the input file name: ";
     // std::string inFileName;
@@ -155,12 +156,12 @@ auto start = std::chrono::high_resolution_clock::now();
     // }
 
     // FastCell case
-    std::string fastcell[15] = {"input_0", "input_1", "input_2", "input_3", "input_4", "input_5", "input_6", "input_7", "input_8", "input_9", "input_10", "input_11", "input_12", "input_13", "input_14"};
-    for (size_t i = 0; i < 15; i++) {
-        Analysis* case1 = new Nonlinear("../Input/FastCell/FOUNT-S2/" + fastcell[i] + ".txt");
-        case1->solve();
-        delete case1;
-    }
+    // std::string fastcell[15] = {"input_0", "input_1", "input_2", "input_3", "input_4", "input_5", "input_6", "input_7", "input_8", "input_9", "input_10", "input_11", "input_12", "input_13", "input_14"};
+    // for (size_t i = 0; i < 15; i++) {
+    //     Analysis* case1 = new Nonlinear("../Input/FastCell/FOUNT-S2/" + fastcell[i] + ".txt");
+    //     case1->solve();
+    //     delete case1;
+    // }
     //
     // // FastCell case (zero deviator stress)
     // std::string fastcell_zero[5] = {"zero_0", "zero_1", "zero_2", "zero_3", "zero_4"};
@@ -177,15 +178,16 @@ auto start = std::chrono::high_resolution_clock::now();
     // case1->writeToVTK(outVTKName);
 
     // Normal Single case
+    Analysis* case1 = new Linear(inFileName);
     // Analysis* case1 = new Nonlinear(inFileName);
-    // // Analysis* case1 = new BackAnalysis(inFileName);
-    // case1->solve();
+    // Analysis* case1 = new BackAnalysis(inFileName);
+    case1->solve();
 
     // case1->printDisp();
     // case1->printStrain();
     // case1->printStress();
     // case1->writeToFile(outFileName);
-    // case1->writeToVTK(outVTKName);
+    case1->writeToVTK(outVTKName);
 
     // delete case1; case1 = NULL;
 
