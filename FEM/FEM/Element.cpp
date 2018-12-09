@@ -64,7 +64,7 @@ const VectorXd & Element::nodalForce() const
     return nodalForce_;
 }
 
-MatrixXd Element::EMatrix(const double & modulus) const
+MatrixXd Element::EMatrix(const VectorXd & modulus) const
 {
     if (!material_->nonlinearity)
         return material_->EMatrix();
@@ -121,10 +121,10 @@ void Element::computeStiffnessAndForce()
     for (int i = 0; i < shape()->gaussianPt().size(); i++) {
         // Local stiffness matrix
         // sum 2PI * B^T * E * B * |J| * r * W(i) at all Gaussian points
-        localStiffness_ += 2 * M_PI * _BMatrix(i).transpose() * EMatrix(modulusAtGaussPt(i)) * _BMatrix(i) * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
+        localStiffness_ += 2 * M_PI * _BMatrix(i).transpose() * EMatrix(modulusAtGaussPt.row(i)) * _BMatrix(i) * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
         // if (i == 4) {
-        //     std::cout << "Modulus Debug: " << modulusAtGaussPt(i) << std::endl;
-        //     std::cout << "E Debug: " << EMatrix(modulusAtGaussPt(i)) << std::endl;
+        //     std::cout << "Modulus Debug: " << modulusAtGaussPt.row(i) << std::endl;
+        //     std::cout << "E Debug: " << EMatrix(modulusAtGaussPt.row(i)) << std::endl;
         // }
         // Body force
         // sum 2PI * N^T * F * |J| * r * W(i) at all Gaussian points
@@ -132,7 +132,7 @@ void Element::computeStiffnessAndForce()
 
         // Temperature load
         // sum 2PI * B^T * E * e0 * |J| * r * W(i) at all Gaussian points
-        nodalForce_ += 2 * M_PI * _BMatrix(i).transpose() * EMatrix(modulusAtGaussPt(i)) * thermalStrain() * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
+        nodalForce_ += 2 * M_PI * _BMatrix(i).transpose() * EMatrix(modulusAtGaussPt.row(i)) * thermalStrain() * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
     }
 
 }
@@ -147,7 +147,7 @@ void Element::computerForce()
 
         // Temperature load
         // sum 2PI * B^T * E * e0 * |J| * r * W(i) at all Gaussian points
-        nodalForce_ += 2 * M_PI * _BMatrix(i).transpose() * EMatrix(modulusAtGaussPt(i)) * thermalStrain() * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
+        nodalForce_ += 2 * M_PI * _BMatrix(i).transpose() * EMatrix(modulusAtGaussPt.row(i)) * thermalStrain() * _jacobianDet(i) * _radius(i) * shape()->gaussianWt(i);
     }
 }
 

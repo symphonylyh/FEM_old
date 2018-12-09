@@ -119,7 +119,7 @@ class Element
          * E matrix based on specific modulus.
          * @return The 4-by-4 E matrix.
          */
-        MatrixXd EMatrix(const double & modulus) const;
+        MatrixXd EMatrix(const VectorXd & modulus) const;
 
         /**
          * Get the body force (unit weight) of the element.
@@ -170,8 +170,8 @@ class Element
          */
         MatrixXd BMatrix(const Vector2d & point) const;
 
-        /** A g-by-1 vector where g is the number of Gaussian points of this element */
-        VectorXd modulusAtGaussPt; // for nonlinear analysis, made public for easier access
+        /** A g-by-1 vector (isotropic) or g-by-3 matrix (anisotropic), where g is the number of Gaussian points of this element */
+        MatrixXd modulusAtGaussPt; // for nonlinear analysis, made public for easier access
 
         /**
          * Helper function for the computation of element stiffness matrix

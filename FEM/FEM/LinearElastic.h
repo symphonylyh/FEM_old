@@ -20,13 +20,6 @@ class LinearElastic : public Material
 
     void adjustModulus(const double & ratio); // Used in back analysis scheme
 
-  protected:
-    double v; // Used in back analysis scheme
-    double vr;
-    double vz;
-    double Mr;
-    double Mz;
-    double G;
 };
 
 #endif /* LinearElastic_h */

@@ -280,48 +280,87 @@ bool Nonlinear::nonlinearIteration(double damping)
             // MatrixXd B = curr->BMatrix(curr->shape()->gaussianPt(4));
             // VectorXd strain = B * nodeDisp; // e = B * u
             // double modulus_old = (curr->modulusAtGaussPt)(4); // M_(i-1)
-            // VectorXd stress = material->EMatrix(modulus_old) * (strain - curr->thermalStrain()); // sigma = E_(i-1) * (e - e0), note that the M and E are both from previous iteration
-            // double modulus_new = material->stressDependentModulus(principalStress(stress)); // M_i
+            // VectorXd modulus_old_vec << modulus_old;
+            // VectorXd stress = material->EMatrix(modulus_old_vec) * (strain - curr->thermalStrain()); // sigma = E_(i-1) * (e - e0), note that the M and E are both from previous iteration
+            // VectorXd modulus_vec = material->stressDependentModulus(principalStress(stress));
+            // double modulus_new = modulus_vec(1); // M_i, 1 for vertical modulus
             // double modulus = (1 - damping) * modulus_old + damping * modulus_new; // true M_i after applying damping ratio
 
-            for (int g = 0; g < numGaussianPt; g++) {
-                // More strict approach
-                MatrixXd B = curr->BMatrix(curr->shape()->gaussianPt(g));
-                VectorXd strain = B * nodeDisp; // e = B * u
-                double modulus_old = (curr->modulusAtGaussPt)(g); // M_(i-1)
-                VectorXd stress = material->EMatrix(modulus_old) * (strain - curr->thermalStrain()); // sigma = E_(i-1) * (e - e0), note that the M and E are both from previous iteration
-                // tension modification
-                // VectorXd principal = principalStress(stress);
-                // for (int x = 0; x < 3; x++) {
-                //     if (principal(x) > 0) principal(x) = 0;
-                // }
-                // double modulus_new = material->stressDependentModulus(principal);
-                double modulus_new = material->stressDependentModulus(principalStress(stress)); // M_i
-                double modulus = (1 - damping) * modulus_old + damping * modulus_new; // true M_i after applying damping ratio
+            // For isotropy case (or a simplified anisotropy case), iterate only on the single modulus (vertical modulus for anisotropy)
+            if (!material->anisotropy) {
+                for (int g = 0; g < numGaussianPt; g++) {
+                    // More strict approach
+                    MatrixXd B = curr->BMatrix(curr->shape()->gaussianPt(g));
+                    VectorXd strain = B * nodeDisp; // e = B * u
+                    double modulus_old = (curr->modulusAtGaussPt)(g); // M_(i-1)
+                    VectorXd modulus_old_vec(1);
+                    modulus_old_vec << modulus_old;
+                    VectorXd stress = material->EMatrix(modulus_old_vec) * (strain - curr->thermalStrain()); // sigma = E_(i-1) * (e - e0), note that the M and E are both from previous iteration
+                    // tension modification
+                    // VectorXd principal = principalStress(stress);
+                    // for (int x = 0; x < 3; x++) {
+                    //     if (principal(x) > 0) principal(x) = 0;
+                    // }
+                    // VectorXd modulus_vec = material->stressDependentModulus(principal);
+                    // double modulus_new = modulus_vec(1);
+                    VectorXd modulus_vec = material->stressDependentModulus(principalStress(stress));
+                    double modulus_new = modulus_vec(1); // M_i, 1 for vertical modulus
+                    double modulus = (1 - damping) * modulus_old + damping * modulus_new; // true M_i after applying damping ratio
 
-                (curr->modulusAtGaussPt)(g) = modulus;
+                    (curr->modulusAtGaussPt)(g) = modulus;
 
-                // Convergence criteria
-                // Criteria 1: modulus stabilize within 5% at all Gaussian points (less strict criteria only checks the center Gaussian point)
-                double error = std::abs(modulus - modulus_new);
-                if (g == 4 && error / modulus_old > 0.05) // tutu uses modulus_old, but I want to use modulus
-                    convergence = false;
-                // Criteraia 2: Accumulative modulus error within 0.2%
-                if (g == 4/*true*/) { // less strict convergence criteria
-                    sumError += error * error;
-                    sumModulus += modulus_old * modulus_old; // tutu uses modulus_old, but I want to use modulus
+                    // Convergence criteria
+                    // Criteria 1: modulus stabilize within 5% at all Gaussian points (less strict criteria only checks the center Gaussian point)
+                    double error = std::abs(modulus - modulus_new);
+                    if (g == 4 && error / modulus_old > 0.05) // tutu uses modulus_old, but I want to use modulus
+                        convergence = false;
+                        // should I just return false? No. Because you want to update all elements' modulus synchronously
+                    // Criteraia 2: Accumulative modulus error within 0.2%
+                    if (g == 4/*true*/) { // less strict convergence criteria
+                        sumError += error * error;
+                        sumModulus += modulus_old * modulus_old; // tutu uses modulus_old, but I want to use modulus
+                    }
+                    // For Debug Use
+                    if (i == 1 && g == 4) { // the granular element at centerline
+                        // std::cout << "nodelDisp: " << nodeDisp.transpose() << std::endl;
+                        // std::cout << "Strain: " << strain.transpose() << std::endl;
+                        // std::cout << "E: " << material->EMatrix(modulus_old) << std::endl;
+                        // std::cout << "cylindrical stress: " << stress.transpose() << std::endl;
+                        // std::cout << "principal stress: " << principalStress(stress).transpose() << std::endl;
+
+                        // std::cout << "Old modulus: " << modulus_old << std::endl;
+                        // std::cout << "New modulus: " << modulus_new << std::endl;
+                        // std::cout << "True modulus: " << modulus << std::endl;
+                    }
                 }
-                // For Debug Use
-                if (i == 1 && g == 4) { // the granular element at centerline
-                    // std::cout << "nodelDisp: " << nodeDisp.transpose() << std::endl;
-                    // std::cout << "Strain: " << strain.transpose() << std::endl;
-                    // std::cout << "E: " << material->EMatrix(modulus_old) << std::endl;
-                    // std::cout << "cylindrical stress: " << stress.transpose() << std::endl;
-                    // std::cout << "principal stress: " << principalStress(stress).transpose() << std::endl;
+            }
+            // For anisotropy case, iterate on all 3 moduli (vertical, horizontal, shear modulus)
+            else {
+                for (int g = 0; g < numGaussianPt; g++) {
+                    // More strict approach
+                    MatrixXd B = curr->BMatrix(curr->shape()->gaussianPt(g));
+                    VectorXd strain = B * nodeDisp; // e = B * u
+                    VectorXd modulus_old = (curr->modulusAtGaussPt).row(g); // M_(i-1)
+                    VectorXd stress = material->EMatrix(modulus_old) * (strain - curr->thermalStrain()); // sigma = E_(i-1) * (e - e0), note that the M and E are both from previous iteration
+                    VectorXd modulus_new = material->stressDependentModulus(principalStress(stress)); // M_i
+                    VectorXd modulus = (1 - damping) * modulus_old + damping * modulus_new; // true M_i after applying damping ratio
 
-                    // std::cout << "Old modulus: " << modulus_old << std::endl;
-                    // std::cout << "New modulus: " << modulus_new << std::endl;
-                    // std::cout << "True modulus: " << modulus << std::endl;
+                    (curr->modulusAtGaussPt).row(g) = modulus;
+
+                    // Convergence criteria
+                    // Criteria 1: modulus stabilize within 5% at all Gaussian points (less strict criteria only checks the center Gaussian point)
+                    VectorXd error = (modulus - modulus_new).array() / modulus_old.array();
+                    error = error.array().abs(); // or error.cwiseAbs()
+                    if (g == 4 && error(0) > 0.05 && error(1) > 0.05 && error(2) > 0.05) // tutu uses modulus_old, but I want to use modulus
+                        convergence = false;
+                    // Criteraia 2: Accumulative modulus error within 0.2%
+                    error = error.array().square();
+                    modulus_old = modulus_old.array().square();
+                    if (g == 4/*true*/) { // less strict convergence criteria
+                        sumError += error.sum();
+                        sumModulus += modulus_old.sum(); // tutu uses modulus_old, but I want to use modulus
+                    }
+
                 }
             }
 
@@ -364,7 +403,9 @@ bool Nonlinear::noTensionIteration()
                 MatrixXd B = curr->BMatrix(curr->shape()->gaussianPt(g));
                 VectorXd strain = B * nodeDisp; // e = B * u
                 double modulus = (curr->modulusAtGaussPt)(g);
-                VectorXd stress = material->EMatrix(modulus) * (strain - curr->thermalStrain()); // sigma = E_(i-1) * (e - e0), note that the M and E are both from previous iteration
+                VectorXd modulus_vec(1);
+                modulus_vec << modulus;
+                VectorXd stress = material->EMatrix(modulus_vec) * (strain - curr->thermalStrain()); // sigma = E_(i-1) * (e - e0), note that the M and E are both from previous iteration
 
                 // Compute principal stress and rotation angle
                 // p1 = (s1 + s3) / 2 + radius;

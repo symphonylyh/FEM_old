@@ -43,7 +43,10 @@ class Material
      * @return The modulus value.
      */
     const double & modulus() const;
-
+    const double & modulusR() const;
+    const double & modulusZ() const;
+    const double & modulusG() const;
+    
     /**
      * Adjust the modulus by ratio. Used in back analysis scheme.
      *
@@ -52,27 +55,33 @@ class Material
     virtual void adjustModulus(const double & ratio);
 
     /**
-     * Get the stress-strain constitutive matrix of the element.
+     * Get the stress-strain constitutive matrix of the element. Linear elastic
+     * material will use this to get the constant E matrix.
      *
      * @return The 4-by-4 E matrix.
      */
     const MatrixXd & EMatrix() const;
 
     /**
-     * Compute the stress-dependent E matrix from resilient modulus. Used in nonlinear scheme.
+     * Compute the stress-dependent E matrix from resilient modulus. Nonlinear
+     * elastic material will use this to get the stress-dependent E matrix.
      *
-     * @param modulus The stress-dependent resilient modulus.
+     * @param modulus The stress-dependent resilient modulus. If isotropic, it's
+     * just a single value; if anisotropic, it's a 3-by-1 vector for horizontal,
+     * vertical & shear modulus.
      * @return The constitutive matrix.
      */
-    virtual MatrixXd EMatrix(const double & modulus) const;
+    virtual MatrixXd EMatrix(const VectorXd & modulus) const;
 
     /**
      * Compute the stress-dependent resilient modulus of the element. Used in nonlinear scheme.
      *
      * @param stress The principal stresses in sigma3, sigma2, sigma1 order.
-     * @return The stress-dependent resilient modulus computed from models.
+     * @return The stress-dependent resilient modulus computed from models. If
+     * isotropic, it's just a single value; if anisotropic, it's a 3-by-1 vector
+     * for horizontal, vertical & shear modulus.
      */
-    virtual double stressDependentModulus(const VectorXd & stress) const;
+    virtual VectorXd stressDependentModulus(const VectorXd & stress) const;
 
     /**
      * Get the body force to be used in the load condition.
@@ -114,7 +123,10 @@ class Material
   protected:
 
     /** The Young's/Resilient modulus. Will be assigned in derived class for both linear and nonlinear (the initial guess Modulus) materials */
-    double modulus_;
+    double M_, Mr_, Mz_, G_; // Isotropic modulus, Horizontal modulus, vertical modulus, shear modulus
+
+    /** Poisson ratio */
+    double v_, vr_, vz_; // Isotropic Poission, horizontal Poisson, vertical Poisson
 
     /** The 4-by-4 stress-strain constitutive matrix sigma = E * e */
     MatrixXd E_;

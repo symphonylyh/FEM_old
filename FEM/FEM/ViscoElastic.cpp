@@ -35,14 +35,14 @@ ViscoElastic::ViscoElastic(const bool & anisotropy, const bool & nonlinearity, c
         Gt -= G0*G[j]*(1 - std::pow(e, -t/tao[j]));
         Kt -= K0*K[j]*(1 - std::pow(e, -t/tao[j]));
     }
-    modulus_ = 9*Kt*Gt/(3*Kt + Gt);
-    double v = (3*Kt - 2*Gt)/(6*Kt + 2*Gt);
+    M_ = 9*Kt*Gt/(3*Kt + Gt);
+    v_ = (3*Kt - 2*Gt)/(6*Kt + 2*Gt);
     // Compute the stress-strain constitutive matrix
-    E_ << 1 - v, v, v, 0,
-          v, 1 - v, v, 0,
-          v, v, 1 - v, 0,
-          0,  0,   0,  (1-2*v)/2;
-    E_ = E_ * modulus_ / (1+v) /(1-2*v);
+    E_ << 1 - v_, v_, v_, 0,
+          v_, 1 - v_, v_, 0,
+          v_, v_, 1 - v_, 0,
+          0,  0,   0,  (1-2*v_)/2;
+    E_ = E_ * M_ / (1+v_) /(1-2*v_);
 
     // Assign body force (unit weight)
     bodyForce_ << properties[i], properties[i+1];

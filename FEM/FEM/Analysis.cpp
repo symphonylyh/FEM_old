@@ -327,7 +327,7 @@ void Analysis::computeStrainAndStress()
             MatrixXd B = curr->BMatrix(curr->shape()->gaussianPt(g));
             VectorXd e = B * nodeDisp; // e = B * u
             strainAtGaussPt.row(g) = e.transpose();
-            double modulus = (curr->modulusAtGaussPt)(g); // for nonlinear, this is the stabilized modulus at the Gaussian point; for linear elastic, it's just the constant modulus M
+            VectorXd modulus = (curr->modulusAtGaussPt).row(g); // for nonlinear, this is the stabilized modulus at the Gaussian point; for linear elastic, it's just the constant modulus M
             stressAtGaussPt.row(g) = (curr->EMatrix(modulus) * (e - curr->thermalStrain())).transpose(); // subtract thermal strain, stress = E * (strain - thermal strain)
             shapeAtGaussPt.row(g) = curr->shape()->functionVec(g).transpose();
         }
