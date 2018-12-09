@@ -39,6 +39,7 @@ const double & Material::modulusG() const
 
 void Material::adjustModulus(const double & ratio)
 {
+    (void)ratio; // silence warning
     return;
 }
 
@@ -49,11 +50,13 @@ const MatrixXd & Material::EMatrix() const
 
 VectorXd Material::stressDependentModulus(const VectorXd & stress) const
 {
+    (void)stress; // silence warning
     return VectorXd::Zero(3); // to silent warning
 }
 
 MatrixXd Material::EMatrix(const VectorXd & modulus) const
 {
+    (void)modulus; // silence warning
     return MatrixXd::Zero(4,4); // to silent warning
 }
 

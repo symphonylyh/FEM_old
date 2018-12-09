@@ -274,22 +274,22 @@ const int & Mesh::elementCount() const
     return elementCount_;
 }
 
-Node* const Mesh::getNode(const int & index) const
+Node* Mesh::getNode(const int & index) const
 {
     return meshNode_[index];
 }
 
-Element* const Mesh::getElement(const int & index) const
+Element* Mesh::getElement(const int & index) const
 {
     return meshElement_[index];
 }
 
-Node** const Mesh::nodeArray() const
+Node** Mesh::nodeArray() const
 {
     return meshNode_;
 }
 
-Element** const Mesh::elementArray() const
+Element** Mesh::elementArray() const
 {
     return meshElement_;
 }

@@ -49,7 +49,7 @@ Element::~Element()
     clear_();
 }
 
-Material* const Element::material() const
+Material* Element::material() const
 {
     return material_;
 }

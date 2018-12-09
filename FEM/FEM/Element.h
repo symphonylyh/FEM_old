@@ -85,14 +85,14 @@ class Element
          * is also memory efficient for large-scale problems.
          * And returning a const pointer secures the usage of Shape object.
          */
-        virtual Shape* const shape() const = 0; // return Shape * & is insecure
+        virtual Shape* shape() const = 0; // return Shape * & is insecure
 
         /**
          * Get the material information of the element.
          *
          * @return A pointer to the material.
          */
-        Material* const material() const;
+        Material* material() const;
 
         /**
          * Compute the local element stiffness matrix formulated by
@@ -319,6 +319,12 @@ class Element
          */
         MatrixXd nodeCoord_;
 
+        /** The 2n-by-2n local stiffness matrix where n is the number of nodes */
+        MatrixXd localStiffness_; // member variable cannot have the same name as member function
+
+        /** The 2n-by-1 nodal force vector where n is the number of nodes */
+        VectorXd nodalForce_;
+
         /**
          * A pointer to the material class. Material should not be stored as static
          * member as Shape does, because Shape is a generic property of a Element
@@ -326,13 +332,7 @@ class Element
          * the list of all material is maintained at the Mesh level, so the
          * memory allocation and deallocation is not handled inside Element. */
         Material* material_;
-
-        /** The 2n-by-2n local stiffness matrix where n is the number of nodes */
-        MatrixXd localStiffness_; // member variable cannot have the same name as member function
-
-        /** The 2n-by-1 nodal force vector where n is the number of nodes */
-        VectorXd nodalForce_;
-
+        
         /**
          * Private helper function for computing the B matrix (the strain-displacement
          * transformation matrix, e = D * u = D * N * u = B * u) at ith Gaussian point.

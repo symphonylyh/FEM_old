@@ -65,7 +65,7 @@ class Mesh
          * @param index The index for query.
          * @return A pointer to the node being queried.
          */
-        Node* const getNode(const int & index) const;
+        Node* getNode(const int & index) const;
 
         /**
          * Get the element at given zero-based index.
@@ -73,14 +73,14 @@ class Mesh
          * @param index The index for query.
          * @return A pointer to the element being queried.
          */
-        Element* const getElement(const int & index) const;
+        Element* getElement(const int & index) const;
 
         /**
          * Get the node array.
          *
          * @return A pointer to the node pool.
          */
-        Node** const nodeArray() const;
+        Node** nodeArray() const;
 
         /**
          * Get the element array.
@@ -90,7 +90,7 @@ class Mesh
          * @note There are two ways to query a node/element:
          * mesh.nodeArray()[i] OR mesh.getNode(i)
          */
-        Element** const elementArray() const;
+        Element** elementArray() const;
 
         /** A list of layered materials */
         std::vector<Material*> materialList;

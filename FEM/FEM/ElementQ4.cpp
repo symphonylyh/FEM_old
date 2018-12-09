@@ -34,7 +34,7 @@ ElementQ4::~ElementQ4()
 {
 }
 
-Shape* const ElementQ4::shape() const
+Shape* ElementQ4::shape() const
 {
     return statics.shape;
 }

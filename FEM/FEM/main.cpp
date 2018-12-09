@@ -14,7 +14,7 @@
 #include "Linear.h"
 #include "Nonlinear.h"
 #include "BackAnalysis.h"
-#include "IO.h" //#include "Matrix/src/Core/IO.h" // to change the folder name, you can just change in Node.h and Shape.h into "include Matrix/Eigen"
+// #include "IO.h" //#include "Matrix/src/Core/IO.h" // to change the folder name, you can just change in Node.h and Shape.h into "include Matrix/Eigen"
 
 int main() {
     //IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
@@ -121,10 +121,10 @@ int main() {
     //--------------------------------------------------------------------------
     // Get file name
     // std::string inFileName = "../Input/input_triaxial.txt";
-    std::string inFileName = "../Input/800/input.txt";
+    std::string inFileName = "./Input/test/input_iso.txt";
     std::string outFileName = "../Output/output_3layer_issam.txt";
     std::string outVTKName = "../Output/FastCell/FOUNT-S2/output_0.vtk";
-    outVTKName = "../Input/800/output2.vtk";
+    outVTKName = "../Input/test/output_iso.vtk";
     //
     // std::cout << "Enter the input file name: ";
     // std::string inFileName;
@@ -178,8 +178,8 @@ auto start = std::chrono::high_resolution_clock::now();
     // case1->writeToVTK(outVTKName);
 
     // Normal Single case
-    Analysis* case1 = new Linear(inFileName);
-    // Analysis* case1 = new Nonlinear(inFileName);
+    // Analysis* case1 = new Linear(inFileName);
+    Analysis* case1 = new Nonlinear(inFileName);
     // Analysis* case1 = new BackAnalysis(inFileName);
     case1->solve();
 

@@ -26,7 +26,7 @@ class ElementQ8 : public Element
         ElementQ8(const int & index, const std::vector<int> & nodeList, Node** const meshNode, Material* const material);
         ~ElementQ8();
 
-        Shape* const shape() const;
+        Shape* shape() const;
 
     private:
         /** A static structure that manages all the static members used in this class */

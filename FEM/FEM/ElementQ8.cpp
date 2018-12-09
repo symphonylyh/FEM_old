@@ -34,7 +34,7 @@ ElementQ8::~ElementQ8()
 {
 }
 
-Shape* const ElementQ8::shape() const
+Shape* ElementQ8::shape() const
 {
     return statics.shape;
 }
