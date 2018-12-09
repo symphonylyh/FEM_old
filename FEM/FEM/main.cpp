@@ -121,7 +121,7 @@ int main() {
     //--------------------------------------------------------------------------
     // Get file name
     // std::string inFileName = "../Input/input_triaxial.txt";
-    std::string inFileName = "./Input/test/input_iso.txt";
+    std::string inFileName = "../Input/test/input_iso.txt";
     std::string outFileName = "../Output/output_3layer_issam.txt";
     std::string outVTKName = "../Output/FastCell/FOUNT-S2/output_0.vtk";
     outVTKName = "../Input/test/output_iso.vtk";
