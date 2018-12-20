@@ -1,4 +1,4 @@
 Release
 *.bx
 *.JPG
-**/.gitignore
+**/.DS_Store
