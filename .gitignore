@@ -1,4 +1,6 @@
 Release
 *.bx
 *.JPG
+.DS_Store
+*/.DS_Store
 **/.DS_Store
