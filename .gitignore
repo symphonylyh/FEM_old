@@ -1,3 +1,4 @@
 Release
 *.bx
 *.JPG
+**/.gitignore
